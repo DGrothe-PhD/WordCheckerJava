@@ -19,8 +19,9 @@ public class Writeinfile {
         	pInit = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
             pInit.println("<html><head>");
             pInit.println("<title>Result</title>");
+            pInit.println("<style>details > summary {font-weight:bold;color:navy;}</style>");
             pInit.println("</head><body><font face=\"Helvetica\">");
-            pInit.println("<h1>Auswertung von "+topic+":</h1>");
+            pInit.println("<h1>Results of "+topic+":</h1>");
             pInit.flush();
             pInit.close();
         	//the boolean true inside FileWriter says to append the content

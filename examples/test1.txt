@@ -1,0 +1,6 @@
+1. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 2. At vero eos et accusam et justo duo dolores et ea rebum. 3. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 4. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+Beispielhafter Textbau für einen Patentanspruch ohne besonderen Sinn.
+1. Vorrichtung (1) zum Verwenden von Gegenständen (2A), dadurch gekennzeichnet, dass neben einer Öffnung (7) und einer Ausnehmung (17) sich der übrige Anspruchstext als unwichtig darstellt.
+2. Vorrichtung nach Anspruch 1, wobei diese ein weiteres Teil (111) aufweist.
+3. Vorrichtung nach einem der Ansprüche 1 bis 2, dadruch gekenneizchnet, dass absichtlich der eine oder andere Tippfehler (88) aufzufinden ist, wobei das dem Tippfeler (88) zugrundeliegende Wort (7) ggf. auch ein zweites Mal auftaucht.
+4. Vorrichtung nach Anspruch 3, wobei ein weiteres Wort (7) ein zweites Mal zu finden ist.
