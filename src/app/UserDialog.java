@@ -54,7 +54,7 @@ public class UserDialog {
 	      Button startButton = new Button("Start");
 	      
 	      //Shorter maybe
-	      TextField targetFile = new TextField("Results.md");
+	      TextField targetFile = new TextField("Results.html");
 	      Label targetFileLabel = new Label("Target file:");
 	      
 	      TextField topicString = new TextField("Result word list");
