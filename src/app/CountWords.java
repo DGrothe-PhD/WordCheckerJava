@@ -19,12 +19,9 @@ public class CountWords {
 		return num_of_words;
 	}
 	
-	//private ArrayList<String> result = new ArrayList<String>();
-	//private ArrayList<Integer> numbers = new ArrayList<Integer>();
-	//create a lookup table
 	private HashMap<String, Integer> WordsList = new HashMap<String, Integer>();
 	
-	//this is the outer interface that outputs the data.
+	//this outputs the data.
 	public ArrayList<String> GetWordsList() {
 		return CountWordReportLines;
 	}
@@ -72,7 +69,7 @@ public class CountWords {
 		}
 		Collections.sort(ResultWordList);
 		
-		//So let's print out the WordsList entries in alphabetical order.
+		//So let's print out WordsList entries in alph. order.
 		for( String entry : ResultWordList ){
 			String worep = entry + "\t" + WordsList.get(entry);
 			CountWordReportLines.add(worep);

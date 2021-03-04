@@ -2,18 +2,21 @@ package app;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.net.URI;
 
 public class UserDialog {
 	//
 	   private Frame mainFrame;
-	   private Label headerLabel;
-	   private Label statusLabel;
+	   private Label headerLabel, statusLabelHeader;
+	   private TextField statusField;
 	   private Panel controlPanel;
 	   public String selFile, selTargetFile, selTopicString;
 	   private static final char[] ILLEGAL_CHARACTERS = {
 			   '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*',
 			   '\\', '<', '>', '|', '\"', ':' };
-
+	   private TimeCalc tc;
+	   
 	   public UserDialog(){
 	      prepareGUI();
 	      showFileDialogDemo();
@@ -22,49 +25,97 @@ public class UserDialog {
 	   public String getSelectedFile() {
 		   return selFile;
 	   }
+	   
+	   public void htmlOpen()
+		{	
+			Desktop desktop = Desktop.getDesktop();
+
+			try
+			{
+				URI uri = new File(selTargetFile).toURI();
+				desktop.browse(uri);
+			} catch (Exception oError)
+			{
+				System.out.println("Seite kann nicht geöffnet werden.");
+			}
+		}
+
+
 
 	   private void prepareGUI(){
 	      mainFrame = new Frame("Java Wordchecker App");
-	      mainFrame.setSize(400,400);
-	      mainFrame.setLayout(new GridLayout(3, 1));
+	      mainFrame.setSize(425,307);
+	      Color moss = new Color(170,200,170);
+	      Color slate = new Color(130,170,130);
+	      Color yellow = new Color(222,222,0);
+	      Color green = new Color(160,180,170);
+	      mainFrame.setBackground(moss);
+
+	      mainFrame.setLayout(new FlowLayout());
 	      mainFrame.addWindowListener(new WindowAdapter() {
 	         public void windowClosing(WindowEvent windowEvent){
 	            System.exit(0);
 	         }        
 	      });    
+	      
 	      headerLabel = new Label();
 	      headerLabel.setAlignment(Label.CENTER);
-	      statusLabel = new Label();        
-	      statusLabel.setAlignment(Label.CENTER);
-	      statusLabel.setSize(350,100);
+	      
+	      statusLabelHeader = new Label(); 
+	      statusLabelHeader.setBackground(green);
+	      statusLabelHeader.setText("Output file...");
+	      statusLabelHeader.setAlignment(Label.LEFT);
+	      statusField = new TextField(40);
+	      statusField.setText("");
+	      statusField.setBackground(yellow);
 	      
 	      controlPanel = new Panel();
-	      controlPanel.setLayout(new FlowLayout());
+	      controlPanel.setLayout(new GridLayout(3,2));
+	      controlPanel.setBackground(slate);
+	      controlPanel.setSize(424,280);
+	      
+	      controlPanel.add(statusLabelHeader);
+	      controlPanel.add(statusField);
+	      //controlPanel.setLayout(new FlowLayout());
+	      
+	      Component[] abc = {headerLabel, controlPanel};
+	      for (Component c:abc) {
+	    	  mainFrame.add(c);
+	      }
 
-	      mainFrame.add(headerLabel);
-	      mainFrame.add(controlPanel);
-	      mainFrame.add(statusLabel);
 	      mainFrame.setVisible(true);  
 	   }
 
+	   public void setMessage(String s) {
+		   statusField.setText(s);
+	   }
+	   public void setMesage(String s, String t) {
+		   statusField.setText(s + t);
+	   }
 	   public void showFileDialogDemo(){
-	      headerLabel.setText("Control in action: FileDialog"); 
 	      final FileDialog fileDialog = new FileDialog(mainFrame,"Select file");
 	      Button showFileDialogButton = new Button("Open File");
 	      Button startButton = new Button("Start");
+	      Button openButton = new Button("Show Results");
+	      Button closeButton = new Button("Close window");
 	      
-	      //Shorter maybe
-	      TextField targetFile = new TextField("Results.html");
+	      TextField targetFile = new TextField(40);
+	      targetFile.setText("Results.html");
 	      Label targetFileLabel = new Label("Target file:");
 	      
-	      TextField topicString = new TextField("Result word list");
+	      TextField topicString = new TextField(40);
+	      topicString.setText("Result word list");
 	      Label topicStringLabel = new Label("Type topic:");
 	      
 	      showFileDialogButton.addActionListener(new ActionListener() {
 	         @Override
 	         public void actionPerformed(ActionEvent e) {
 	            fileDialog.setVisible(true);
-	            statusLabel.setText("File Selected :" 
+	            String loc = ""+fileDialog.getDirectory();
+	            int q = loc.length()>40?loc.length()-40:0;
+	            loc = loc.substring(q);
+	            statusLabelHeader.setText("File Selected :");
+	            statusField.setText("..." 
 	            + fileDialog.getDirectory() + fileDialog.getFile());
 	            selFile = fileDialog.getDirectory() + fileDialog.getFile();
 	            
@@ -73,42 +124,75 @@ public class UserDialog {
 	      });
 	      
 	      startButton.addActionListener(new ActionListener() {
-		         @Override
-		         public void actionPerformed(ActionEvent e){
-		        	//User selected target filename for results.
-		        	//FIXME currently writing rights of current directory are not checked for
-		        	String s = targetFile.getText();
-		        	for(char c:ILLEGAL_CHARACTERS) {
-		        		if(s.contains(""+c)) {
-		        			s = s.replace(c, '0');
-		        			//TODO set some warning window
-		        		}
+		     @Override
+		     public void actionPerformed(ActionEvent e){
+		     //User selected target filename for results.
+		     tc = new TimeCalc();
+		     try{
+		        String s = targetFile.getText();
+		        String illchar = new String();
+		        illchar="";
+		        for(char c:ILLEGAL_CHARACTERS) {
+		        	if(s.contains(""+c)) {
+		        		s = s.replace(c, '0');
+		        		illchar += (""+c);
 		        	}
-		        	if(s.length() > 5 ) {
-		        		if(s.endsWith(".html")) {
-		        			selTargetFile = s;
-		        		}
-		        		else {
-		        			selTargetFile = s + ".html";
-		        		}
+		        }
+		        // Replacement of "*/\" etc.
+		        if(illchar.length()>0) {
+		        	setMessage("Symbols "+illchar+" are not allowed in filenames");
+		        }
+		        if(s.length() > 5 ) {
+		        	if(s.endsWith(".html")) {
+		        		selTargetFile = s;
 		        	}
 		        	else {
-		        			selTargetFile = "Results_" + s + ".html";
+		        		selTargetFile = s + ".html";
 		        	}
-		        	selTargetFile = targetFile.getText();
-		        	Writeinfile WordPlace = new Writeinfile(selTargetFile, selTopicString);
-		        	EvaluateText foobar = new EvaluateText(selFile);
-		        	WordPlace.storeAllItems(foobar.GetWordsList());
-		        	WordPlace.finishWriting();
-		        	mainFrame.dispose();        	
-		         }
+		        }
+		        else {
+		        	selTargetFile = "Results_" + s + ".html";
+		        }
+		        
+		        Writeinfile WordPlace = new Writeinfile(selTargetFile, topicString.getText());
+		        if (selFile == null || selFile.length()<2) {
+		        	setMessage("Please select a file before clicking Start.");
+		        }
+		        EvaluateText foobar = new EvaluateText(selFile);
+		        WordPlace.storeAllItems(foobar.GetWordsList());
+		        WordPlace.finishWriting();
+		        tc.endTime();
+		        tc.getDuration();
+		     }// end try
+		     catch(Exception exc) {;}
+		     }
 		  });
 
-	      Component[] abc = {showFileDialogButton, startButton, targetFileLabel, 
-	    		  targetFile, topicStringLabel, topicString};
+	      closeButton.addActionListener(new ActionListener() {
+	    	  @Override
+	    	  public void actionPerformed(ActionEvent e) {
+	    		  mainFrame.dispose();
+	    	  }
+	      });
+	      
+	      openButton.addActionListener(new ActionListener() {
+		         @Override
+		         public void actionPerformed(ActionEvent e) {
+		            htmlOpen();
+		         }
+		  });
+	      //buttons
+	      Component[] abc = {showFileDialogButton, startButton, openButton, closeButton};
 	      for (Component s:abc) {
 	    	   controlPanel.add(s);
 	      }
+	      //labels
+	      mainFrame.add(topicStringLabel);
+	      mainFrame.add(topicString);
+	      mainFrame.add(targetFileLabel);
+	      mainFrame.add(targetFile);
+	      mainFrame.add(statusLabelHeader);
+	      mainFrame.add(statusField);
 	      mainFrame.setVisible(true);  
 	   }
 }

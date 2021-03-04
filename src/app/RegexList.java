@@ -16,6 +16,14 @@ public class RegexList {
 		return mat.find();
 	}
 	
+	public static String datetime = "[0-9][0-9].[0-9][0-9].[0-9][0-9]*";
+	public static Pattern simplePatternDateTime = Pattern.compile(datetime);
+	
+	public static boolean hasDateTime(String s) {
+		Matcher mat = simplePatternDateTime.matcher(s);
+		return mat.find();
+	}
+	
 	public static String patnum = "[A-Z][A-Z][0-9][0-9]*[A-Z][0-9]?";
 	public static Pattern patnumpattern = Pattern.compile(patnum);
 	
@@ -23,9 +31,6 @@ public class RegexList {
 		Matcher mat = patnumpattern.matcher(s);
 		return mat.find();
 	}
-	
-	/*public static String refsign = "[(][0-9][0-9]*[)]";
-	public static Pattern refpattern = Pattern.compile(refsign);*/
 	
 	//TODO verfeinere den Inhalt der Klammern
 	public static boolean hasRefSign(String s) {

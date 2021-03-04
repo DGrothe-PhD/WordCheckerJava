@@ -26,7 +26,7 @@ public class Writeinfile {
             pInit.close();
         	//the boolean true inside FileWriter says to append the content
             pWriter = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
-            // file is silently overwritten, and newline at each line is automatically added
+            // file overwritten, newline at line ends is automatically added
         } catch (IOException ioe) {
             ioe.printStackTrace();
         } finally {;}
@@ -38,7 +38,7 @@ public class Writeinfile {
 
     public void storeAllItems(ArrayList<String> targs) {
     	char cap = '0';
-    	//cap automatically set to first char of first word in alphabetical order
+    	//cap will be set to first char of first word in alphabetical order
     	//regardless of which
     	for( String entry : targs ){
     		if (Character.isDigit(entry.charAt(0))) {
