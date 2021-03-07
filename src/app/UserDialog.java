@@ -11,7 +11,10 @@ public class UserDialog {
 	   private Label headerLabel, statusLabelHeader;
 	   private TextField statusField;
 	   private Panel controlPanel;
-	   public String selFile, selTargetFile, selTopicString;
+	   public String selFile, selTargetFile, selTopicString, fileType;
+	   private static final String[] ALLOWED_INPUT_FILES = {
+			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
+			   ".java", ".cpp", ".hpp", ".csv", ".cs"};
 	   private static final char[] ILLEGAL_CHARACTERS = {
 			   '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*',
 			   '\\', '<', '>', '|', '\"', ':' };
@@ -36,7 +39,7 @@ public class UserDialog {
 				desktop.browse(uri);
 			} catch (Exception oError)
 			{
-				System.out.println("Seite kann nicht geöffnet werden.");
+				System.out.println("Output file could not be opened.");
 			}
 		}
 
@@ -107,6 +110,7 @@ public class UserDialog {
 	      topicString.setText("Result word list");
 	      Label topicStringLabel = new Label("Type topic:");
 	      
+	      /** The Open File or Browse... button to select input text file.*/
 	      showFileDialogButton.addActionListener(new ActionListener() {
 	         @Override
 	         public void actionPerformed(ActionEvent e) {
@@ -118,11 +122,19 @@ public class UserDialog {
 	            statusField.setText("..." 
 	            + fileDialog.getDirectory() + fileDialog.getFile());
 	            selFile = fileDialog.getDirectory() + fileDialog.getFile();
-	            
+	            fileType="";
+	            for(String str:ALLOWED_INPUT_FILES) {
+	            	if(selFile.endsWith(str)) {
+	            		fileType=str;
+	            		break;
+	            	}
+	            }
 	            selTopicString = topicString.getText();
 	         }
 	      });
 	      
+	      /** The start button. When pressed, chosen file is processed, 
+	       * and results are written into the target file. */
 	      startButton.addActionListener(new ActionListener() {
 		     @Override
 		     public void actionPerformed(ActionEvent e){
@@ -132,13 +144,17 @@ public class UserDialog {
 		        String s = targetFile.getText();
 		        String illchar = new String();
 		        illchar="";
+		        if(fileType.length()<2) {
+		        	setMessage("Please choose a text file, of types:"+String.join(", ", ALLOWED_INPUT_FILES));
+		        	throw new ArithmeticException("File type not allowed");//placeholder
+		        }
 		        for(char c:ILLEGAL_CHARACTERS) {
 		        	if(s.contains(""+c)) {
 		        		s = s.replace(c, '0');
 		        		illchar += (""+c);
 		        	}
 		        }
-		        // Replacement of "*/\" etc.
+		        // Replacement of "*,\,<,/" etc.
 		        if(illchar.length()>0) {
 		        	setMessage("Symbols "+illchar+" are not allowed in filenames");
 		        }
@@ -154,6 +170,7 @@ public class UserDialog {
 		        	selTargetFile = "Results_" + s + ".html";
 		        }
 		        
+		        // handling unset results file at start
 		        Writeinfile WordPlace = new Writeinfile(selTargetFile, topicString.getText());
 		        if (selFile == null || selFile.length()<2) {
 		        	setMessage("Please select a file before clicking Start.");
@@ -164,10 +181,12 @@ public class UserDialog {
 		        tc.endTime();
 		        tc.getDuration();
 		     }// end try
-		     catch(Exception exc) {;}
+		     catch(ArithmeticException bannedfiletype) {System.out.println("Error: forbidden file type.");}
+		     catch(Exception exc) {System.out.println("dasda");}
 		     }
 		  });
-
+	      
+	      /** When close button is pressed, the window is closed.*/
 	      closeButton.addActionListener(new ActionListener() {
 	    	  @Override
 	    	  public void actionPerformed(ActionEvent e) {
@@ -175,6 +194,7 @@ public class UserDialog {
 	    	  }
 	      });
 	      
+	      /** Opens the result HTML file (in the standard browser).*/
 	      openButton.addActionListener(new ActionListener() {
 		         @Override
 		         public void actionPerformed(ActionEvent e) {
