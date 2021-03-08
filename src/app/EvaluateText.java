@@ -20,7 +20,9 @@ public class EvaluateText// extends CountWords
     public ArrayList<String> GetWordsList() {
     	return cwo.GetWordsList();
     }
- 
+    public int GetNumberOfWords() {
+    	return cwo.GetNOW();
+    }
     //Read file content into string with - Files.readAllBytes(Path path)
  
     private int readAllBytesJava7(String filePath) 

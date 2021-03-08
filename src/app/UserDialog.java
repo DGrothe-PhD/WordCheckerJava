@@ -5,11 +5,12 @@ import java.awt.event.*;
 import java.io.File;
 import java.net.URI;
 
+/** User dialog widget */
 public class UserDialog {
 	//
 	   private Frame mainFrame;
 	   private Label headerLabel, statusLabelHeader;
-	   private TextField statusField;
+	   private TextField statusField, supplField;
 	   private Panel controlPanel;
 	   public String selFile, selTargetFile, selTopicString, fileType;
 	   private static final String[] ALLOWED_INPUT_FILES = {
@@ -22,13 +23,14 @@ public class UserDialog {
 	   
 	   public UserDialog(){
 	      prepareGUI();
-	      showFileDialogDemo();
+	      showFileDialog();
 	   }
 	   
 	   public String getSelectedFile() {
 		   return selFile;
 	   }
 	   
+	   /** Open the results HTML file */
 	   public void htmlOpen()
 		{	
 			Desktop desktop = Desktop.getDesktop();
@@ -42,15 +44,13 @@ public class UserDialog {
 				System.out.println("Output file could not be opened.");
 			}
 		}
-
-
-
+	   
+	   /** Widget settings */
 	   private void prepareGUI(){
 	      mainFrame = new Frame("Java Wordchecker App");
 	      mainFrame.setSize(425,307);
 	      Color moss = new Color(170,200,170);
-	      Color slate = new Color(130,170,130);
-	      Color yellow = new Color(222,222,0);
+	      Color darker = new Color(130,170,130);
 	      Color green = new Color(160,180,170);
 	      mainFrame.setBackground(moss);
 
@@ -70,16 +70,14 @@ public class UserDialog {
 	      statusLabelHeader.setAlignment(Label.LEFT);
 	      statusField = new TextField(40);
 	      statusField.setText("");
-	      statusField.setBackground(yellow);
+	      supplField = new TextField(40);
+	      supplField.setBackground(green);
+	      supplField.setText("");
 	      
 	      controlPanel = new Panel();
 	      controlPanel.setLayout(new GridLayout(3,2));
-	      controlPanel.setBackground(slate);
+	      controlPanel.setBackground(darker);
 	      controlPanel.setSize(424,280);
-	      
-	      controlPanel.add(statusLabelHeader);
-	      controlPanel.add(statusField);
-	      //controlPanel.setLayout(new FlowLayout());
 	      
 	      Component[] abc = {headerLabel, controlPanel};
 	      for (Component c:abc) {
@@ -88,14 +86,19 @@ public class UserDialog {
 
 	      mainFrame.setVisible(true);  
 	   }
-
+	   
+	   /** show status messages */
 	   public void setMessage(String s) {
 		   statusField.setText(s);
 	   }
-	   public void setMesage(String s, String t) {
-		   statusField.setText(s + t);
+	   /** show extra message @param up to 3 strings */
+	   public void setSupplMessage(String s, String... t) {
+		   String t1 = t.length > 0 ? t[0] : "";
+		   String t2 = t.length > 1 ? t[1] : "";
+		   supplField.setText(s + " " + t1 + " "+ t2);
 	   }
-	   public void showFileDialogDemo(){
+	   /** File dialog and button actions */
+	   public void showFileDialog(){
 	      final FileDialog fileDialog = new FileDialog(mainFrame,"Select file");
 	      Button showFileDialogButton = new Button("Open File");
 	      Button startButton = new Button("Start");
@@ -119,9 +122,10 @@ public class UserDialog {
 	            int q = loc.length()>40?loc.length()-40:0;
 	            loc = loc.substring(q);
 	            statusLabelHeader.setText("File Selected :");
-	            statusField.setText("..." 
-	            + fileDialog.getDirectory() + fileDialog.getFile());
 	            selFile = fileDialog.getDirectory() + fileDialog.getFile();
+	            statusField.setText("..." + selFile);
+	            supplField.setText("");
+	            
 	            fileType="";
 	            for(String str:ALLOWED_INPUT_FILES) {
 	            	if(selFile.endsWith(str)) {
@@ -141,22 +145,33 @@ public class UserDialog {
 		     //User selected target filename for results.
 		     tc = new TimeCalc();
 		     try{
-		        String s = targetFile.getText();
-		        String illchar = new String();
-		        illchar="";
+		    	// Validate source text file selection: must be text file
 		        if(fileType.length()<2) {
-		        	setMessage("Please choose a text file, of types:"+String.join(", ", ALLOWED_INPUT_FILES));
+		        	setMessage(
+		        			"Please choose a text file, of types:"+
+		        			String.join(", ", ALLOWED_INPUT_FILES)
+		        			);
 		        	throw new ArithmeticException("File type not allowed");//placeholder
 		        }
+		        // handling unset results file at start
+		        if (selFile == null || selFile.length()<2) {
+		        	setMessage("Please select a file before clicking Start.");
+		        	throw new ArithmeticException("No file selected");//placeholder
+		        }
+		        
+		        // Validate results filename from input text field
+		        String s = targetFile.getText();
+		        String illchar = "";
 		        for(char c:ILLEGAL_CHARACTERS) {
 		        	if(s.contains(""+c)) {
-		        		s = s.replace(c, '0');
+		        		//s = s.replace(c, '0');
 		        		illchar += (""+c);
 		        	}
 		        }
-		        // Replacement of "*,\,<,/" etc.
+		        
 		        if(illchar.length()>0) {
 		        	setMessage("Symbols "+illchar+" are not allowed in filenames");
+		        	throw new ArithmeticException("File type not allowed");//placeholder
 		        }
 		        if(s.length() > 5 ) {
 		        	if(s.endsWith(".html")) {
@@ -170,19 +185,16 @@ public class UserDialog {
 		        	selTargetFile = "Results_" + s + ".html";
 		        }
 		        
-		        // handling unset results file at start
 		        Writeinfile WordPlace = new Writeinfile(selTargetFile, topicString.getText());
-		        if (selFile == null || selFile.length()<2) {
-		        	setMessage("Please select a file before clicking Start.");
-		        }
-		        EvaluateText foobar = new EvaluateText(selFile);
-		        WordPlace.storeAllItems(foobar.GetWordsList());
+		        EvaluateText etx = new EvaluateText(selFile);
+		        WordPlace.storeAllItems(etx.GetWordsList());
 		        WordPlace.finishWriting();
-		        tc.endTime();
-		        tc.getDuration();
+		        setSupplMessage(Integer.toString(etx.GetNumberOfWords())+" words counted.",
+		        		tc.getDuration());
+		        tc.printDuration();
 		     }// end try
-		     catch(ArithmeticException bannedfiletype) {System.out.println("Error: forbidden file type.");}
-		     catch(Exception exc) {System.out.println("dasda");}
+		     catch(ArithmeticException bannedfiletype) {;}
+		     catch(Exception exc) {System.out.println("Some error");}
 		     }
 		  });
 	      
@@ -196,15 +208,15 @@ public class UserDialog {
 	      
 	      /** Opens the result HTML file (in the standard browser).*/
 	      openButton.addActionListener(new ActionListener() {
-		         @Override
-		         public void actionPerformed(ActionEvent e) {
-		            htmlOpen();
-		         }
+		      @Override
+		      public void actionPerformed(ActionEvent e) {
+		          htmlOpen();
+		      }
 		  });
 	      //buttons
 	      Component[] abc = {showFileDialogButton, startButton, openButton, closeButton};
 	      for (Component s:abc) {
-	    	   controlPanel.add(s);
+	    	  controlPanel.add(s);
 	      }
 	      //labels
 	      mainFrame.add(topicStringLabel);
@@ -213,6 +225,7 @@ public class UserDialog {
 	      mainFrame.add(targetFile);
 	      mainFrame.add(statusLabelHeader);
 	      mainFrame.add(statusField);
+	      mainFrame.add(supplField);
 	      mainFrame.setVisible(true);  
 	   }
 }

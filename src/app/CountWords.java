@@ -4,6 +4,7 @@ import java.util.ArrayList;
 //Für Anzahl Vorkommen gebraucht:
 import java.util.*; 
 
+/** Words counting class */
 public class CountWords {
 	public int num_of_lines;
 	public int num_of_words;
@@ -19,6 +20,8 @@ public class CountWords {
 		return num_of_words;
 	}
 	
+	/** WordsList is an aggregation of entry pairs of:
+	 *  &lt; string: the word, int: counts&gt; */
 	private HashMap<String, Integer> WordsList = new HashMap<String, Integer>();
 	
 	//this outputs the data.
@@ -26,10 +29,11 @@ public class CountWords {
 		return CountWordReportLines;
 	}
 	
+	/** Add a word to the WordsList. If new, add, if already in list, increment counter */
 	public void AddWord(String str) {
 		String str2 = str.trim();
-		//@NOTE replaceAll uses regex, whereas replace simply does not!
-		//so replace would remove points in words like in URLs
+		//replaceAll uses regex, whereas replace simply does not!
+		//remove points
 		str2= str2.replaceAll("\\.$","").replaceAll(",$","");
 		str2= str2.replaceAll("[\";„“»«]","");
 		// Finding words and incrementing occurrence counts
@@ -44,15 +48,18 @@ public class CountWords {
 			WordsList.put(str2, 1);//Add word to word list
 		}
 	}
+	/** empty constructor */
 	public CountWords() {
 		;
 	}
+	/** CountWords @param string: the text, that is split into lines and tokens (words). */
 	public CountWords(String str){
 		String[] lines = str.split("\n");
 		num_of_lines = lines.length;
 		int j, k;
 		ArrayList<String> buf = new ArrayList<String>();
 		for (j=0; j<num_of_lines; j++) {
+			lines[j] = lines[j].replace("\t", " ");
 			for (String bar: lines[j].split(" ")) {
 				buf.add(bar);
 			}
@@ -62,6 +69,7 @@ public class CountWords {
 			AddWord(buf.get(k));
 		}
 		
+		//need to have an ArrayList as Collections.sort(HashMap) is not implemented.
 		ArrayList<String> ResultWordList = new ArrayList<String>();
 		
 		for( Map.Entry<String, Integer> entry : WordsList.entrySet() ){
