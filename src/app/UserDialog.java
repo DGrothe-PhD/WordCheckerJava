@@ -8,11 +8,18 @@ import java.net.URI;
 /** User dialog widget */
 public class UserDialog {
 	//
+	   private int LABEL_WIDTH = 40;
 	   private Frame mainFrame;
-	   private Label headerLabel, statusLabelHeader;
-	   private TextField statusField, supplField;
-	   private Panel controlPanel;
-	   public String selFile, selTargetFile, selTopicString, fileType;
+	   private Label headerLabel, topicStringLabel, targetFileLabel, statusFieldLabel, fileFieldLabel;
+	   private Label fileLabel, supplLabel, supplFieldLabel;
+	   
+	   private TextField topicString, targetFile, statusField;
+	   
+	   private Color warnFG = new Color(255, 0,0);
+	   private Color normalFG = new Color(0,0,0);
+	   
+	   private Panel controlPanel, statusPanel;
+	   public String selFile, selTargetFile, selTopicString = "", fileType = "";
 	   private static final String[] ALLOWED_INPUT_FILES = {
 			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
 			   ".java", ".cpp", ".hpp", ".csv", ".cs"};
@@ -50,7 +57,9 @@ public class UserDialog {
 	      mainFrame = new Frame("Java Wordchecker App");
 	      mainFrame.setSize(425,307);
 	      Color moss = new Color(170,200,170);
+	      Color light = new Color(190, 220, 190);
 	      Color darker = new Color(130,170,130);
+	      Color hint = new Color(130,170,130);
 	      Color green = new Color(160,180,170);
 	      mainFrame.setBackground(moss);
 
@@ -64,38 +73,92 @@ public class UserDialog {
 	      headerLabel = new Label();
 	      headerLabel.setAlignment(Label.CENTER);
 	      
-	      statusLabelHeader = new Label(); 
-	      statusLabelHeader.setBackground(green);
-	      statusLabelHeader.setText("Output file...");
-	      statusLabelHeader.setAlignment(Label.LEFT);
+	      topicStringLabel = new Label("Type topic:");
+	      topicString = new TextField(40);
+	      topicString.setText("Result word list");
+	      targetFileLabel = new Label("Target file:");
+	      targetFile = new TextField(40);
+	      targetFile.setText("Results.html");
+	      statusFieldLabel = new Label(); 
+	      statusFieldLabel.setText("Selected folder:");
 	      statusField = new TextField(40);
+	      statusField.setBackground(hint);
 	      statusField.setText("");
-	      supplField = new TextField(40);
-	      supplField.setBackground(green);
-	      supplField.setText("");
+	      
+	      fileLabel = new Label();
+	      fileLabel.setBackground(light);
+	      fileLabel.setText("");
+	      fileFieldLabel = new Label();
+	      fileFieldLabel.setText("Chosen file:");
+	      supplLabel = new Label();
+	      supplLabel.setBackground(green);
+	      supplLabel.setText("");
+	      supplFieldLabel = new Label();
+	      supplFieldLabel.setText("Info:");
 	      
 	      controlPanel = new Panel();
 	      controlPanel.setLayout(new GridLayout(3,2));
 	      controlPanel.setBackground(darker);
 	      controlPanel.setSize(424,280);
 	      
-	      Component[] abc = {headerLabel, controlPanel};
-	      for (Component c:abc) {
-	    	  mainFrame.add(c);
-	      }
-
+	      statusPanel = new Panel();
+	      statusPanel.setBackground(moss);
+	      statusPanel.setSize(424,280);
+	      
+	      GridBagLayout grid3 = new GridBagLayout();
+	      GridBagConstraints gbc = new GridBagConstraints();
+	      statusPanel.setLayout(grid3);
+	      gbc.fill = GridBagConstraints.HORIZONTAL;
+	      // left column
+	      gbc.gridx = 0;
+	      gbc.gridy = 0;
+	      statusPanel.add(topicStringLabel, gbc);
+	      //gbc.gridx = 0;
+	      gbc.gridy = 1;
+	      statusPanel.add(targetFileLabel, gbc);
+	      gbc.gridy = 3;
+	      statusPanel.add(statusFieldLabel, gbc);
+	      gbc.gridy = 4;
+	      statusPanel.add(fileFieldLabel, gbc);
+	      gbc.gridy = 5;
+	      statusPanel.add(supplFieldLabel, gbc);
+	      
+	      // right column is broader
+	      gbc.gridwidth = 2;
+	      gbc.gridx = 1;
+	      gbc.gridy = 0;
+	      statusPanel.add(topicString, gbc);
+	      gbc.gridy = 1;
+	      statusPanel.add(targetFile, gbc);
+	      gbc.gridy = 3;
+	      statusPanel.add(statusField, gbc);
+	      gbc.gridy = 4;
+	      statusPanel.add(fileLabel, gbc);
+	      gbc.gridy = 5;
+	      statusPanel.add(supplLabel, gbc);
+	      
+	      mainFrame.add(headerLabel);
+	      mainFrame.add(controlPanel);
+	      mainFrame.add(statusPanel);
 	      mainFrame.setVisible(true);  
 	   }
 	   
 	   /** show status messages */
-	   public void setMessage(String s) {
-		   statusField.setText(s);
+	   public void setMessage(String settext, int warning) {
+		   statusField.setText(settext);
+		   if(warning == 1) {
+			   statusField.setForeground(warnFG);
+		   }
+		   else {
+			   statusField.setForeground(normalFG);
+		   }
 	   }
+	   
 	   /** show extra message @param up to 3 strings */
 	   public void setSupplMessage(String s, String... t) {
 		   String t1 = t.length > 0 ? t[0] : "";
 		   String t2 = t.length > 1 ? t[1] : "";
-		   supplField.setText(s + " " + t1 + " "+ t2);
+		   supplLabel.setText(s + " " + t1 + " "+ t2);
 	   }
 	   /** File dialog and button actions */
 	   public void showFileDialog(){
@@ -104,27 +167,21 @@ public class UserDialog {
 	      Button startButton = new Button("Start");
 	      Button openButton = new Button("Show Results");
 	      Button closeButton = new Button("Close window");
-	      
-	      TextField targetFile = new TextField(40);
-	      targetFile.setText("Results.html");
-	      Label targetFileLabel = new Label("Target file:");
-	      
-	      TextField topicString = new TextField(40);
-	      topicString.setText("Result word list");
-	      Label topicStringLabel = new Label("Type topic:");
-	      
+	      	      
 	      /** The Open File or Browse... button to select input text file.*/
 	      showFileDialogButton.addActionListener(new ActionListener() {
 	         @Override
 	         public void actionPerformed(ActionEvent e) {
+	        	setMessage("", 0);
 	            fileDialog.setVisible(true);
 	            String loc = ""+fileDialog.getDirectory();
 	            int q = loc.length()>40?loc.length()-40:0;
 	            loc = loc.substring(q);
-	            statusLabelHeader.setText("File Selected :");
+	            
 	            selFile = fileDialog.getDirectory() + fileDialog.getFile();
-	            statusField.setText("..." + selFile);
-	            supplField.setText("");
+	            statusField.setText("..." + fileDialog.getDirectory());
+	            fileLabel.setText(fileDialog.getFile());
+	            supplLabel.setText("");
 	            
 	            fileType="";
 	            for(String str:ALLOWED_INPUT_FILES) {
@@ -149,16 +206,17 @@ public class UserDialog {
 		        if(fileType.length()<2) {
 		        	setMessage(
 		        			"Please choose a text file, of types:"+
-		        			String.join(", ", ALLOWED_INPUT_FILES)
-		        			);
+		        			String.join(", ", ALLOWED_INPUT_FILES), 1);
 		        	throw new ArithmeticException("File type not allowed");//placeholder
 		        }
 		        // handling unset results file at start
+
 		        if (selFile == null || selFile.length()<2) {
-		        	setMessage("Please select a file before clicking Start.");
+		        	//FIXME does not show
+		        	setMessage("Please select a file before clicking Start.", 1);
 		        	throw new ArithmeticException("No file selected");//placeholder
 		        }
-		        
+
 		        // Validate results filename from input text field
 		        String s = targetFile.getText();
 		        String illchar = "";
@@ -170,7 +228,7 @@ public class UserDialog {
 		        }
 		        
 		        if(illchar.length()>0) {
-		        	setMessage("Symbols "+illchar+" are not allowed in filenames");
+		        	setMessage("Symbols "+illchar+" are not allowed in filenames", 1);
 		        	throw new ArithmeticException("File type not allowed");//placeholder
 		        }
 		        if(s.length() > 5 ) {
@@ -189,6 +247,8 @@ public class UserDialog {
 		        EvaluateText etx = new EvaluateText(selFile);
 		        WordPlace.storeAllItems(etx.GetWordsList());
 		        WordPlace.finishWriting();
+		        //forget input file
+		        fileType = "";
 		        setSupplMessage(Integer.toString(etx.GetNumberOfWords())+" words counted.",
 		        		tc.getDuration());
 		        tc.printDuration();
@@ -214,18 +274,12 @@ public class UserDialog {
 		      }
 		  });
 	      //buttons
+	      
 	      Component[] abc = {showFileDialogButton, startButton, openButton, closeButton};
 	      for (Component s:abc) {
 	    	  controlPanel.add(s);
 	      }
-	      //labels
-	      mainFrame.add(topicStringLabel);
-	      mainFrame.add(topicString);
-	      mainFrame.add(targetFileLabel);
-	      mainFrame.add(targetFile);
-	      mainFrame.add(statusLabelHeader);
-	      mainFrame.add(statusField);
-	      mainFrame.add(supplField);
+
 	      mainFrame.setVisible(true);  
 	   }
 }
