@@ -10,10 +10,9 @@ public class UserDialog {
 	//
 	   private int LABEL_WIDTH = 40;
 	   private Frame mainFrame;
-	   private Label headerLabel, topicStringLabel, targetFileLabel, statusFieldLabel, fileFieldLabel;
-	   private Label fileLabel, supplLabel, supplFieldLabel;
+	   private Label headerLabel;
 	   
-	   private TextField topicString, targetFile, statusField;
+	   LabelledField topic, target, status, aboutfile, supplinfo;
 	   
 	   private Color warnFG = new Color(255, 0,0);
 	   private Color normalFG = new Color(0,0,0);
@@ -73,28 +72,12 @@ public class UserDialog {
 	      headerLabel = new Label();
 	      headerLabel.setAlignment(Label.CENTER);
 	      
-	      topicStringLabel = new Label("Type topic:");
-	      topicString = new TextField(40);
-	      topicString.setText("Result word list");
-	      targetFileLabel = new Label("Target file:");
-	      targetFile = new TextField(40);
-	      targetFile.setText("Results.html");
-	      statusFieldLabel = new Label(); 
-	      statusFieldLabel.setText("Selected folder:");
-	      statusField = new TextField(40);
-	      statusField.setBackground(hint);
-	      statusField.setText("");
-	      
-	      fileLabel = new Label();
-	      fileLabel.setBackground(light);
-	      fileLabel.setText("");
-	      fileFieldLabel = new Label();
-	      fileFieldLabel.setText("Chosen file:");
-	      supplLabel = new Label();
-	      supplLabel.setBackground(green);
-	      supplLabel.setText("");
-	      supplFieldLabel = new Label();
-	      supplFieldLabel.setText("Info:");
+	      //labels and textfields
+	      topic = new LabelledField("Type topic:", "Result word list");
+	      target = new LabelledField("Target file:", "Results.html");
+	      status = new LabelledField("Selected folder:", "", hint);
+	      aboutfile = new LabelledField("Selected file:", "", light);
+	      supplinfo = new LabelledField("Info:", "", green);
 	      
 	      controlPanel = new Panel();
 	      controlPanel.setLayout(new GridLayout(3,2));
@@ -112,30 +95,30 @@ public class UserDialog {
 	      // left column
 	      gbc.gridx = 0;
 	      gbc.gridy = 0;
-	      statusPanel.add(topicStringLabel, gbc);
+	      statusPanel.add(topic.thelabel, gbc);
 	      //gbc.gridx = 0;
 	      gbc.gridy = 1;
-	      statusPanel.add(targetFileLabel, gbc);
+	      statusPanel.add(target.thelabel, gbc);
 	      gbc.gridy = 3;
-	      statusPanel.add(statusFieldLabel, gbc);
+	      statusPanel.add(status.thelabel, gbc);
 	      gbc.gridy = 4;
-	      statusPanel.add(fileFieldLabel, gbc);
+	      statusPanel.add(aboutfile.thelabel, gbc);
 	      gbc.gridy = 5;
-	      statusPanel.add(supplFieldLabel, gbc);
+	      statusPanel.add(supplinfo.thelabel, gbc);
 	      
 	      // right column is broader
 	      gbc.gridwidth = 2;
 	      gbc.gridx = 1;
 	      gbc.gridy = 0;
-	      statusPanel.add(topicString, gbc);
+	      statusPanel.add(topic.thetextfield, gbc);
 	      gbc.gridy = 1;
-	      statusPanel.add(targetFile, gbc);
+	      statusPanel.add(target.thetextfield, gbc);
 	      gbc.gridy = 3;
-	      statusPanel.add(statusField, gbc);
+	      statusPanel.add(status.thetextfield, gbc);
 	      gbc.gridy = 4;
-	      statusPanel.add(fileLabel, gbc);
+	      statusPanel.add(aboutfile.thetextfield, gbc);
 	      gbc.gridy = 5;
-	      statusPanel.add(supplLabel, gbc);
+	      statusPanel.add(supplinfo.thetextfield, gbc);
 	      
 	      mainFrame.add(headerLabel);
 	      mainFrame.add(controlPanel);
@@ -145,12 +128,12 @@ public class UserDialog {
 	   
 	   /** show status messages */
 	   public void setMessage(String settext, int warning) {
-		   statusField.setText(settext);
+		   status.setText(settext);
 		   if(warning == 1) {
-			   statusField.setForeground(warnFG);
+			   status.thetextfield.setForeground(warnFG);
 		   }
 		   else {
-			   statusField.setForeground(normalFG);
+			   status.thetextfield.setForeground(normalFG);
 		   }
 	   }
 	   
@@ -158,8 +141,9 @@ public class UserDialog {
 	   public void setSupplMessage(String s, String... t) {
 		   String t1 = t.length > 0 ? t[0] : "";
 		   String t2 = t.length > 1 ? t[1] : "";
-		   supplLabel.setText(s + " " + t1 + " "+ t2);
+		   supplinfo.setText(s + " " + t1 + " "+ t2);
 	   }
+	   
 	   /** File dialog and button actions */
 	   public void showFileDialog(){
 	      final FileDialog fileDialog = new FileDialog(mainFrame,"Select file");
@@ -179,9 +163,9 @@ public class UserDialog {
 	            loc = loc.substring(q);
 	            
 	            selFile = fileDialog.getDirectory() + fileDialog.getFile();
-	            statusField.setText("..." + fileDialog.getDirectory());
-	            fileLabel.setText(fileDialog.getFile());
-	            supplLabel.setText("");
+	            status.setText("..." + fileDialog.getDirectory());
+	            aboutfile.setText(fileDialog.getFile());
+	            supplinfo.setText("");
 	            
 	            fileType="";
 	            for(String str:ALLOWED_INPUT_FILES) {
@@ -190,7 +174,7 @@ public class UserDialog {
 	            		break;
 	            	}
 	            }
-	            selTopicString = topicString.getText();
+	            selTopicString = topic.getText();
 	         }
 	      });
 	      
@@ -202,6 +186,7 @@ public class UserDialog {
 		     //User selected target filename for results.
 		     tc = new TimeCalc();
 		     try{
+		    	 
 		    	// Validate source text file selection: must be text file
 		        if(fileType.length()<2) {
 		        	setMessage(
@@ -218,7 +203,7 @@ public class UserDialog {
 		        }
 
 		        // Validate results filename from input text field
-		        String s = targetFile.getText();
+		        String s = target.getText();
 		        String illchar = "";
 		        for(char c:ILLEGAL_CHARACTERS) {
 		        	if(s.contains(""+c)) {
@@ -243,7 +228,7 @@ public class UserDialog {
 		        	selTargetFile = "Results_" + s + ".html";
 		        }
 		        
-		        Writeinfile WordPlace = new Writeinfile(selTargetFile, topicString.getText());
+		        Writeinfile WordPlace = new Writeinfile(selTargetFile, topic.getText());
 		        EvaluateText etx = new EvaluateText(selFile);
 		        WordPlace.storeAllItems(etx.GetWordsList());
 		        WordPlace.finishWriting();
