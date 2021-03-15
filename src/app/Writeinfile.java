@@ -32,6 +32,7 @@ public class Writeinfile {
         } finally {;}
     }
     
+    /** complete the html section */
     public void insertParEnd() {
     	pWriter.println(type_of_word==0?"":"</details><br>");
     }
@@ -63,7 +64,7 @@ public class Writeinfile {
 						pWriter.println("<details><summary>Words:</summary>");
 					}
 					type_of_word = 2;
-					char curr_char = Character.toUpperCase(entry.charAt(0));
+					char curr_char = entry.charAt(0);//Character.toUpperCase(entry.charAt(0));
 					if(curr_char!= cap) {
 						//insert an alph. section line if the word starts with different character
 						cap = curr_char;
@@ -98,6 +99,7 @@ public class Writeinfile {
     	
     }
     
+    /** finish the html file */
     public void finishWriting() {
     	insertParEnd();
     	pWriter.println("</font></body></html>");

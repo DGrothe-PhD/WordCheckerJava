@@ -8,12 +8,13 @@ import java.net.URI;
 /** User dialog widget */
 public class UserDialog {
 	//
-	   private int LABEL_WIDTH = 40;
 	   private Frame mainFrame;
 	   private Label headerLabel;
 	   
 	   LabelledField topic, target, status, aboutfile, supplinfo;
+	   Checkbox chkNumbers, chkSymbols, chkWords;
 	   
+	   public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
 	   private Color warnFG = new Color(255, 0,0);
 	   private Color normalFG = new Color(0,0,0);
 	   
@@ -50,6 +51,33 @@ public class UserDialog {
 				System.out.println("Output file could not be opened.");
 			}
 		}
+	   
+	   /** Lets user select which tokens to collect */
+	   private void makeCheckboxGroup() {
+		   chkNumbers = new Checkbox("Numbers", true);
+		   chkSymbols = new Checkbox("Symbols", true);
+		   chkWords = new Checkbox("Words", true);
+		   
+		   chkNumbers.addItemListener(new ItemListener() {
+		         public void itemStateChanged(ItemEvent e) {             
+		            collectNumbers = e.getStateChange()==1?true:false;
+		         }
+		   });
+		   chkSymbols.addItemListener(new ItemListener() {
+		         public void itemStateChanged(ItemEvent e) {             
+		            collectSymbols = e.getStateChange()==1?true:false;
+		         }
+		   });
+		   chkWords.addItemListener(new ItemListener() {
+		         public void itemStateChanged(ItemEvent e) {             
+		            collectWords = e.getStateChange()==1?true:false;
+		         }
+		   });
+		   
+		   controlPanel.add(chkNumbers);
+		   controlPanel.add(chkSymbols);
+		   controlPanel.add(chkWords);
+	   }
 	   
 	   /** Widget settings */
 	   private void prepareGUI(){
@@ -229,7 +257,9 @@ public class UserDialog {
 		        }
 		        
 		        Writeinfile WordPlace = new Writeinfile(selTargetFile, topic.getText());
-		        EvaluateText etx = new EvaluateText(selFile);
+		        
+		        /** Check boxes status */
+		        EvaluateText etx = new EvaluateText(selFile, collectWords, collectNumbers, collectSymbols);
 		        WordPlace.storeAllItems(etx.GetWordsList());
 		        WordPlace.finishWriting();
 		        //forget input file
@@ -264,6 +294,8 @@ public class UserDialog {
 	      for (Component s:abc) {
 	    	  controlPanel.add(s);
 	      }
+	      
+	      makeCheckboxGroup();
 
 	      mainFrame.setVisible(true);  
 	   }

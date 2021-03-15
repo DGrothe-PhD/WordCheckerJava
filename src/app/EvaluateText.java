@@ -9,12 +9,11 @@ public class EvaluateText// extends CountWords
 {
 	CountWords cwo;
 	String content = "";
-    public EvaluateText(String filename) 
-    {
+    public EvaluateText(String filename, boolean collectWords, boolean collectNumbers, boolean collectSymbols) {
         String filePath = filename;
  
         System.out.println( readAllBytesJava7( filePath ) );
-        cwo = new CountWords(content);
+        cwo = new CountWords(content, collectWords, collectNumbers, collectSymbols);
     }
     
     public ArrayList<String> GetWordsList() {
@@ -25,15 +24,11 @@ public class EvaluateText// extends CountWords
     }
     //Read file content into string with - Files.readAllBytes(Path path)
  
-    private int readAllBytesJava7(String filePath) 
-    {
-        //CountWords cwo;
-        try
-        {
+    private int readAllBytesJava7(String filePath) {
+        try {
             content = new String ( Files.readAllBytes( Paths.get(filePath) ) );
         } 
-        catch (IOException e) 
-        {
+        catch (IOException e) {
             e.printStackTrace();
         }
         return 0;

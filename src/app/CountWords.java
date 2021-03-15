@@ -8,6 +8,8 @@ import java.util.*;
 public class CountWords {
 	public int num_of_lines;
 	public int num_of_words;
+	
+	public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
 
@@ -53,7 +55,7 @@ public class CountWords {
 		;
 	}
 	/** CountWords @param string: the text, that is split into lines and tokens (words). */
-	public CountWords(String str){
+	public CountWords(String str, boolean collectWords, boolean collectNumbers, boolean collectSymbols){
 		String[] lines = str.split("\n");
 		num_of_lines = lines.length;
 		int j, k;
@@ -66,6 +68,8 @@ public class CountWords {
 		}
 		num_of_words = buf.size();
 		for (k=0;k<num_of_words; k++) {
+			//TODO should e.g. not collect numbers if user unchecks that box
+			//"boolean collectWords, boolean collectNumbers, boolean collectSymbols" should have effect
 			AddWord(buf.get(k));
 		}
 		
