@@ -18,8 +18,8 @@ public class Writeinfile {
         try {
         	pInit = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
             pInit.println("<html><head>");
-            pInit.println("<title>Result</title>");
-            pInit.println("<style>details > summary {font-weight:bold;color:navy;}</style>");
+            pInit.println("<title>Result</title><meta charset=\"UTF-8\"></meta>");
+            pInit.println("<style>details > summary {font-weight:bold;color:navy;} h3 {color:maroon;}</style>");
             pInit.println("</head><body><font face=\"Helvetica\">");
             pInit.println("<h1>Results of "+topic+":</h1>");
             pInit.flush();
@@ -36,6 +36,26 @@ public class Writeinfile {
     public void insertParEnd() {
     	pWriter.println(type_of_word==0?"":"</details><br>");
     }
+    
+    private String[] uml = {"Ã", "Ä", "Ü", "Ö", "ä", "ö", "ü", "Ø", "ø", "Å", "å", "Æ", "æ",
+    		"ç", "Ç", "Ñ", "ñ", "á", "à", "â", "é", "è", "ê", "ë", "í", "ï", "ì", "î", "ó", "ò", "ô", "ú", "ù", "û",
+    		};
+    
+    public String startsWithUmlaut(String str) {
+    	String u = "";
+    	if(str.charAt(0) == (char)0xc3) {
+    		u+= (""+ str.charAt(0)+str.charAt(1));
+    	}
+    	else {
+	    	for (String s: uml) {
+	    		if(str.startsWith(s)) {
+	    			u= s;
+	    			break;
+	    		}
+	    	}
+    	}
+    	return u;
+    }
 
     public void storeAllItems(ArrayList<String> targs) {
     	char cap = '0';
@@ -46,6 +66,10 @@ public class Writeinfile {
     			if(RegexList.hasISBN(entry)) {
    					specialTokens.add("ISBN candidate: "+entry);
    					continue;
+    			}
+    			else if(RegexList.hasDateTime(entry)) {
+    				specialTokens.add("Date or time pattern_ "+ entry);
+    				continue;
     			}
     			else if(type_of_word != 1) {
     				insertParEnd();
@@ -64,12 +88,16 @@ public class Writeinfile {
 						pWriter.println("<details><summary>Words:</summary>");
 					}
 					type_of_word = 2;
-					char curr_char = entry.charAt(0);//Character.toUpperCase(entry.charAt(0));
+					char curr_char = entry.charAt(0);
+					
+					String u = startsWithUmlaut(entry);
+					
 					if(curr_char!= cap) {
 						//insert an alph. section line if the word starts with different character
+						//insert full first symbol if umlaut
 						cap = curr_char;
 						pWriter.println("");
-						pWriter.println("<h3>__"+cap+"____</h3>");
+						pWriter.println("<h3>__"+(u==""?cap:"Umlaut")+"____</h3>");
 					}
 				}
 			}

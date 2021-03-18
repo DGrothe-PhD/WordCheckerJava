@@ -9,10 +9,11 @@ public class CountWords {
 	public int num_of_lines;
 	public int num_of_words;
 	
+	private String thebom = "" +((char)0xef) + ((char)0xbb) + ((char)0xbf);
 	public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
-
+	// punctuation ",;\"\\/()[]{}!?"
 	public ArrayList<String> CountWordReportLines = new ArrayList<String>();
 	
 	public int GetNOL() {
@@ -50,6 +51,32 @@ public class CountWords {
 			WordsList.put(str2, 1);//Add word to word list
 		}
 	}
+	
+	String sz = "";//testing
+	/** this method shall gather alphanumeric sequences with low amount of hyphens etc. */
+	public void AddNumbersAndWords(String str) {
+		String str2 = str.trim();
+		//replaceAll uses regex, whereas replace simply does not!
+		//remove points
+		str2= str2.replaceAll("\\.$","").replaceAll(",$","");
+		str2= str2.replaceAll("[\";„“»«]","");
+		// Finding words and incrementing occurrence counts
+		int q /*, iof*/;
+		if (RegexList.hasAlNum(str2)) {
+			if (WordsList.containsKey(str2)) {
+			q=WordsList.get(str2);
+			q+=1;
+			WordsList.replace(str2, q);
+			}
+			else {
+				WordsList.put(str2, 1);//Add word to word list
+			}
+		}
+		else {
+			sz+=", "+str2;//testing
+		}
+	}
+	
 	/** empty constructor */
 	public CountWords() {
 		;
@@ -62,16 +89,30 @@ public class CountWords {
 		ArrayList<String> buf = new ArrayList<String>();
 		for (j=0; j<num_of_lines; j++) {
 			lines[j] = lines[j].replace("\t", " ");
+			lines[j] = lines[j].replace(thebom, "");
+			
 			for (String bar: lines[j].split(" ")) {
 				buf.add(bar);
 			}
 		}
 		num_of_words = buf.size();
-		for (k=0;k<num_of_words; k++) {
-			//TODO should e.g. not collect numbers if user unchecks that box
-			//"boolean collectWords, boolean collectNumbers, boolean collectSymbols" should have effect
-			AddWord(buf.get(k));
+		
+		if(!collectSymbols) {
+			for (k=0;k<num_of_words; k++) {
+				//TODO should e.g. not collect numbers if user unchecks that box
+				//"boolean collectWords, boolean collectNumbers" should have effect
+				AddNumbersAndWords(buf.get(k));
+			}
+			System.out.println("Garbage: " + sz);//testing
 		}
+		else {
+			for (k=0;k<num_of_words; k++) {
+			//TODO should e.g. not collect numbers if user unchecks that box
+			//"boolean collectWords, boolean collectNumbers" should have effect
+			AddWord(buf.get(k));
+			}
+		}
+		
 		
 		//need to have an ArrayList as Collections.sort(HashMap) is not implemented.
 		ArrayList<String> ResultWordList = new ArrayList<String>();

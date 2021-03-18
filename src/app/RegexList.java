@@ -17,8 +17,8 @@ public class RegexList {
 		Matcher mat = simplePatternISBN.matcher(s);
 		return mat.find();
 	}
-	
-	public static String datetime = "[0-9][0-9].[0-9][0-9].[0-9][0-9]*";
+	String punct=".-:/";
+	public static String datetime = "[0-9][0-9][\\.:\\/-][0-9][0-9]";
 	public static Pattern simplePatternDateTime = Pattern.compile(datetime);
 	
 	/** Finds a number similar to a date or time in a @param string, 
@@ -35,6 +35,16 @@ public class RegexList {
 	 * @return boolean true if patent number was found.*/
 	public static boolean hasPatentNumber(String s) {
 		Matcher mat = patnumpattern.matcher(s);
+		return mat.find();
+	}
+	
+	public static String somealnum = "[a-zA-Z0-9].[a-zA-Z0-9]*";
+	public static Pattern simalnum = Pattern.compile(somealnum);
+	
+	/** Finds a number similar to a date or time in a @param string, 
+	 * @return boolean true if such a number was found.*/
+	public static boolean hasAlNum(String s) {
+		Matcher mat = simalnum.matcher(s);
 		return mat.find();
 	}
 	
