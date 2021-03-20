@@ -13,7 +13,7 @@ Then click on Start. Words from the text file are gathered, collected and sorted
 
 ## Browser support
 Basically, the results.html file can be opened with any later browser, e.g. Firefox and Microsoft Edge.
-As clickable `<details>` tags are used, Internet Explorer is not fully supported. The html source code itself is kept readable so that compatibility issues are minimized. This way, quick review of an entry by (Linux only) `less results.html | grep <word>` or any suitable editor tool works as well.
+As clickable `<details>` tags are used, Internet Explorer is not fully supported. The html source code itself is kept readable so that compatibility issues are minimized. This way, quick review of an entry by command line (Linux only) `less results.html | grep <word>` or (Windows command line) `type results.html | findstr "1"` or any suitable editor tool works as well.
 
 # Requirements
 To compile, a JDK is required, it will run on a JRE 8 or later.
