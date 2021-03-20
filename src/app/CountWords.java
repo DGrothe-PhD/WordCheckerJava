@@ -32,48 +32,69 @@ public class CountWords {
 		return CountWordReportLines;
 	}
 	
-	/** Add a word to the WordsList. If new, add, if already in list, increment counter */
-	public void AddWord(String str) {
+	/** removing unbalanced brackets, end punctuation*/
+	private String TrimWord(String str) {
 		String str2 = str.trim();
 		//replaceAll uses regex, whereas replace simply does not!
 		//remove points
-		str2= str2.replaceAll("\\.$","").replaceAll(",$","");
 		str2= str2.replaceAll("[\";„“»«]","");
-		// Finding words and incrementing occurrence counts
-		int q /*, iof*/;
+		str2= str2.replaceAll("[,\\.\\:;,\\!\\?]*$","");
 		
-		if (WordsList.containsKey(str2)) {
-			q=WordsList.get(str2);
-			q+=1;
-			WordsList.replace(str2, q);
+		if(str2.startsWith("(") && str2.endsWith(")")) {
+			if(Character.isAlphabetic(str2.charAt(1)) 
+					&& Character.isLetterOrDigit(str2.charAt(str2.length()-2))) {
+				// remove brackets around words
+				str2=str2.replaceAll("^\\(", "").replaceAll("\\)$", "");
+			}
 		}
-		else {
-			WordsList.put(str2, 1);//Add word to word list
+		else if(str2.contains("(") ^ str2.contains(")")) {
+			//remove only unbalanced outer brackets
+			str2=str2.replaceAll("^\\(", "").replaceAll("\\)$", "");
 		}
+		return str2;
 	}
 	
-	String sz = "";//testing
-	/** this method shall gather alphanumeric sequences with low amount of hyphens etc. */
-	public void AddNumbersAndWords(String str) {
-		String str2 = str.trim();
-		//replaceAll uses regex, whereas replace simply does not!
-		//remove points
-		str2= str2.replaceAll("\\.$","").replaceAll(",$","");
-		str2= str2.replaceAll("[\";„“»«]","");
-		// Finding words and incrementing occurrence counts
-		int q /*, iof*/;
-		if (RegexList.hasAlNum(str2)) {
+	/** Add a word to the WordsList. If new, add, if already in list, increment counter */
+	public void AddWord(String str) {
+		try {
+			String str2 = TrimWord(str);
+			// Finding words and incrementing occurrence counts
+			int q;
+			
 			if (WordsList.containsKey(str2)) {
-			q=WordsList.get(str2);
-			q+=1;
-			WordsList.replace(str2, q);
+				q=WordsList.get(str2);
+				q+=1;
+				WordsList.replace(str2, q);
 			}
 			else {
 				WordsList.put(str2, 1);//Add word to word list
 			}
 		}
-		else {
-			sz+=", "+str2;//testing
+		catch(Exception e) {
+			System.out.println("CountWords' internal error");
+		}
+	}
+	
+	/** this method shall gather alphanumeric sequences with low amount of hyphens etc. */
+	public void AddNumbersAndWords(String str) {
+		String str2 = TrimWord(str);
+		
+		try {
+		// Finding words and incrementing occurrence counts
+			int q;
+			if (RegexList.hasSymbols(str2) == false) {
+				if (WordsList.containsKey(str2)) {
+					q=WordsList.get(str2);
+					q+=1;
+					WordsList.replace(str2, q);
+				}
+				else {
+					WordsList.put(str2, 1);//Add word to word list
+				}
+			}
+		}
+		catch(Exception e) {
+			System.out.println("CountWords' internal error");
 		}
 	}
 	
@@ -103,7 +124,6 @@ public class CountWords {
 				//"boolean collectWords, boolean collectNumbers" should have effect
 				AddNumbersAndWords(buf.get(k));
 			}
-			System.out.println("Garbage: " + sz);//testing
 		}
 		else {
 			for (k=0;k<num_of_words; k++) {

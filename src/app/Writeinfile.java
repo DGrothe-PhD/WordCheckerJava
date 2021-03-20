@@ -2,8 +2,8 @@ package app;
 
 import java.io.BufferedWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Writeinfile {
@@ -13,7 +13,7 @@ public class Writeinfile {
 	ArrayList<String> specialTokens = new ArrayList<String>();
 	ArrayList<String> refSignTokens = new ArrayList<String>();
 	
-    public Writeinfile(String filename, String topic) {
+    public Writeinfile(String filename, String topic) throws WriteFileException {
         pWriter = null;
         try {
         	pInit = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
@@ -27,9 +27,11 @@ public class Writeinfile {
         	//the boolean true inside FileWriter says to append the content
             pWriter = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
             // file overwritten, newline at line ends is automatically added
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } finally {;}
+        } 
+        catch (Exception wfe) {
+        	throw new WriteFileException("Could not initialize file writing.");
+        }
+        /*catch (IOException ioe) { ioe.printStackTrace(); } finally {;}*/
     }
     
     /** complete the html section */
@@ -57,74 +59,92 @@ public class Writeinfile {
     	return u;
     }
 
-    public void storeAllItems(ArrayList<String> targs) {
+    public void storeAllItems(ArrayList<String> targs) throws WriteFileException {
     	char cap = '0';
     	//cap will be set to first char of first word in alphabetical order
     	//regardless of which
-    	for( String entry : targs ){
-    		if (Character.isDigit(entry.charAt(0))) {
-    			if(RegexList.hasISBN(entry)) {
-   					specialTokens.add("ISBN candidate: "+entry);
-   					continue;
-    			}
-    			else if(RegexList.hasDateTime(entry)) {
-    				specialTokens.add("Date or time pattern_ "+ entry);
-    				continue;
-    			}
-    			else if(type_of_word != 1) {
-    				insertParEnd();
-    				pWriter.println("<details><summary>Tokens beginning with a digit:</summary>");
-    				type_of_word = 1;
-    			}
-			}
-			else if (Character.isLetter(entry.charAt(0))){
-				if (RegexList.hasPatentNumber(entry)){
-					specialTokens.add(entry);
-					continue;
+    	try {
+	    	for( String entry : targs ){
+	    		if (Character.isDigit(entry.charAt(0))) {
+	    			if(RegexList.hasISBN(entry)) {
+	   					specialTokens.add("ISBN candidate: "+entry);
+	   					continue;
+	    			}
+	    			else if(RegexList.hasDateTime(entry)) {
+	    				specialTokens.add("Date or time pattern: "+ entry);
+	    				continue;
+	    			}
+	    			else if(type_of_word != 1) {
+	    				insertParEnd();
+	    				pWriter.println("<details><summary>Tokens beginning with a digit:</summary>");
+	    				type_of_word = 1;
+	    			}
 				}
-				else {
-					if(type_of_word != 2) {
+				else if (Character.isAlphabetic(entry.charAt(0))){
+					if (RegexList.hasPatentNumber(entry)){
+						specialTokens.add(entry);
+						continue;
+					}
+					else if(RegexList.hasEMail(entry)){
+						specialTokens.add("E-Mail address found: " +entry);
+						continue;
+					}
+					else if(RegexList.hasURL(entry)){
+						specialTokens.add("URL: " + entry);
+						continue;
+					}
+					else {
+						if(type_of_word != 2) {
+							insertParEnd();
+							pWriter.println("<details><summary>Words:</summary>");
+						}
+						type_of_word = 2;
+						char curr_char = entry.charAt(0);
+						
+						String u = startsWithUmlaut(entry);
+						
+						if(curr_char!= cap) {
+							//insert an alph. section line if the word starts with different character
+							//insert full first symbol if umlaut
+							cap = curr_char;
+							pWriter.println("");
+							pWriter.println("<h3>__"+(u==""?cap:"Umlaut")+"____</h3>");
+						}
+					}
+				}
+				else if (!Character.isLetterOrDigit(entry.charAt(0))){
+					if(RegexList.hasRefSign(entry)) {
+						refSignTokens.add(entry);
+						continue;
+					}
+					else if(type_of_word != 3) {
 						insertParEnd();
-						pWriter.println("<details><summary>Words:</summary>");
-					}
-					type_of_word = 2;
-					char curr_char = entry.charAt(0);
-					
-					String u = startsWithUmlaut(entry);
-					
-					if(curr_char!= cap) {
-						//insert an alph. section line if the word starts with different character
-						//insert full first symbol if umlaut
-						cap = curr_char;
-						pWriter.println("");
-						pWriter.println("<h3>__"+(u==""?cap:"Umlaut")+"____</h3>");
+						pWriter.println("<details><summary>Special tokens found:</summary>");
+						type_of_word = 3;
 					}
 				}
+			    pWriter.println( entry+"<br>");
 			}
-			else if (!Character.isLetterOrDigit(entry.charAt(0))){
-				if(RegexList.hasRefSign(entry)) {
-					refSignTokens.add(entry);
-					continue;
-				}
-				else if(type_of_word != 3) {
-					insertParEnd();
-					pWriter.println("<details><summary>Special tokens found:</summary>");
-					type_of_word = 3;
-				}
+	    	
+	    	Collections.sort(specialTokens);
+	    	for (String o:specialTokens) {
+			    	pWriter.println(o+"<br>");
 			}
-		    pWriter.println( entry+"<br>");
-		}
-    	for (String o:specialTokens) {
-		    	pWriter.println(o+"<br>");
-		}
-    	if(refSignTokens.size()>0) {
-    		insertParEnd();
-    		pWriter.println("<details><summary>Reference signs found:</summary>");
-    		for (String o:refSignTokens) {
-    			pWriter.println(o+"<br>");
-    		}
+	    	if(refSignTokens.size()>0) {
+	    		insertParEnd();
+	    		pWriter.println("<details><summary>Reference signs found:</summary>");
+	    		for (String o:refSignTokens) {
+	    			pWriter.println(o+"<br>");
+	    		}
+	    	}
     	}
-    	
+    	//Specific exceptions during developing, later to be erased
+    	catch(IndexOutOfBoundsException ioobe) {throw new WriteFileException("Some index-out-of-bounds error in entry processing.");}
+    	catch(ArithmeticException npe) {throw new WriteFileException("Internal calculation error.");}
+    	//general exception handling
+    	catch(Exception wfe){
+    		throw new WriteFileException("Error: File could not be written.");
+    	}
     }
     
     /** finish the html file */
@@ -134,5 +154,4 @@ public class Writeinfile {
     	pWriter.flush();
         pWriter.close();
     }
-    
 }

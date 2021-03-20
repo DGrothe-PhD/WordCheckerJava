@@ -29,8 +29,13 @@ public class UserDialog {
 	   private TimeCalc tc;
 	   
 	   public UserDialog(){
-	      prepareGUI();
-	      showFileDialog();
+		  try {
+			  prepareGUI();
+			  showFileDialog();
+		  }
+		  catch(AWTError awe) {
+			  System.out.println("Application window could not be opened.");
+		  }
 	   }
 	   
 	   public String getSelectedFile() {
@@ -170,6 +175,13 @@ public class UserDialog {
 		   String t1 = t.length > 0 ? t[0] : "";
 		   String t2 = t.length > 1 ? t[1] : "";
 		   supplinfo.setText(s + " " + t1 + " "+ t2);
+		   supplinfo.thetextfield.setForeground(normalFG);
+	   }
+	   public void setSupplWarning(String s, String... t) {
+		   String t1 = t.length > 0 ? t[0] : "";
+		   String t2 = t.length > 1 ? t[1] : "";
+		   supplinfo.setText(s + " " + t1 + " "+ t2);
+		   supplinfo.thetextfield.setForeground(warnFG);
 	   }
 	   
 	   /** File dialog and button actions */
@@ -214,35 +226,31 @@ public class UserDialog {
 		     //User selected target filename for results.
 		     tc = new TimeCalc();
 		     try{
-		    	 
 		    	// Validate source text file selection: must be text file
 		        if(fileType.length()<2) {
 		        	setMessage(
 		        			"Please choose a text file, of types:"+
 		        			String.join(", ", ALLOWED_INPUT_FILES), 1);
-		        	throw new ArithmeticException("File type not allowed");//placeholder
+		        	throw new IllegalArgumentException("File type not allowed");//placeholder
 		        }
+		        
 		        // handling unset results file at start
-
 		        if (selFile == null || selFile.length()<2) {
 		        	//FIXME does not show
 		        	setMessage("Please select a file before clicking Start.", 1);
-		        	throw new ArithmeticException("No file selected");//placeholder
+		        	throw new IllegalArgumentException("No file selected");//placeholder
 		        }
 
 		        // Validate results filename from input text field
 		        String s = target.getText();
 		        String illchar = "";
 		        for(char c:ILLEGAL_CHARACTERS) {
-		        	if(s.contains(""+c)) {
-		        		//s = s.replace(c, '0');
-		        		illchar += (""+c);
-		        	}
+		        	if(s.contains(""+c)) {illchar += (""+c);}
 		        }
 		        
 		        if(illchar.length()>0) {
 		        	setMessage("Symbols "+illchar+" are not allowed in filenames", 1);
-		        	throw new ArithmeticException("File type not allowed");//placeholder
+		        	throw new Error("File type not allowed");//placeholder
 		        }
 		        if(s.length() > 5 ) {
 		        	if(s.endsWith(".html")) {
@@ -268,8 +276,12 @@ public class UserDialog {
 		        		tc.getDuration());
 		        tc.printDuration();
 		     }// end try
-		     catch(ArithmeticException bannedfiletype) {;}
-		     catch(Exception exc) {System.out.println("Some error");}
+		     catch(IllegalArgumentException bannedfiletype) {System.out.println(bannedfiletype);}
+		     catch(WriteFileException wfe) {
+		    	 setSupplWarning(wfe.getMessage());
+		    	 System.out.println(wfe.getCause());
+		     }
+		     catch(Exception exc) {System.out.println("Some UI or other exception.");}
 		     }
 		  });
 	      
