@@ -81,6 +81,7 @@ public class Writeinfile {
 	    			}
 				}
 				else if (Character.isAlphabetic(entry.charAt(0))){
+					//including words, URLs, etc.
 					if (RegexList.hasPatentNumber(entry)){
 						specialTokens.add(entry);
 						continue;
@@ -94,6 +95,7 @@ public class Writeinfile {
 						continue;
 					}
 					else {
+						//words
 						if(type_of_word != 2) {
 							insertParEnd();
 							pWriter.println("<details><summary>Words:</summary>");
@@ -110,6 +112,8 @@ public class Writeinfile {
 							pWriter.println("");
 							pWriter.println("<h3>__"+(u==""?cap:"Umlaut")+"____</h3>");
 						}
+						pWriter.println( StringCompare.cycleWord(entry)+"<br>");
+						continue;
 					}
 				}
 				else if (!Character.isLetterOrDigit(entry.charAt(0))){
