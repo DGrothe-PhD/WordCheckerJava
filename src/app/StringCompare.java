@@ -10,7 +10,7 @@ public class StringCompare {
 	
 	static Vector<Integer> mins = new Vector<Integer>();
 	static String subseq ="", dfs = "", theword = "";
-	private static int NUMCYCLES = 5;
+	private static int NUMW = 5;
 	private static double ALLOVAR = 0.5;
 	
 	//java.util.LinkedList is fine with addLast, removeFirst
@@ -114,8 +114,8 @@ public class StringCompare {
 		}
 	}
 	
-	public static String cycleWord(String a) {
-		/** word is compared to the preceding {NUMCYCLES} words */
+	public static String compareWords(String a) {
+		/** word is compared to the preceding {NUMW} words */
 		//TODO implement and test
 		dfs = a;
 		for(String s: words) {
@@ -123,7 +123,7 @@ public class StringCompare {
 		}
 		//shift by one
 		words.addLast(a);
-		if(words.size() > NUMCYCLES) {
+		if(words.size() > NUMW) {
 			words.removeFirst();
 		}
 		return dfs;
