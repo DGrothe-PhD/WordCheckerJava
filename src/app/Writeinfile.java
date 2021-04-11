@@ -39,8 +39,9 @@ public class Writeinfile {
 		pWriter.println(type_of_word==0?"":"</details><br>");
 	}
 	
-	private String[] uml = {"Ã", "Ä", "Ü", "Ö", "ä", "ö", "ü", "Ø", "ø", "Å", "å", "Æ", "æ",
-			"ç", "Ç", "Ñ", "ñ", "á", "à", "â", "é", "è", "ê", "ë", "í", "ï", "ì", "î", "ó", "ò", "ô", "ú", "ù", "û",
+	private String[] uml = {"Ã", "Ä", "Ü", "Ö", "ä", "ö", "ü", "Ø", "ø", "Å",
+			"å", "Æ", "æ", "ç", "Ç", "Ñ", "ñ", "á", "à", "â", "é", "è", "ê",
+			"ë", "í", "ï", "ì", "î", "ó", "ò", "ô", "ú", "ù", "û",
 			};
 	
 	public String startsWithUmlaut(String str) {
@@ -121,15 +122,20 @@ public class Writeinfile {
 						refSignTokens.add(entry);
 						continue;
 					}
-					else if(type_of_word != 3) {
+					else {
+						specialTokens.add(entry);
+						continue;
+					}
+					/*else if(type_of_word != 3) {
 						insertParEnd();
 						pWriter.println("<details><summary>Special tokens found:</summary>");
 						type_of_word = 3;
-					}
+					}*/
 				}
 				pWriter.println( entry+"<br>");
 			}
-			
+			insertParEnd();
+			pWriter.println("<details><summary>Special tokens found:</summary>");
 			Collections.sort(specialTokens);
 			for (String o:specialTokens) {
 					pWriter.println(o+"<br>");

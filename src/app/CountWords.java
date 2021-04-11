@@ -10,6 +10,7 @@ public class CountWords {
 	public int num_of_words;
 	
 	private String thebom = "" +((char)0xef) + ((char)0xbb) + ((char)0xbf);
+	private String apost = "" + ((char)0xe2) + ((char)0x20ac) + ((char)0x2122);
 	public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
@@ -32,14 +33,24 @@ public class CountWords {
 		return CountWordReportLines;
 	}
 	
+	private String unapostrophe(String str) {
+		String loc=str;
+		if(loc.startsWith(apost)) loc= loc.substring(3);
+		if(loc.endsWith(apost)) loc=loc.replaceAll(apost, "");
+		return loc;
+	}
+	
 	/** removing unbalanced brackets, end punctuation*/
 	private String TrimWord(String str) {
 		String str2 = str.trim();
 		//replaceAll uses regex, whereas replace simply does not!
 		//remove points
 		str2= str2.replaceAll("[\";„“»«]","");
-		str2= str2.replaceAll("[,\\.\\:;,\\!\\?]*$","");
-		
+		str2= str2.replaceAll("[,\u2019\\.\\:;',\\!\\?]*$","");
+		str2=str2.replaceAll("^[\\u8303\\u8217\\’\\']", "").replaceAll("[\\’\\']$", "");
+		//remove unicode quotation marks; test for Â
+		str2=unapostrophe(str2);
+		//
 		if(str2.startsWith("(") && str2.endsWith(")")) {
 			if(Character.isAlphabetic(str2.charAt(1)) 
 					&& Character.isLetterOrDigit(str2.charAt(str2.length()-2))) {
