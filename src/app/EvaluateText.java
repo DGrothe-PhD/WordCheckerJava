@@ -1,9 +1,10 @@
 package app;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.*;
  
 public class EvaluateText// extends CountWords
 {
@@ -26,7 +27,7 @@ public class EvaluateText// extends CountWords
  
     private int readAllBytesJava7(String filePath) {
         try {
-            content = new String ( Files.readAllBytes( Paths.get(filePath) ) );
+        	content = new String ( Files.readAllBytes( Paths.get(filePath)) );
         } 
         catch (IOException e) {
             e.printStackTrace();
