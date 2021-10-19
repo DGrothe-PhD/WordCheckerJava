@@ -51,10 +51,7 @@ public class CharRep {
 	
 	public String clarify(String str) {
 		try{String w = unapostrophe(str);
-		for(zeichen z : umlaut) {
-			if(w.contains(z.ansi)) System.out.println("Fund: "+z.ansi);
-			w = w.replace(z.ansi, z.utf);
-		}
+		for(zeichen z : umlaut) w = w.replace(z.ansi, z.utf);
 		return w;
 		}
 		catch(Exception e) {System.out.println(e); return str;}

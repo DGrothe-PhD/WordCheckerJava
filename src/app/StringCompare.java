@@ -101,6 +101,12 @@ public class StringCompare {
 			diff(worda, wordb);
 			
 			if(subseq.length() > 0) {
+				if(ShortWords.isStopWordDE(worda) && ShortWords.isStopWordDE(wordb)) {
+					return "";
+				}
+				if(ShortWords.isStopWordEN(worda) && ShortWords.isStopWordEN(wordb)) {
+					return "";
+				}
 				//when words are similar
 				return "; <em>"+ ((occa > occb && occb > 0)?"less":"more")
 						+ ":</em> " + b + " (" + Integer.toString(occb)+ "x) ";
