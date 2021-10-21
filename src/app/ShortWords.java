@@ -68,6 +68,8 @@ public class ShortWords {
 		"zwei", "zwölf", "öfter", "übel", "über", "übrig"
 	};
 	
+	public static String[] ListOfPhrases = {"oft he ", "tot he ", "fort he "};
+	
 	public static List<String> shortlistDE = Arrays.asList(shwDE);
 	public static List<String> shortlistEN = Arrays.asList(shwEN);
 	public static List<String> uppercaselistDE = Arrays.asList(capsDE);
@@ -75,13 +77,13 @@ public class ShortWords {
 	
 	public static boolean isStopWordDE(String sz) {
 		if(shortlistDE.contains(sz.toLowerCase())) {return true;}
-		else if(uppercaselistDE.contains(sz)) {return true;}
-		else return false;
+		if(uppercaselistDE.contains(sz)) {return true;}
+		return false;
 	}
 	
 	public static boolean isStopWordEN(String sz) {
 		if(shortlistEN.contains(sz.toLowerCase())) {return true;}
-		else if(uppercaselistEN.contains(sz)) {return true;}
-		else return false;
+		if(uppercaselistEN.contains(sz)) {return true;}
+		return false;
 	}
 }

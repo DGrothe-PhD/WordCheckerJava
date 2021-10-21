@@ -8,7 +8,8 @@ import java.util.*;
 public class CountWords extends CharRep {
 	public int num_of_lines;
 	public int num_of_words;
-	
+	private ArrayList<String> buf;
+		
 	public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
@@ -110,10 +111,12 @@ public class CountWords extends CharRep {
 		String[] lines = str.split("\n");
 		num_of_lines = lines.length;
 		int j, k;
-		ArrayList<String> buf = new ArrayList<String>();
+		buf = new ArrayList<String>();
 		for (j=0; j<num_of_lines; j++) {
 			lines[j] = lines[j].replace("\t", " ");
 			lines[j] = lines[j].replace(thebom, "");
+			
+			phraseFinder(lines[j]);
 			
 			for (String bar: lines[j].split(" ")) {
 				buf.add(bar);
@@ -153,4 +156,13 @@ public class CountWords extends CharRep {
 
 		System.out.println(num_of_words+" words counted!");
 	}
+	
+	void phraseFinder(String line) {
+		for(String w: ShortWords.ListOfPhrases) {
+			if(line.contains(w)) {
+				buf.add(" - Phrase found: "+ w);
+			}
+		}
+	}
+	
 }

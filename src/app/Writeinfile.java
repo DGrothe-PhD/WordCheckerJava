@@ -31,7 +31,6 @@ public class Writeinfile {
 		catch (Exception wfe) {
 			throw new WriteFileException("Could not initialize file writing.");
 		}
-		/*catch (IOException ioe) { ioe.printStackTrace(); } finally {;}*/
 	}
 	
 	/** complete the html section */

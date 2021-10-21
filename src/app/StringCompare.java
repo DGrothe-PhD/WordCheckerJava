@@ -108,10 +108,10 @@ public class StringCompare {
 					return "";
 				}
 				//when words are similar
-				return "; <em>"+ ((occa > occb && occb > 0)?"less":"more")
+				return "; <em>"+ ((occa >= occb && occb > 0)?"also found":"more frequent")
 						+ ":</em> " + b + " (" + Integer.toString(occb)+ "x) ";
 			}
-			else {return "";}
+			return "";
 		}
 		catch(Exception sdEx) {
 			//entry frequency parsing failed
@@ -122,7 +122,6 @@ public class StringCompare {
 	
 	public static String compareWords(String a) {
 		/** word is compared to the preceding {NUMW} words */
-		//TODO implement and test
 		dfs = a;
 		for(String s: words) {
 			dfs += showDifference(a,s);
