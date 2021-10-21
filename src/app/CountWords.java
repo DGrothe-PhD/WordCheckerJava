@@ -38,12 +38,13 @@ public class CountWords extends CharRep {
 		String str2 = str.trim();
 		//replaceAll uses regex, whereas replace simply does not!
 		//remove points
-		str2= str2.replaceAll("[\";„“»«]","");
-		str2= str2.replaceAll("[,\u2019\\.\\:;',\\!\\?]*$","");
-		str2=str2.replaceAll("^[\\u8303\\u8217\\’\\']", "").replaceAll("[\\’\\']$", "");
+		str2 = str2.replaceAll("[\";„“»«]","");
+		str2 = str2.replaceAll("[,\u2019\\.\\:;',\\!\\?]*$","");
+		str2 = str2.replaceAll("^[\\u8303\\u8217\\’\\']", "").replaceAll("[\\’\\']$", "");
 		//remove unicode quotation marks; test for Â
-		str2=clarify(str2);
-		//
+		str2 = clarify(str2);
+		//HTML protection
+		str2 = str2.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 		if(str2.startsWith("(") && str2.endsWith(")")) {
 			if(Character.isAlphabetic(str2.charAt(1)) 
 					&& Character.isLetterOrDigit(str2.charAt(str2.length()-2))) {

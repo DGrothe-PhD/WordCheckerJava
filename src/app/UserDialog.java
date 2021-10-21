@@ -10,6 +10,7 @@ public class UserDialog {
 	//fields
     private Frame mainFrame;
     private Label headerLabel;
+    private String workingFolder;
 	   
     LabelledField topic, targetFile, status, fileToAnalyze, supplinfo;
     Checkbox chkNumbers, chkSymbols, chkWords;
@@ -194,7 +195,7 @@ public class UserDialog {
             return null;
         }
         if(s.length() > 5 && s.endsWith(".html")) return "Results_" + s; 
-        return "Results_" + s + ".html";
+        return workingFolder + "Results_" + s + ".html";
     }
 	   
 	   
@@ -212,12 +213,10 @@ public class UserDialog {
             public void actionPerformed(ActionEvent e) {
                 setMessage("", 0);
                 fileDialog.setVisible(true);
-                String loc = ""+fileDialog.getDirectory();
-                int q = loc.length()>40?loc.length()-40:0;
-                loc = loc.substring(q);
+                workingFolder = ""+fileDialog.getDirectory();
 	            
-                selFile = fileDialog.getDirectory() + fileDialog.getFile();
-                status.setText("..." + fileDialog.getDirectory());
+                selFile = workingFolder + fileDialog.getFile();
+                status.setText("..." + workingFolder);
                 fileToAnalyze.setText(fileDialog.getFile());
                 supplinfo.setText("");
 	            
