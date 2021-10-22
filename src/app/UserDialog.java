@@ -12,7 +12,7 @@ public class UserDialog {
     private Label headerLabel;
     private String workingFolder;
 	   
-    LabelledField topic, targetFile, status, fileToAnalyze, supplinfo;
+    LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
     Checkbox chkNumbers, chkSymbols, chkWords;
 	   
     public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
@@ -105,11 +105,11 @@ public class UserDialog {
         headerLabel.setAlignment(Label.CENTER);
 	      
         //labels and textfields
-        topic = new LabelledField("Type topic:", "Result word list");
-        targetFile = new LabelledField("Target file:", "Word_occurrences.html");
-        status = new LabelledField("Selected folder:", "", hint);
-        fileToAnalyze = new LabelledField("Selected file:", "", light);
-        supplinfo = new LabelledField("Info:", "", green);
+        field_topic = new LabelledField("Type topic:", "Result word list");
+        field_targetFile = new LabelledField("Target file:", "Word_occurrences.html");
+        field_status = new LabelledField("Selected folder:", "", hint);
+        field_fileToAnalyze = new LabelledField("Selected file:", "", light);
+        field_supplinfo = new LabelledField("Info:", "", green);
 	      
         controlPanel = new Panel();
         controlPanel.setLayout(new GridLayout(3,2));
@@ -127,30 +127,30 @@ public class UserDialog {
         // left column
         gbc.gridx = 0;
         gbc.gridy = 0;
-        statusPanel.add(topic.thelabel, gbc);
+        statusPanel.add(field_topic.thelabel, gbc);
         //gbc.gridx = 0;
         gbc.gridy = 1;
-        statusPanel.add(targetFile.thelabel, gbc);
+        statusPanel.add(field_targetFile.thelabel, gbc);
         gbc.gridy = 3;
-        statusPanel.add(status.thelabel, gbc);
+        statusPanel.add(field_status.thelabel, gbc);
         gbc.gridy = 4;
-        statusPanel.add(fileToAnalyze.thelabel, gbc);
+        statusPanel.add(field_fileToAnalyze.thelabel, gbc);
         gbc.gridy = 5;
-        statusPanel.add(supplinfo.thelabel, gbc);
+        statusPanel.add(field_supplinfo.thelabel, gbc);
 	      
         // right column is broader
         gbc.gridwidth = 2;
         gbc.gridx = 1;
         gbc.gridy = 0;
-        statusPanel.add(topic.thetextfield, gbc);
+        statusPanel.add(field_topic.thetextfield, gbc);
         gbc.gridy = 1;
-        statusPanel.add(targetFile.thetextfield, gbc);
+        statusPanel.add(field_targetFile.thetextfield, gbc);
         gbc.gridy = 3;
-        statusPanel.add(status.thetextfield, gbc);
+        statusPanel.add(field_status.thetextfield, gbc);
         gbc.gridy = 4;
-        statusPanel.add(fileToAnalyze.thetextfield, gbc);
+        statusPanel.add(field_fileToAnalyze.thetextfield, gbc);
         gbc.gridy = 5;
-        statusPanel.add(supplinfo.thetextfield, gbc);
+        statusPanel.add(field_supplinfo.thetextfield, gbc);
 	      
         mainFrame.add(headerLabel);
         mainFrame.add(controlPanel);
@@ -160,12 +160,12 @@ public class UserDialog {
 	   
     /** show status messages */
     public void setMessage(String settext, int warning) {
-        status.setText(settext);
+        field_status.setText(settext);
         if(warning == 1) {
-            status.thetextfield.setForeground(warnFG);
+            field_status.thetextfield.setForeground(warnFG);
         }
         else {
-			   status.thetextfield.setForeground(normalFG);
+			   field_status.thetextfield.setForeground(normalFG);
 		}
     }
 	   
@@ -173,19 +173,19 @@ public class UserDialog {
     public void setSupplMessage(String s, String... t) {
         String t1 = t.length > 0 ? t[0] : "";
         String t2 = t.length > 1 ? t[1] : "";
-	    supplinfo.setText(s + " " + t1 + " "+ t2);
-        supplinfo.thetextfield.setForeground(normalFG);
+	    field_supplinfo.setText(s + " " + t1 + " "+ t2);
+        field_supplinfo.thetextfield.setForeground(normalFG);
     }
     public void setSupplWarning(String s, String... t) {
         String t1 = t.length > 0 ? t[0] : "";
         String t2 = t.length > 1 ? t[1] : "";
-        supplinfo.setText(s + " " + t1 + " "+ t2);
-        supplinfo.thetextfield.setForeground(warnFG);
+        field_supplinfo.setText(s + " " + t1 + " "+ t2);
+        field_supplinfo.thetextfield.setForeground(warnFG);
     }
 	   
     private String setWritingTarget() {
         // Validate results filename from input text field
-        String s = targetFile.getText();
+        String s = field_targetFile.getText();
         String illchar = "";
         for(char c:ILLEGAL_CHARACTERS) {
             if(s.contains(""+c)) {illchar += (""+c);}
@@ -216,9 +216,9 @@ public class UserDialog {
                 workingFolder = ""+fileDialog.getDirectory();
 	            
                 selFile = workingFolder + fileDialog.getFile();
-                status.setText("..." + workingFolder);
-                fileToAnalyze.setText(fileDialog.getFile());
-                supplinfo.setText("");
+                field_status.setText("..." + workingFolder);
+                field_fileToAnalyze.setText(fileDialog.getFile());
+                field_supplinfo.setText("");
 	            
                 fileType="";
                 for(String str:ALLOWED_INPUT_FILES) {
@@ -227,11 +227,11 @@ public class UserDialog {
                         break;
                         }
                     }
-                selTopicString = topic.getText();
-                String str = fileToAnalyze.getText();
+                selTopicString = field_topic.getText();
+                String str = field_fileToAnalyze.getText();
                 if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
-                targetFile.setText(str);
-                topic.setText(str);
+                field_targetFile.setText(str);
+                field_topic.setText(str);
                 }
         });
 	      
@@ -258,7 +258,7 @@ public class UserDialog {
                         }
                     selTargetFile = setWritingTarget();
 		        
-                    Writeinfile WordPlace = new Writeinfile(selTargetFile, topic.getText());
+                    Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText());
 		        
                     /** Check boxes status */
                     EvaluateText etx = new EvaluateText(selFile, collectWords, collectNumbers, collectSymbols);
