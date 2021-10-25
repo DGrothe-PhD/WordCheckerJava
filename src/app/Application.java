@@ -6,7 +6,5 @@ public class Application extends StringCompare {
 	public static void main(String[] args) {
 		System.out.println("Collecting words");
 	    new UserDialog();
-		
-		//StringCompare.Probelauf();
 	}
 }

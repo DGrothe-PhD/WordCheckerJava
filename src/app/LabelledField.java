@@ -10,7 +10,7 @@ class LabelledField extends TextField {
 	 * 
 	 */
 	private static final long serialVersionUID = 424211L;
-	int LABEL_WIDTH = 40;
+	protected static int FIELD_WIDTH = 40;
 	String thepreset = "";
 	Label thelabel;
 	TextField thetextfield;
@@ -18,15 +18,23 @@ class LabelledField extends TextField {
 	public LabelledField(String title, String preset) {
 		thelabel = new Label(title);
 		thepreset = preset;
-		thetextfield = new TextField(LABEL_WIDTH);
+		thetextfield = new TextField(FIELD_WIDTH);
 		thetextfield.setText(preset);
 	}
 	public LabelledField(String title, String preset, Color bgcolor) {
 		thelabel = new Label(title);
 		thepreset = preset;
-		thetextfield = new TextField(LABEL_WIDTH);
+		thetextfield = new TextField(FIELD_WIDTH);
 		thetextfield.setText(preset);
 		thetextfield.setBackground(bgcolor);
+	}
+	public LabelledField(String title, String preset, Color bgcolor, boolean editable) {
+		thelabel = new Label(title);
+		thepreset = preset;
+		thetextfield = new TextField(FIELD_WIDTH);
+		thetextfield.setText(preset);
+		thetextfield.setBackground(bgcolor);
+		thetextfield.setEditable(editable);
 	}
 	
 	/** returns the field content*/

@@ -7,12 +7,14 @@ import java.net.URI;
 
 /** User dialog widget */
 public class UserDialog {
-	//fields
+
     private Frame mainFrame;
     private Label headerLabel;
     private String workingFolder;
 	   
     LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
+    Label textareaLabel;
+    private TextArea textarea;
     Checkbox chkNumbers, chkSymbols, chkWords;
 	   
     public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
@@ -29,7 +31,6 @@ public class UserDialog {
 			   '\\', '<', '>', '|', '\"', ':' };
     private TimeCalc tc;
 	
-	//constructor
     public UserDialog(){
         try {
             prepareGUI();
@@ -86,7 +87,7 @@ public class UserDialog {
 	   /** Widget settings */
     private void prepareGUI(){
         mainFrame = new Frame("Java Wordchecker App");
-        mainFrame.setSize(425,307);
+        mainFrame.setSize(432,347);
         Color moss = new Color(170,200,170);
         Color light = new Color(190, 220, 190);
         Color darker = new Color(130,170,130);
@@ -107,10 +108,16 @@ public class UserDialog {
         //labels and textfields
         field_topic = new LabelledField("Type topic:", "Result word list");
         field_targetFile = new LabelledField("Target file:", "Word_occurrences.html");
-        field_status = new LabelledField("Selected folder:", "", hint);
-        field_fileToAnalyze = new LabelledField("Selected file:", "", light);
-        field_supplinfo = new LabelledField("Info:", "", green);
-	      
+        field_status = new LabelledField("Selected folder:", "", hint, false);
+        field_fileToAnalyze = new LabelledField("Selected file:", "- Please select a file -", light, false);
+        field_supplinfo = new LabelledField("Info:", "", green, false);
+	    
+        textareaLabel = new Label("Search terms:");
+        textarea = new TextArea();
+        textarea.setColumns(LabelledField.FIELD_WIDTH);
+        textarea.setRows(5);
+        textarea.setEditable(true);
+        
         controlPanel = new Panel();
         controlPanel.setLayout(new GridLayout(3,2));
         controlPanel.setBackground(darker);
@@ -124,6 +131,7 @@ public class UserDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         statusPanel.setLayout(grid3);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTH;
         // left column
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -137,6 +145,8 @@ public class UserDialog {
         statusPanel.add(field_fileToAnalyze.thelabel, gbc);
         gbc.gridy = 5;
         statusPanel.add(field_supplinfo.thelabel, gbc);
+        gbc.gridy = 6;
+        statusPanel.add(textareaLabel, gbc);
 	      
         // right column is broader
         gbc.gridwidth = 2;
@@ -151,6 +161,8 @@ public class UserDialog {
         statusPanel.add(field_fileToAnalyze.thetextfield, gbc);
         gbc.gridy = 5;
         statusPanel.add(field_supplinfo.thetextfield, gbc);
+        gbc.gridy = 6;
+        statusPanel.add(textarea, gbc);
 	      
         mainFrame.add(headerLabel);
         mainFrame.add(controlPanel);
@@ -226,7 +238,7 @@ public class UserDialog {
                         fileType=str;
                         break;
                         }
-                    }
+                }
                 selTopicString = field_topic.getText();
                 String str = field_fileToAnalyze.getText();
                 if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
@@ -240,27 +252,25 @@ public class UserDialog {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                //User selected target filename for results.
                 tc = new TimeCalc();
                 try{
-                    // handling unset results file at start
                     if (selFile == null || selFile.length()<2) {
                         setMessage("Please select a file before clicking Start.", 1);
                         throw new IllegalArgumentException("No file selected");
-                        }
+                    }
                     
-                    // Validate source text file selection: must be text file
                     if(fileType.length()<2) {
                         setMessage(
-                                "Please choose a text file, of types:"+
-                                        String.join(", ", ALLOWED_INPUT_FILES), 1);
+                            "Please choose a text file, of types:"+
+                                String.join(", ", ALLOWED_INPUT_FILES), 1);
                         throw new IllegalArgumentException("File type not allowed");
-                        }
+                    }
                     selTargetFile = setWritingTarget();
 		        
                     Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText());
 		        
                     /** Check boxes status */
+                    System.out.println("Info. "+ selFile);
                     EvaluateText etx = new EvaluateText(selFile, collectWords, collectNumbers, collectSymbols);
                     WordPlace.storeAllItems(etx.GetWordsList());
                     WordPlace.finishWriting();
@@ -269,12 +279,12 @@ public class UserDialog {
                     setSupplMessage(Integer.toString(etx.GetNumberOfWords())+" words counted.",
                             tc.getDuration());
                     tc.printDuration();
-                    }// end try
+                }
                 catch(IllegalArgumentException bannedfiletype) {System.out.println(bannedfiletype);}
                 catch(WriteFileException wfe) {
                     setSupplWarning(wfe.getMessage());
                     System.out.println(wfe.getCause());
-                    }
+                }
                 catch(Exception exc) {System.out.println("Some UI or other exception.");}
                 }
         });
@@ -294,7 +304,6 @@ public class UserDialog {
                 htmlOpen();
                 }
             });
-        //buttons
 	      
         Component[] abc = {showFileDialogButton, startButton, openButton, closeButton};
         for (Component s:abc) controlPanel.add(s);
