@@ -9,6 +9,12 @@ public class CountWords extends CharRep {
 	public int num_of_lines;
 	public int num_of_words;
 	private ArrayList<String> buf;
+	
+	private String[] userSearchTerms;
+	
+	public CountWords(String input) {
+		userSearchTerms = input.split("\n");
+	}
 		
 	public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
@@ -107,33 +113,55 @@ public class CountWords extends CharRep {
 	public CountWords() {
 		;
 	}
+	
 	/** CountWords @param string: the text, that is split into lines and tokens (words). */
-	public CountWords(String str, boolean collectWords, boolean collectNumbers, boolean collectSymbols){
-		String[] lines = str.split("\n");
-		num_of_lines = lines.length;
-		int j, k;
-		buf = new ArrayList<String>();
-		for (j=0; j<num_of_lines; j++) {
-			lines[j] = lines[j].replace("\t", " ");
-			lines[j] = lines[j].replace(thebom, "");
+	public void cwoToolBox(String str, boolean collectWords, boolean collectNumbers, boolean collectSymbols, boolean useUserTerms){
+		
+		if(useUserTerms) {
+		
+			String[] lines = str.split("\n");
+			num_of_lines = lines.length;
+
+			buf = new ArrayList<String>();
+			for (int j=0; j<num_of_lines; j++) {
+				lines[j] = lines[j].replace("\t", " ");
+				lines[j] = lines[j].replace(thebom, "");
 			
-			phraseFinder(lines[j]);
+				phraseFinder(lines[j]);
+				userPhraseFinder(lines[j]);
 			
-			for (String bar: lines[j].split(" ")) {
-				buf.add(bar);
+				for (String bar: lines[j].split(" ")) {
+					buf.add(bar);
+				}
 			}
 		}
+		else {
+			String[] lines = str.split("\n");
+			num_of_lines = lines.length;
+			buf = new ArrayList<String>();
+			for (int j=0; j<num_of_lines; j++) {
+				lines[j] = lines[j].replace("\t", " ");
+				lines[j] = lines[j].replace(thebom, "");
+			
+				phraseFinder(lines[j]);
+			
+				for (String bar: lines[j].split(" ")) {
+					buf.add(bar);
+				}
+			}
+		}
+		
 		num_of_words = buf.size();
 		
 		if(!collectSymbols) {
-			for (k=0;k<num_of_words; k++) {
+			for (int k=0;k<num_of_words; k++) {
 				//TODO should e.g. not collect numbers if user unchecks that box
 				//"boolean collectWords, boolean collectNumbers" should have effect
 				AddNumbersAndWords(buf.get(k));
 			}
 		}
 		else {
-			for (k=0;k<num_of_words; k++) {
+			for (int k=0;k<num_of_words; k++) {
 			//TODO should e.g. not collect numbers if user unchecks that box
 			//"boolean collectWords, boolean collectNumbers" should have effect
 			AddWord(buf.get(k));
@@ -162,6 +190,14 @@ public class CountWords extends CharRep {
 		for(String w: ShortWords.ListOfPhrases) {
 			if(line.contains(w)) {
 				buf.add(" - Phrase found: "+ w);
+			}
+		}
+	}
+	
+	void userPhraseFinder(String line) {
+		for(String w: userSearchTerms) {
+			if(line.contains(w)) {
+				buf.add(" - Search term found: "+ w);
 			}
 		}
 	}

@@ -5,15 +5,20 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
  
-public class EvaluateText// extends CountWords
+public class EvaluateText
 {
 	CountWords cwo;
 	String content = "";
-    public EvaluateText(String filename, boolean collectWords, boolean collectNumbers, boolean collectSymbols) {
+	//TODO maybe use enum.
+	public EvaluateText(String input) {
+		cwo = new CountWords(input);
+		//TODO local regression test :)
+	}
+    public void eTextToolBox(String filename, boolean collectWords, boolean collectNumbers, boolean collectSymbols, boolean collectUserTerms) {
         String filePath = filename;
  
         System.out.println( readAllBytesJava7( filePath ) );
-        cwo = new CountWords(content, collectWords, collectNumbers, collectSymbols);
+        cwo.cwoToolBox(content, collectWords, collectNumbers, collectSymbols, collectUserTerms);
     }
     
     public ArrayList<String> GetWordsList() {

@@ -14,6 +14,7 @@ public class CharRep {
 	}
 	protected ArrayList<zeichen> umlaut = new ArrayList<zeichen>();
 
+	//TODO unnecessary code?
 	public CharRep() {
 		umlaut.clear();
 		umlaut.add(new zeichen(""+(char)0xdc, ""+(char)0xc3+ (char)0x153));//UE
