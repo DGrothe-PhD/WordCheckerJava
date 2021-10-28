@@ -1,7 +1,6 @@
 package app;
 
 import java.util.ArrayList;
-//Für Anzahl Vorkommen gebraucht:
 import java.util.*; 
 
 /** Words counting class */
@@ -9,8 +8,35 @@ public class CountWords extends CharRep {
 	public int num_of_lines;
 	public int num_of_words;
 	private ArrayList<String> buf;
+	
+	private int mode;
+	private String[] userSearchTerms;
+	
+	protected static enum switchMode {
+		c_Numbers (0x1),
+		c_Symbols (0x2),
+		c_Words (0x4),
+		c_UserTerms (0x8);
 		
-	public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
+		private int mode;
+		switchMode(int mode){
+			this.mode = mode;
+		}
+		
+		public int getMode() {
+			return mode;
+		}
+		
+		public boolean isMode(int m) {
+			return (m & this.mode) == this.mode;
+		}
+	}
+	
+	public CountWords(String input, int mode) {
+		userSearchTerms = input.split(System.lineSeparator());
+		this.mode = mode;
+	}
+		
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
 	// punctuation ",;\"\\/()[]{}!?"
@@ -107,33 +133,55 @@ public class CountWords extends CharRep {
 	public CountWords() {
 		;
 	}
+	
 	/** CountWords @param string: the text, that is split into lines and tokens (words). */
-	public CountWords(String str, boolean collectWords, boolean collectNumbers, boolean collectSymbols){
-		String[] lines = str.split("\n");
-		num_of_lines = lines.length;
-		int j, k;
-		buf = new ArrayList<String>();
-		for (j=0; j<num_of_lines; j++) {
-			lines[j] = lines[j].replace("\t", " ");
-			lines[j] = lines[j].replace(thebom, "");
+	public void cwoToolBox(String str){
+		
+		if(switchMode.c_UserTerms.isMode(mode)) {
+		
+			String[] lines = str.split("\n");
+			num_of_lines = lines.length;
+
+			buf = new ArrayList<String>();
+			for (int j=0; j<num_of_lines; j++) {
+				lines[j] = lines[j].replace("\t", " ");
+				lines[j] = lines[j].replace(thebom, "");
 			
-			phraseFinder(lines[j]);
+				phraseFinder(lines[j]);
+				userPhraseFinder(lines[j]);
 			
-			for (String bar: lines[j].split(" ")) {
-				buf.add(bar);
+				for (String bar: lines[j].split(" ")) {
+					buf.add(bar);
+				}
 			}
 		}
+		else {
+			String[] lines = str.split("\n");
+			num_of_lines = lines.length;
+			buf = new ArrayList<String>();
+			for (int j=0; j<num_of_lines; j++) {
+				lines[j] = lines[j].replace("\t", " ");
+				lines[j] = lines[j].replace(thebom, "");
+			
+				phraseFinder(lines[j]);
+			
+				for (String bar: lines[j].split(" ")) {
+					buf.add(bar);
+				}
+			}
+		}
+		
 		num_of_words = buf.size();
 		
-		if(!collectSymbols) {
-			for (k=0;k<num_of_words; k++) {
+		if(!switchMode.c_Symbols.isMode(mode)) {
+			for (int k=0;k<num_of_words; k++) {
 				//TODO should e.g. not collect numbers if user unchecks that box
 				//"boolean collectWords, boolean collectNumbers" should have effect
 				AddNumbersAndWords(buf.get(k));
 			}
 		}
 		else {
-			for (k=0;k<num_of_words; k++) {
+			for (int k=0;k<num_of_words; k++) {
 			//TODO should e.g. not collect numbers if user unchecks that box
 			//"boolean collectWords, boolean collectNumbers" should have effect
 			AddWord(buf.get(k));
@@ -162,6 +210,15 @@ public class CountWords extends CharRep {
 		for(String w: ShortWords.ListOfPhrases) {
 			if(line.contains(w)) {
 				buf.add(" - Phrase found: "+ w);
+			}
+		}
+	}
+	
+	//Currently integrated in tokens list, to be separated later.
+	void userPhraseFinder(String line) {
+		for(String w: userSearchTerms) {
+			if(line.contains(w)) {
+				buf.add(" - Search term found: "+ w);
 			}
 		}
 	}

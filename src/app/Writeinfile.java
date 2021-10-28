@@ -12,6 +12,7 @@ public class Writeinfile {
 	int type_of_word = 0;
 	ArrayList<String> specialTokens = new ArrayList<String>();
 	ArrayList<String> refSignTokens = new ArrayList<String>();
+	ArrayList<String> userSearchTokens = new ArrayList<String>();
 	
 	public Writeinfile(String filename, String topic) throws WriteFileException {
 		pWriter = null;
@@ -59,7 +60,19 @@ public class Writeinfile {
 		return u;
 	}
 
+	public void storeUserTerms() {
+		if(!userSearchTokens.isEmpty()) {
+			insertParEnd();
+			pWriter.println("<details><summary>Search terms found:</summary>");
+			for(String o : userSearchTokens) {
+				pWriter.println(o+"<br>");
+			}
+		}
+	}
+	
 	public void storeAllItems(ArrayList<String> targs) throws WriteFileException {
+		
+		storeUserTerms();
 		char cap = '0';
 		//cap will be set to first char of first word in alphabetical order
 		//regardless of which

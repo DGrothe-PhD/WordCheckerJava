@@ -5,15 +5,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
  
-public class EvaluateText// extends CountWords
+public class EvaluateText
 {
 	CountWords cwo;
 	String content = "";
-    public EvaluateText(String filename, boolean collectWords, boolean collectNumbers, boolean collectSymbols) {
+
+	public EvaluateText(String input, int mode) {
+		cwo = new CountWords(input, mode);
+	}
+    public void eTextToolBox(String filename) {
         String filePath = filename;
  
         System.out.println( readAllBytesJava7( filePath ) );
-        cwo = new CountWords(content, collectWords, collectNumbers, collectSymbols);
+        cwo.cwoToolBox(content);
     }
     
     public ArrayList<String> GetWordsList() {
