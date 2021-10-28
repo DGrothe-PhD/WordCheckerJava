@@ -9,16 +9,15 @@ public class EvaluateText
 {
 	CountWords cwo;
 	String content = "";
-	//TODO maybe use enum.
-	public EvaluateText(String input) {
-		cwo = new CountWords(input);
-		//TODO local regression test :)
+
+	public EvaluateText(String input, int mode) {
+		cwo = new CountWords(input, mode);
 	}
-    public void eTextToolBox(String filename, boolean collectWords, boolean collectNumbers, boolean collectSymbols, boolean collectUserTerms) {
+    public void eTextToolBox(String filename) {
         String filePath = filename;
  
         System.out.println( readAllBytesJava7( filePath ) );
-        cwo.cwoToolBox(content, collectWords, collectNumbers, collectSymbols, collectUserTerms);
+        cwo.cwoToolBox(content);
     }
     
     public ArrayList<String> GetWordsList() {

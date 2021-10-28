@@ -15,11 +15,11 @@ public class UserDialog {
     LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
     Label textareaLabel;
     private TextArea userTermsTextArea;
-    Checkbox chkNumbers, chkSymbols, chkWords;
+    Checkbox chkNumbers, chkSymbols, chkWords, chkCollectUserTerms;
     private Panel controlPanel, statusPanel;
     
-    public boolean collectNumbers = true, collectSymbols = true, collectWords = true, collectUserTerms = true;
-    //TODO add checkbox and clear button for user search terms.
+    private int mode;
+    //TODO add clear button for user search terms.
     
     private Color warnFG = new Color(255, 0,0);
     private Color normalFG = new Color(0,0,0);
@@ -63,29 +63,40 @@ public class UserDialog {
 	   
     /** Lets user select which tokens to collect */
     private void makeCheckboxGroup() {
+    	//initialize
         chkNumbers = new Checkbox("Numbers", true);
         chkSymbols = new Checkbox("Symbols", true);
         chkWords = new Checkbox("Words", true);
+        chkCollectUserTerms = new Checkbox("Custom search terms", true);
+        mode = 15;
 		   
+        //add listeners to switch the mode
         chkNumbers.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {             
-                collectNumbers = e.getStateChange()==1?true:false;
+                mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_Numbers.getMode();
                 }
             });
         chkSymbols.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {             
-                collectSymbols = e.getStateChange()==1?true:false;
+            	mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_Symbols.getMode();
                 }
             });
         chkWords.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {             
-                collectWords = e.getStateChange()==1?true:false;
+            	mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_Words.getMode();
                 }
             });
 		   
+        chkCollectUserTerms.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {             
+            	mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_UserTerms.getMode();
+                }
+            });
+        
         controlPanel.add(chkNumbers);
         controlPanel.add(chkSymbols);
     	controlPanel.add(chkWords);
+    	controlPanel.add(chkCollectUserTerms);
     }
 	   
 	   /** Widget settings */
@@ -276,15 +287,20 @@ public class UserDialog {
                     selTargetFile = setWritingTarget();
                     
                     String str = userTermsTextArea.getText();
-                    EvaluateText etx = new EvaluateText(str);
-		        
+                    
+                    EvaluateText etx = new EvaluateText(str, mode);
+                    
                     Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText());
-		        
+                    
                     /** Check boxes status */
                     System.out.println("Info. "+ selFile);
                     
-                    etx.eTextToolBox(selFile, collectWords, collectNumbers, collectSymbols, collectUserTerms);
-                    WordPlace.storeAllItems(etx.GetWordsList());
+                    try{etx.eTextToolBox(selFile);}
+                    catch(Exception exc) {System.out.println("EtextToolbox went wrong.");}
+                    
+                    try{WordPlace.storeAllItems(etx.GetWordsList());}
+                    catch(Exception exc) {System.out.println("WordPlace Storage went wrong.");}
+                    
                     WordPlace.finishWriting();
                     //forget input file
                     fileType = "";
@@ -297,7 +313,7 @@ public class UserDialog {
                     setSupplWarning(wfe.getMessage());
                     System.out.println(wfe.getCause());
                 }
-                catch(Exception exc) {System.out.println("Some UI or other exception.");}
+                catch(Exception exc) {System.out.println("Some UI or other exception."+exc.getCause());}
                 }
         });
 	      

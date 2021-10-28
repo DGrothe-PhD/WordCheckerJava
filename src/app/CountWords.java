@@ -1,7 +1,6 @@
 package app;
 
 import java.util.ArrayList;
-//Für Anzahl Vorkommen gebraucht:
 import java.util.*; 
 
 /** Words counting class */
@@ -10,13 +9,34 @@ public class CountWords extends CharRep {
 	public int num_of_words;
 	private ArrayList<String> buf;
 	
+	private int mode;
 	private String[] userSearchTerms;
 	
-	public CountWords(String input) {
-		userSearchTerms = input.split("\n");
+	protected static enum switchMode {
+		c_Numbers (0x1),
+		c_Symbols (0x2),
+		c_Words (0x4),
+		c_UserTerms (0x8);
+		
+		private int mode;
+		switchMode(int mode){
+			this.mode = mode;
+		}
+		
+		public int getMode() {
+			return mode;
+		}
+		
+		public boolean isMode(int m) {
+			return (m & this.mode) == this.mode;
+		}
+	}
+	
+	public CountWords(String input, int mode) {
+		userSearchTerms = input.split(System.lineSeparator());
+		this.mode = mode;
 	}
 		
-	public boolean collectNumbers = true, collectSymbols = true, collectWords = true;
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
 	// punctuation ",;\"\\/()[]{}!?"
@@ -115,9 +135,9 @@ public class CountWords extends CharRep {
 	}
 	
 	/** CountWords @param string: the text, that is split into lines and tokens (words). */
-	public void cwoToolBox(String str, boolean collectWords, boolean collectNumbers, boolean collectSymbols, boolean useUserTerms){
+	public void cwoToolBox(String str){
 		
-		if(useUserTerms) {
+		if(switchMode.c_UserTerms.isMode(mode)) {
 		
 			String[] lines = str.split("\n");
 			num_of_lines = lines.length;
@@ -153,7 +173,7 @@ public class CountWords extends CharRep {
 		
 		num_of_words = buf.size();
 		
-		if(!collectSymbols) {
+		if(!switchMode.c_Symbols.isMode(mode)) {
 			for (int k=0;k<num_of_words; k++) {
 				//TODO should e.g. not collect numbers if user unchecks that box
 				//"boolean collectWords, boolean collectNumbers" should have effect
@@ -194,6 +214,7 @@ public class CountWords extends CharRep {
 		}
 	}
 	
+	//Currently integrated in tokens list, to be separated later.
 	void userPhraseFinder(String line) {
 		for(String w: userSearchTerms) {
 			if(line.contains(w)) {
