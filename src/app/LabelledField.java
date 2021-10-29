@@ -3,6 +3,9 @@ package app;
 import java.awt.Color;
 import java.awt.Label;
 import java.awt.TextField;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.Checkbox;
 
 /** inner class for labelled fields */
 class LabelledField extends TextField {
@@ -43,5 +46,35 @@ class LabelledField extends TextField {
 	}
 	public void setText(String displayedtext) {
 		thetextfield.setText(displayedtext);
+	}
+}
+
+class ToggleFunction extends Checkbox {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8097995714747461357L;
+	
+	Checkbox thecheckbox;
+	/*public ToggleFunction(String name, int mode, int level) {
+		final int curval = mode;
+		thecheckbox = new Checkbox(name, true);
+		thecheckbox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {             
+                curval += (e.getStateChange()==1?1:(-1))*level;
+                }
+        });
+		
+	}*/
+	
+	public ToggleFunction(String name, UserDialog udi, int level) {
+		thecheckbox = new Checkbox(name, true);
+		thecheckbox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {             
+                udi.switchMode((e.getStateChange()==1?1:(-1))*level);
+            }
+        });
+		// so now add an enter-key listener doing same.
 	}
 }

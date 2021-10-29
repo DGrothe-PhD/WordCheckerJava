@@ -19,7 +19,9 @@ public class UserDialog {
     private Panel controlPanel, statusPanel;
     
     private int mode;
-    //TODO add clear button for user search terms.
+    public void switchMode(int mode) {
+    	this.mode += mode;
+    }
     
     private Color warnFG = new Color(255, 0,0);
     private Color normalFG = new Color(0,0,0);
@@ -133,6 +135,15 @@ public class UserDialog {
         userTermsTextArea.setRows(5);
         userTermsTextArea.setEditable(true);
         
+        userTermsTextArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+            	if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+            		mainFrame.requestFocus();
+            	}
+            }
+        });
+        
         controlPanel = new Panel();
         controlPanel.setLayout(new GridLayout(3,2));
         controlPanel.setBackground(darker);
@@ -229,6 +240,9 @@ public class UserDialog {
     	return userSearchTerms;
     }
     
+    protected void rhabarber() {
+    		System.out.println("Hey, you've hit the enter key.");
+    }
 	   
 	   /** File dialog and button actions */
     public void showFileDialog(){
@@ -237,7 +251,8 @@ public class UserDialog {
         Button startButton = new Button("Start");
         Button openButton = new Button("Show Results");
         Button closeButton = new Button("Close window");
-	      	      
+        Button clearButton = new Button("Clear search");
+	    
         /** The Open File or Browse... button to select input text file.*/
         showFileDialogButton.addActionListener(new ActionListener() {
             @Override
@@ -256,7 +271,7 @@ public class UserDialog {
                     if(selFile.endsWith(str)) {
                         fileType=str;
                         break;
-                        }
+                    }
                 }
                 selTopicString = field_topic.getText();
                 String str = field_fileToAnalyze.getText();
@@ -266,6 +281,39 @@ public class UserDialog {
                 }
         });
 	      
+        showFileDialogButton.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            if (event.getKeyChar() == KeyEvent.VK_TAB) {
+            	showFileDialogButton.requestFocus();
+            }
+            else if (event.getKeyChar() == KeyEvent.VK_ENTER) {
+            	//double code portion. perhaps to be revised.
+            	setMessage("", 0);
+                fileDialog.setVisible(true);
+                workingFolder = ""+fileDialog.getDirectory();
+	            
+                selFile = workingFolder + fileDialog.getFile();
+                field_status.setText("..." + workingFolder);
+                field_fileToAnalyze.setText(fileDialog.getFile());
+                field_supplinfo.setText("");
+	            
+                fileType="";
+                for(String str:ALLOWED_INPUT_FILES) {
+                    if(selFile.endsWith(str)) {
+                        fileType=str;
+                        break;
+                    }
+                }
+                selTopicString = field_topic.getText();
+                String str = field_fileToAnalyze.getText();
+                if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
+                field_targetFile.setText(str);
+                field_topic.setText(str);
+            }
+           }
+        });
+        
         /** The start button. When pressed, chosen file is processed, 
         * and results are written into the target file. */
         startButton.addActionListener(new ActionListener() {
@@ -324,20 +372,65 @@ public class UserDialog {
                 mainFrame.dispose();
                 }
             });
-	      
+	    
+        closeButton.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            	if (event.getKeyChar() == KeyEvent.VK_ENTER) {
+            		mainFrame.dispose();
+            }
+           }
+        });
+        
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	userTermsTextArea.setText("");
+            }
+        });
+        
+        clearButton.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+            	if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+            		userTermsTextArea.setText("");
+            	}
+            }
+        });
+        
         /** Opens the result HTML file (in the standard browser).*/
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 htmlOpen();
-                }
-            });
+            }
+        });
+        
+        openButton.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            	if (event.getKeyChar() == KeyEvent.VK_ENTER) {
+            		htmlOpen();
+            	}
+            }
+        });
 	      
-        Component[] abc = {showFileDialogButton, startButton, openButton, closeButton};
+        Component[] abc = {showFileDialogButton, startButton, openButton, closeButton, clearButton};
         for (Component s:abc) controlPanel.add(s);
 	      
         makeCheckboxGroup();
+        
+        mainFrame.setFocusable(true);
+        mainFrame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            	if (event.getKeyChar() == KeyEvent.VK_ESCAPE) {
+            		mainFrame.dispose();
+            	}
+            }
+        });
 
-        mainFrame.setVisible(true);  
+        mainFrame.setVisible(true);
+        mainFrame.requestFocus();
     }
 }
