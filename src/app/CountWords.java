@@ -33,7 +33,9 @@ public class CountWords extends CharRep {
 	}
 	
 	public CountWords(String input, int mode) {
-		userSearchTerms = input.split(System.lineSeparator());
+		if(input != "") {
+		userSearchTerms = input.split(System.lineSeparator());}
+		else {userSearchTerms = null;}
 		this.mode = mode;
 	}
 		
@@ -138,15 +140,16 @@ public class CountWords extends CharRep {
 	public void cwoToolBox(String str){
 		
 		if(switchMode.c_UserTerms.isMode(mode)) {
-		
+			str = str.replace("\r\n", "\n");
 			String[] lines = str.split("\n");
+			
 			num_of_lines = lines.length;
 
 			buf = new ArrayList<String>();
 			for (int j=0; j<num_of_lines; j++) {
 				lines[j] = lines[j].replace("\t", " ");
 				lines[j] = lines[j].replace(thebom, "");
-			
+				if(lines[j].length()==0) continue;
 				phraseFinder(lines[j]);
 				userPhraseFinder(lines[j]);
 			
@@ -162,7 +165,7 @@ public class CountWords extends CharRep {
 			for (int j=0; j<num_of_lines; j++) {
 				lines[j] = lines[j].replace("\t", " ");
 				lines[j] = lines[j].replace(thebom, "");
-			
+				if(lines[j].length()==0) continue;
 				phraseFinder(lines[j]);
 			
 				for (String bar: lines[j].split(" ")) {
@@ -216,8 +219,11 @@ public class CountWords extends CharRep {
 	
 	//Currently integrated in tokens list, to be separated later.
 	void userPhraseFinder(String line) {
+		if(userSearchTerms.length == 1 && userSearchTerms[0].length()==0){
+			return;
+		}
 		for(String w: userSearchTerms) {
-			if(line.contains(w)) {
+			if(line.length()>0 && line.contains(w)) {
 				buf.add(" - Search term found: "+ w);
 			}
 		}

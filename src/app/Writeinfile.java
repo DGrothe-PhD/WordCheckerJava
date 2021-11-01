@@ -130,19 +130,15 @@ public class Writeinfile {
 					}
 				}
 				else if (!Character.isLetterOrDigit(entry.charAt(0))){
+					entry = entry.trim();
 					if(RegexList.hasRefSign(entry)) {
 						refSignTokens.add(entry);
 						continue;
 					}
-					else {
+					else if (entry.length()>0) {
 						specialTokens.add(entry);
 						continue;
 					}
-					/*else if(type_of_word != 3) {
-						insertParEnd();
-						pWriter.println("<details><summary>Special tokens found:</summary>");
-						type_of_word = 3;
-					}*/
 				}
 				pWriter.println( entry+"<br>");
 			}
@@ -160,12 +156,8 @@ public class Writeinfile {
 				}
 			}
 		}
-		//Specific exceptions during developing, later to be erased
-		catch(IndexOutOfBoundsException ioobe) {throw new WriteFileException("Some index-out-of-bounds error in entry processing.");}
-		catch(ArithmeticException npe) {throw new WriteFileException("Internal calculation error.");}
-		//general exception handling
 		catch(Exception wfe){
-			throw new WriteFileException("Error: File could not be written.");
+			throw new WriteFileException("Error: File may have not been written.");
 		}
 	}
 	
