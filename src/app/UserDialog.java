@@ -15,7 +15,8 @@ public class UserDialog {
     LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
     Label textareaLabel;
     private TextArea userTermsTextArea;
-    Checkbox chkNumbers, chkSymbols, chkWords, chkCollectUserTerms;
+
+    private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
     private Panel controlPanel, statusPanel;
     
     private int mode;
@@ -65,40 +66,17 @@ public class UserDialog {
 	   
     /** Lets user select which tokens to collect */
     private void makeCheckboxGroup() {
-    	//initialize
-        chkNumbers = new Checkbox("Numbers", true);
-        chkSymbols = new Checkbox("Symbols", true);
-        chkWords = new Checkbox("Words", true);
-        chkCollectUserTerms = new Checkbox("Custom search terms", true);
         mode = 15;
 		   
-        //add listeners to switch the mode
-        chkNumbers.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {             
-                mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_Numbers.getMode();
-                }
-            });
-        chkSymbols.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {             
-            	mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_Symbols.getMode();
-                }
-            });
-        chkWords.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {             
-            	mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_Words.getMode();
-                }
-            });
-		   
-        chkCollectUserTerms.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {             
-            	mode += (e.getStateChange()==1?1:(-1))*CountWords.switchMode.c_UserTerms.getMode();
-                }
-            });
+        chkNumbers = new ToggleFunction("Symbols", this, CountWords.switchMode.c_Numbers.getMode());
+        chkSymbols = new ToggleFunction("Symbols", this, CountWords.switchMode.c_Symbols.getMode());
+        chkWords = new ToggleFunction("Words", this, CountWords.switchMode.c_Words.getMode());
+        chkUserTerms = new ToggleFunction("Custom search terms", this, CountWords.switchMode.c_UserTerms.getMode());
         
         controlPanel.add(chkNumbers);
         controlPanel.add(chkSymbols);
     	controlPanel.add(chkWords);
-    	controlPanel.add(chkCollectUserTerms);
+    	controlPanel.add(chkUserTerms);
     }
 	   
 	   /** Widget settings */
