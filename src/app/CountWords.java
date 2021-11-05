@@ -224,7 +224,18 @@ public class CountWords extends CharRep {
 		}
 		for(String w: userSearchTerms) {
 			if(line.length()>0 && line.contains(w)) {
-				buf.add(" - Search term found: "+ w);
+				int fixpoint = line.indexOf(w);
+				int b = fixpoint+w.length()+20;
+				int rightbound = line.length();
+				if(b < line.length()-1) {
+					rightbound = Math.max(line.indexOf(" ",b), b);
+				}
+				int leftbound = 0;
+				if(fixpoint-20>0) {
+					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint-20));
+				}
+				String a = line.substring(leftbound,  rightbound);
+				buf.add(" - Found: \""+w+"\" in: "+ a);
 			}
 		}
 	}
