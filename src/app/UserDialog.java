@@ -60,7 +60,7 @@ public class UserDialog {
             URI uri = new File(selTargetFile).toURI();
 				desktop.browse(uri);
 		} catch (Exception oError){
-	        System.out.println("Output file could not be opened.");
+	        setMessage("Output file could not be opened.", 1);
 	    }
 	}
 	   
@@ -217,10 +217,6 @@ public class UserDialog {
     public String[] getSearchTerms() {
     	return userSearchTerms;
     }
-    
-    protected void rhabarber() {
-    		System.out.println("Hey, you've hit the enter key.");
-    }
 	   
 	   /** File dialog and button actions */
     public void showFileDialog(){
@@ -301,7 +297,6 @@ public class UserDialog {
                 try{
                     if (selFile == null || selFile.length()<2) {
                         setMessage("Please select a file before clicking Start.", 1);
-                        throw new IllegalArgumentException("No file selected");
                     }
                     
                     if(fileType.length()<2) {
@@ -318,9 +313,6 @@ public class UserDialog {
                     
                     Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText());
                     
-                    /** Check boxes status */
-                    System.out.println("Info. "+ selFile);
-                    
                     try{etx.eTextToolBox(selFile);}
                     catch(Exception exc) {System.out.println("EtextToolbox went wrong.");}
                     
@@ -328,13 +320,11 @@ public class UserDialog {
                     catch(Exception exc) {System.out.println("WordPlace Storage went wrong.");}
                     
                     WordPlace.finishWriting();
-                    //forget input file
+
                     fileType = "";
                     setSupplMessage(Integer.toString(etx.GetNumberOfWords())+" words counted.",
-                            tc.getDuration());
-                    tc.printDuration();
+                        tc.getDuration());
                 }
-                catch(IllegalArgumentException bannedfiletype) {System.out.println(bannedfiletype);}
                 catch(WriteFileException wfe) {
                     setSupplWarning(wfe.getMessage());
                     System.out.println(wfe.getCause());
@@ -343,7 +333,6 @@ public class UserDialog {
                 }
         });
 	      
-	      /** When close button is pressed, the window is closed.*/
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -39,7 +39,6 @@ class LabelledField extends TextField {
 		thetextfield.setEditable(editable);
 	}
 	
-	/** returns the field content*/
 	public String getText() {
 		return thetextfield.getText();
 	}

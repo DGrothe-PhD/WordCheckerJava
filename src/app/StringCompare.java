@@ -77,12 +77,6 @@ public class StringCompare {
 	    return minValue;
 	}
 	
-	public static void verbose(String a, String b) {
-		/** compare two words, console message **/
-		String q = Integer.toString(diff(a,b));
-		System.out.println(String.join("\t", a, b, q, subseq));
-	}
-	
 	public static String showDifference(String a, String b) {
 		/** compare two words, return message **/
 		String worda = a, wordb = b;
