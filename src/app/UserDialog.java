@@ -82,7 +82,7 @@ public class UserDialog {
 	   /** Widget settings */
     private void prepareGUI(){
         mainFrame = new Frame("Java Wordchecker App");
-        mainFrame.setSize(432,347);
+        mainFrame.setSize(440,360);
         Color moss = new Color(170,200,170);
         Color light = new Color(190, 220, 190);
         Color darker = new Color(130,170,130);

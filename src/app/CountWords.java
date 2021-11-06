@@ -217,7 +217,6 @@ public class CountWords extends CharRep {
 		}
 	}
 	
-	//Currently integrated in tokens list, to be separated later.
 	void userPhraseFinder(String line) {
 		if(userSearchTerms.length == 1 && userSearchTerms[0].length()==0){
 			return;

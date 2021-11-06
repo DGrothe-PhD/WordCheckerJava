@@ -78,6 +78,10 @@ public class Writeinfile {
 		//regardless of which
 		try {
 			for( String entry : targs ){
+				if(entry.startsWith("- Found:")) {
+					userSearchTokens.add(entry);
+					continue;
+				}
 				if (Character.isDigit(entry.charAt(0))) {
 					if(RegexList.hasISBN(entry)) {
 						specialTokens.add("ISBN candidate: "+entry);
@@ -152,6 +156,13 @@ public class Writeinfile {
 				insertParEnd();
 				pWriter.println("<details><summary>Reference signs found:</summary>");
 				for (String o:refSignTokens) {
+					pWriter.println(o+"<br>");
+				}
+			}
+			if(userSearchTokens.size()>0) {
+				insertParEnd();
+				pWriter.println("<details><summary>Searched tokens found:</summary>");
+				for (String o:userSearchTokens) {
 					pWriter.println(o+"<br>");
 				}
 			}
