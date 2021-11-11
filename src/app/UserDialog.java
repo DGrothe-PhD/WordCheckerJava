@@ -68,7 +68,7 @@ public class UserDialog {
     private void makeCheckboxGroup() {
         mode = 15;
 		   
-        chkNumbers = new ToggleFunction("Symbols", this, CountWords.switchMode.c_Numbers.getMode());
+        chkNumbers = new ToggleFunction("Numbers", this, CountWords.switchMode.c_Numbers.getMode());
         chkSymbols = new ToggleFunction("Symbols", this, CountWords.switchMode.c_Symbols.getMode());
         chkWords = new ToggleFunction("Words", this, CountWords.switchMode.c_Words.getMode());
         chkUserTerms = new ToggleFunction("Custom search terms", this, CountWords.switchMode.c_UserTerms.getMode());
@@ -311,7 +311,7 @@ public class UserDialog {
                     
                     EvaluateText etx = new EvaluateText(str, mode);
                     
-                    Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText());
+                    Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText(), mode);
                     
                     try{etx.eTextToolBox(selFile);}
                     catch(Exception exc) {System.out.println("EtextToolbox went wrong.");}

@@ -63,7 +63,11 @@ public class CountWords extends CharRep {
 	
 	/** removing unbalanced brackets, end punctuation*/
 	private String TrimWord(String str) {
+		
 		String str2 = str.trim();
+		if(str2.startsWith("- Found")) {
+			return str;
+		}
 		//replaceAll uses regex, whereas replace simply does not!
 		//remove points
 		str2 = str2.replaceAll("[\";„“»«]","");
@@ -178,15 +182,11 @@ public class CountWords extends CharRep {
 		
 		if(!switchMode.c_Symbols.isMode(mode)) {
 			for (int k=0;k<num_of_words; k++) {
-				//TODO should e.g. not collect numbers if user unchecks that box
-				//"boolean collectWords, boolean collectNumbers" should have effect
 				AddNumbersAndWords(buf.get(k));
 			}
 		}
 		else {
 			for (int k=0;k<num_of_words; k++) {
-			//TODO should e.g. not collect numbers if user unchecks that box
-			//"boolean collectWords, boolean collectNumbers" should have effect
 			AddWord(buf.get(k));
 			}
 		}
@@ -224,17 +224,21 @@ public class CountWords extends CharRep {
 		for(String w: userSearchTerms) {
 			if(line.length()>0 && line.contains(w)) {
 				int fixpoint = line.indexOf(w);
+				int leftspace = 0;
 				int b = fixpoint+w.length()+20;
 				int rightbound = line.length();
 				if(b < line.length()-1) {
 					rightbound = Math.max(line.indexOf(" ",b), b);
 				}
+				else {
+					leftspace = b - line.length()+1;
+				}
 				int leftbound = 0;
-				if(fixpoint-20>0) {
-					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint-20));
+				if(fixpoint - 20 - leftspace > 0) {
+					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - 20 - leftspace));
 				}
 				String a = line.substring(leftbound,  rightbound);
-				buf.add(" - Found: \""+w+"\" in: "+ a);
+				buf.add("- Found: \""+w+"\" in: "+ a);
 			}
 		}
 	}
