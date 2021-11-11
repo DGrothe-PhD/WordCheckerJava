@@ -3,6 +3,8 @@ Counts word occurrences in a text file. Results are saved in alphabetical order 
 
 ## How it works
 Numbers and bracketed numbers (often reference signs) are listed separately.
+User can uncheck words, symbols, numbers or custom search terms, thereby shortening the result html file. Scenarios:
+Unchecking symbols can be useful if a source text contains some mathematical expressions, for example. Unchecking numbers may be helpful if a text contains line numbers.
 
 With regular expressions, simple filtering for data types similar to ISBN, date or time, URLs or e-mail addresses is done; these tokens are listed separately as well. As regular expressions can be fiddly, I focused on a simple and stable solution so this filtering may not always yield perfect results.
 
