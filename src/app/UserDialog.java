@@ -2,14 +2,18 @@ package app;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
 
 /** User dialog widget */
 public class UserDialog {
 
     private Frame mainFrame;
-    private Label headerLabel;
+    //private Label headerLabel;
     private String workingFolder;
 	   
     LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
@@ -24,8 +28,14 @@ public class UserDialog {
     	this.mode += mode;
     }
     
+    private Font labelfont = new Font("Helvetica", Font.BOLD, 12);
     private Color warnFG = new Color(255, 0,0);
     private Color normalFG = new Color(0,0,0);
+    private Color openFileBG = new Color(255, 177, 91);
+    private Color startButtonBG = new Color(232, 111, 55);
+    private Color openHTMLBG = new Color(92,177,92);
+    private Color moss = new Color(170,200,170);
+    private Color clearBG = moss;
  
     public String selFile, selTargetFile, selTopicString = "", fileType = "";
     public /*static*/ String[] userSearchTerms;
@@ -40,6 +50,11 @@ public class UserDialog {
 	
     public UserDialog(){
         try {
+        	Toolkit tk = Toolkit.getDefaultToolkit();
+            Dimension d = tk.getScreenSize();
+            System.out.println("Screen width = " + d.width);
+            System.out.println("Screen height = " + d.height);
+
             prepareGUI();
             showFileDialog();
         }
@@ -71,7 +86,7 @@ public class UserDialog {
         chkNumbers = new ToggleFunction("Numbers", this, CountWords.switchMode.c_Numbers.getMode());
         chkSymbols = new ToggleFunction("Symbols", this, CountWords.switchMode.c_Symbols.getMode());
         chkWords = new ToggleFunction("Words", this, CountWords.switchMode.c_Words.getMode());
-        chkUserTerms = new ToggleFunction("Custom search terms", this, CountWords.switchMode.c_UserTerms.getMode());
+        chkUserTerms = new ToggleFunction("Search terms", this, CountWords.switchMode.c_UserTerms.getMode());
         
         controlPanel.add(chkNumbers);
         controlPanel.add(chkSymbols);
@@ -83,11 +98,12 @@ public class UserDialog {
     private void prepareGUI(){
         mainFrame = new Frame("Java Wordchecker App");
         mainFrame.setSize(440,360);
-        Color moss = new Color(170,200,170);
+        //Color moss = new Color(170,200,170);
         Color light = new Color(190, 220, 190);
         Color darker = new Color(130,170,130);
         Color hint = new Color(130,170,130);
         Color green = new Color(160,180,170);
+        
         mainFrame.setBackground(moss);
 
         mainFrame.setLayout(new FlowLayout());
@@ -97,9 +113,6 @@ public class UserDialog {
             }        
         });    
 	      
-        headerLabel = new Label();
-        headerLabel.setAlignment(Label.CENTER);
-	      
         //labels and textfields
         field_topic = new LabelledField("Type topic:", "Result word list");
         field_targetFile = new LabelledField("Target file:", "Word_occurrences.html");
@@ -108,6 +121,7 @@ public class UserDialog {
         field_supplinfo = new LabelledField("Info:", "", green, false);
 	    
         textareaLabel = new Label("Search terms:");
+        textareaLabel.setFont(labelfont);
         userTermsTextArea = new TextArea();
         userTermsTextArea.setColumns(LabelledField.FIELD_WIDTH);
         userTermsTextArea.setRows(5);
@@ -168,7 +182,7 @@ public class UserDialog {
         gbc.gridy = 6;
         statusPanel.add(userTermsTextArea, gbc);
 	      
-        mainFrame.add(headerLabel);
+        //mainFrame.add(headerLabel);
         mainFrame.add(controlPanel);
         mainFrame.add(statusPanel);
         mainFrame.setVisible(true);  
@@ -221,14 +235,30 @@ public class UserDialog {
 	   /** File dialog and button actions */
     public void showFileDialog(){
         final FileDialog fileDialog = new FileDialog(mainFrame,"Select file");
-        Button showFileDialogButton = new Button("Open File");
-        Button startButton = new Button("Start");
-        Button openButton = new Button("Show Results");
-        Button closeButton = new Button("Close window");
-        Button clearButton = new Button("Clear search");
+        WButton fileDialogButton = new WButton("Open File", openFileBG);
+
+        WButton startButton = new WButton("Start", startButtonBG);
+        startButton.setPreferredSize(new Dimension(116, 30));
+        
+        /*try{
+        	JButton startButton = new JButton("Start");
+            startButton.setPreferredSize(new Dimension(116, 30));
+            startButton.setBackground(startButtonBG);
+        	File imgFile=new File("start.png");
+        	Image imgio = ImageIO.read(imgFile);
+        	ImageIcon icon = new ImageIcon(imgio);
+            startButton.setIcon(icon);
+        }
+        catch(Exception exc) {
+        	System.out.println("Klappt nicht");
+        }*/
+        
+        WButton openButton = new WButton("Show Results", openHTMLBG);
+        WButton closeButton = new WButton("Close window", moss);
+        WButton clearButton = new WButton("Clear search", clearBG);
 	    
         /** The Open File or Browse... button to select input text file.*/
-        showFileDialogButton.addActionListener(new ActionListener() {
+        fileDialogButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setMessage("", 0);
@@ -255,11 +285,11 @@ public class UserDialog {
                 }
         });
 	      
-        showFileDialogButton.addKeyListener(new KeyAdapter() {
+        fileDialogButton.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
             if (event.getKeyChar() == KeyEvent.VK_TAB) {
-            	showFileDialogButton.requestFocus();
+            	fileDialogButton.requestFocus();
             }
             else if (event.getKeyChar() == KeyEvent.VK_ENTER) {
             	//double code portion. perhaps to be revised.
@@ -382,7 +412,7 @@ public class UserDialog {
             }
         });
 	      
-        Component[] abc = {showFileDialogButton, startButton, openButton, closeButton, clearButton};
+        Component[] abc = {fileDialogButton, startButton, openButton, closeButton, clearButton};
         for (Component s:abc) controlPanel.add(s);
 	      
         makeCheckboxGroup();

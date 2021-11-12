@@ -5,6 +5,8 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.*;
 import java.awt.Checkbox;
+import java.awt.Font;
+import java.awt.Button;
 
 /** inner class for labelled fields */
 class LabelledField extends TextField {
@@ -16,25 +18,25 @@ class LabelledField extends TextField {
 	String thepreset = "";
 	Label thelabel;
 	TextField thetextfield;
+	protected static Font descriptionFont = new Font("Helvetica", Font.PLAIN, 12);
+	protected static Font labelfont = new Font("Helvetica", Font.BOLD, 12);
 	   
 	public LabelledField(String title, String preset) {
 		thelabel = new Label(title);
+		thelabel.setFont(labelfont);
 		thepreset = preset;
 		thetextfield = new TextField(FIELD_WIDTH);
+		thetextfield.setFont(descriptionFont);
 		thetextfield.setText(preset);
 	}
+	
 	public LabelledField(String title, String preset, Color bgcolor) {
-		thelabel = new Label(title);
-		thepreset = preset;
-		thetextfield = new TextField(FIELD_WIDTH);
-		thetextfield.setText(preset);
+		this(title, preset);
 		thetextfield.setBackground(bgcolor);
 	}
 	public LabelledField(String title, String preset, Color bgcolor, boolean editable) {
-		thelabel = new Label(title);
-		thepreset = preset;
-		thetextfield = new TextField(FIELD_WIDTH);
-		thetextfield.setText(preset);
+		this(title, preset);
+		if(!editable) thelabel.setFont(descriptionFont);
 		thetextfield.setBackground(bgcolor);
 		thetextfield.setEditable(editable);
 	}
@@ -81,5 +83,18 @@ class ToggleFunction extends Checkbox {
             	}
             }
         });
+	}
+}
+
+class WButton extends Button {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5037983284871342515L;
+
+	public WButton(String title, Color color) {
+		super(title);
+		this.setBackground(color);
+		this.setFont(LabelledField.labelfont);
 	}
 }
