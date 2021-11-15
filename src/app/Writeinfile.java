@@ -7,15 +7,21 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 
 public class Writeinfile {
+	
+	private int mode;
+		
 	PrintWriter pInit = null;
 	PrintWriter pWriter = null;
 	int type_of_word = 0;
+	boolean detailsOpen = false;
+	
 	ArrayList<String> specialTokens = new ArrayList<String>();
 	ArrayList<String> refSignTokens = new ArrayList<String>();
 	ArrayList<String> userSearchTokens = new ArrayList<String>();
 	
-	public Writeinfile(String filename, String topic) throws WriteFileException {
+	public Writeinfile(String filename, String topic, int mode) throws WriteFileException {
 		pWriter = null;
+		this.mode = mode;
 		try {
 			pInit = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
 			pInit.println("<html><head>");
@@ -35,8 +41,16 @@ public class Writeinfile {
 	}
 	
 	/** complete the html section */
-	public void insertParEnd() {
-		pWriter.println(type_of_word==0?"":"</details><br>");
+	private void insertParEnd() {
+		if(detailsOpen) {
+			pWriter.println("</details><br>");
+			detailsOpen = false;
+		}
+	}
+	private void insertNewSection(String str) {
+		insertParEnd();
+		pWriter.println("<details><summary>"+str+"</summary>");
+		detailsOpen = true;
 	}
 	
 	private String[] uml = {"Ã", "Ä", "Ü", "Ö", "ä", "ö", "ü", "Ø", "ø", "Å",
@@ -60,24 +74,19 @@ public class Writeinfile {
 		return u;
 	}
 
-	public void storeUserTerms() {
-		if(!userSearchTokens.isEmpty()) {
-			insertParEnd();
-			pWriter.println("<details><summary>Search terms found:</summary>");
-			for(String o : userSearchTokens) {
-				pWriter.println(o+"<br>");
-			}
-		}
-	}
-	
 	public void storeAllItems(ArrayList<String> targs) throws WriteFileException {
+		// stores all items, already sorted in alphabetical order, in sub-lists according to entry type
 		
-		storeUserTerms();
 		char cap = '0';
 		//cap will be set to first char of first word in alphabetical order
 		//regardless of which
 		try {
 			for( String entry : targs ){
+				if(entry.startsWith("- Found:")) {
+					userSearchTokens.add(entry);
+					continue;
+				}
+				
 				if (Character.isDigit(entry.charAt(0))) {
 					if(RegexList.hasISBN(entry)) {
 						specialTokens.add("ISBN candidate: "+entry);
@@ -87,9 +96,12 @@ public class Writeinfile {
 						specialTokens.add("Date or time pattern: "+ entry);
 						continue;
 					}
+					// Plain numbers can be excluded from the printed result.
+					else if(!CountWords.switchMode.c_Numbers.isMode(mode)) {
+						continue;
+					}
 					else if(type_of_word != 1) {
-						insertParEnd();
-						pWriter.println("<details><summary>Tokens beginning with a digit:</summary>");
+						insertNewSection("Tokens beginning with a digit:");
 						type_of_word = 1;
 					}
 				}
@@ -107,11 +119,15 @@ public class Writeinfile {
 						specialTokens.add("URL: " + entry);
 						continue;
 					}
+					// Plain words can be excluded from the printed result.
+					else if(!CountWords.switchMode.c_Words.isMode(mode)) {
+						type_of_word = 2;
+						continue;
+					}
 					else {
 						//words
 						if(type_of_word != 2) {
-							insertParEnd();
-							pWriter.println("<details><summary>Words:</summary>");
+							insertNewSection("Words:");
 						}
 						type_of_word = 2;
 						char curr_char = entry.charAt(0);
@@ -130,42 +146,43 @@ public class Writeinfile {
 					}
 				}
 				else if (!Character.isLetterOrDigit(entry.charAt(0))){
+					entry = entry.trim();
 					if(RegexList.hasRefSign(entry)) {
 						refSignTokens.add(entry);
 						continue;
 					}
-					else {
-						specialTokens.add(entry);
+					else if(!CountWords.switchMode.c_Symbols.isMode(mode)) {
 						continue;
 					}
-					/*else if(type_of_word != 3) {
-						insertParEnd();
-						pWriter.println("<details><summary>Special tokens found:</summary>");
-						type_of_word = 3;
-					}*/
+					else if (entry.length()>0) {
+						specialTokens.add(entry);
+						continue;
+					}	
 				}
+				
 				pWriter.println( entry+"<br>");
 			}
-			insertParEnd();
-			pWriter.println("<details><summary>Special tokens found:</summary>");
+			
+			insertNewSection("Special tokens found:");
 			Collections.sort(specialTokens);
 			for (String o:specialTokens) {
-					pWriter.println(o+"<br>");
+				pWriter.println(o+"<br>");
 			}
 			if(refSignTokens.size()>0) {
-				insertParEnd();
-				pWriter.println("<details><summary>Reference signs found:</summary>");
+				insertNewSection("Reference signs found:");
 				for (String o:refSignTokens) {
 					pWriter.println(o+"<br>");
 				}
 			}
+			if(userSearchTokens.size()>0) {
+				insertNewSection("Searched tokens found:");
+				for (String o:userSearchTokens) {
+					pWriter.println(o+"<br>");
+				}
+			}
 		}
-		//Specific exceptions during developing, later to be erased
-		catch(IndexOutOfBoundsException ioobe) {throw new WriteFileException("Some index-out-of-bounds error in entry processing.");}
-		catch(ArithmeticException npe) {throw new WriteFileException("Internal calculation error.");}
-		//general exception handling
 		catch(Exception wfe){
-			throw new WriteFileException("Error: File could not be written.");
+			throw new WriteFileException("Error: File may have not been written.");
 		}
 	}
 	

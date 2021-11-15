@@ -10,7 +10,7 @@ public class CountWords extends CharRep {
 	private ArrayList<String> buf;
 	
 	private int mode;
-	private String[] userSearchTerms;
+	private ArrayList<String> userSearchTerms;
 	
 	protected static enum switchMode {
 		c_Numbers (0x1),
@@ -33,7 +33,17 @@ public class CountWords extends CharRep {
 	}
 	
 	public CountWords(String input, int mode) {
-		userSearchTerms = input.split(System.lineSeparator());
+		userSearchTerms = new ArrayList<String>();
+		if(input != "") {
+			String[] buf = input.split(System.lineSeparator());
+			for (String x : buf) {
+				String y = clarify(x);
+				userSearchTerms.add(x);
+				if(x != y) userSearchTerms.add(y);
+			}
+		}
+		
+		//else {userSearchTerms = null;}
 		this.mode = mode;
 	}
 		
@@ -61,7 +71,11 @@ public class CountWords extends CharRep {
 	
 	/** removing unbalanced brackets, end punctuation*/
 	private String TrimWord(String str) {
+		
 		String str2 = str.trim();
+		if(str2.startsWith("- Found")) {
+			return str;
+		}
 		//replaceAll uses regex, whereas replace simply does not!
 		//remove points
 		str2 = str2.replaceAll("[\";„“»«]","");
@@ -138,15 +152,16 @@ public class CountWords extends CharRep {
 	public void cwoToolBox(String str){
 		
 		if(switchMode.c_UserTerms.isMode(mode)) {
-		
+			str = str.replace("\r\n", "\n");
 			String[] lines = str.split("\n");
+			
 			num_of_lines = lines.length;
 
 			buf = new ArrayList<String>();
 			for (int j=0; j<num_of_lines; j++) {
 				lines[j] = lines[j].replace("\t", " ");
 				lines[j] = lines[j].replace(thebom, "");
-			
+				if(lines[j].length()==0) continue;
 				phraseFinder(lines[j]);
 				userPhraseFinder(lines[j]);
 			
@@ -162,7 +177,7 @@ public class CountWords extends CharRep {
 			for (int j=0; j<num_of_lines; j++) {
 				lines[j] = lines[j].replace("\t", " ");
 				lines[j] = lines[j].replace(thebom, "");
-			
+				if(lines[j].length()==0) continue;
 				phraseFinder(lines[j]);
 			
 				for (String bar: lines[j].split(" ")) {
@@ -175,15 +190,11 @@ public class CountWords extends CharRep {
 		
 		if(!switchMode.c_Symbols.isMode(mode)) {
 			for (int k=0;k<num_of_words; k++) {
-				//TODO should e.g. not collect numbers if user unchecks that box
-				//"boolean collectWords, boolean collectNumbers" should have effect
 				AddNumbersAndWords(buf.get(k));
 			}
 		}
 		else {
 			for (int k=0;k<num_of_words; k++) {
-			//TODO should e.g. not collect numbers if user unchecks that box
-			//"boolean collectWords, boolean collectNumbers" should have effect
 			AddWord(buf.get(k));
 			}
 		}
@@ -214,11 +225,28 @@ public class CountWords extends CharRep {
 		}
 	}
 	
-	//Currently integrated in tokens list, to be separated later.
 	void userPhraseFinder(String line) {
+		if(userSearchTerms.size() == 1 && userSearchTerms.get(0).length()==0){
+			return;
+		}
 		for(String w: userSearchTerms) {
-			if(line.contains(w)) {
-				buf.add(" - Search term found: "+ w);
+			if(line.length()>0 && line.contains(w)) {
+				int fixpoint = line.indexOf(w);
+				int leftspace = 0;
+				int b = fixpoint+w.length()+20;
+				int rightbound = line.length();
+				if(b < line.length()-1) {
+					rightbound = Math.max(line.indexOf(" ",b), b);
+				}
+				else {
+					leftspace = b - line.length()+1;
+				}
+				int leftbound = 0;
+				if(fixpoint - 20 - leftspace > 0) {
+					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - 20 - leftspace));
+				}
+				String a = line.substring(leftbound,  rightbound);
+				buf.add("- Found: \""+w+"\" in: "+ a);
 			}
 		}
 	}

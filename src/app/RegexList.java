@@ -74,7 +74,6 @@ public class RegexList {
 	public static boolean hasRefSign(String s) {
 		boolean b = false;
 		if(s.contains("(") && s.contains(")")) {
-			//b = true;
 			b = (Character.isDigit(s.charAt(1)));
 		}
 		return b;
