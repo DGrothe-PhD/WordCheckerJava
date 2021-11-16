@@ -18,15 +18,13 @@ class LabelledField extends TextField {
 	String thepreset = "";
 	Label thelabel;
 	TextField thetextfield;
-	protected static Font descriptionFont = new Font("Helvetica", Font.PLAIN, 12);
-	protected static Font labelfont = new Font("Helvetica", Font.BOLD, 12);
 	   
 	public LabelledField(String title, String preset) {
 		thelabel = new Label(title);
-		thelabel.setFont(labelfont);
+		thelabel.setFont(WFont.labelfont);
 		thepreset = preset;
 		thetextfield = new TextField(FIELD_WIDTH);
-		thetextfield.setFont(descriptionFont);
+		thetextfield.setFont(WFont.descriptionFont);
 		thetextfield.setText(preset);
 	}
 	
@@ -36,7 +34,7 @@ class LabelledField extends TextField {
 	}
 	public LabelledField(String title, String preset, Color bgcolor, boolean editable) {
 		this(title, preset);
-		if(!editable) thelabel.setFont(descriptionFont);
+		if(!editable) thelabel.setFont(WFont.descriptionFont);
 		thetextfield.setBackground(bgcolor);
 		thetextfield.setEditable(editable);
 	}
@@ -69,6 +67,7 @@ class ToggleFunction extends Checkbox {
 	
 	public ToggleFunction(String name, UserDialog udi, int level) {
 		super(name, true);
+		this.setFont(WFont.labelfont);
 		this.name = name;
 		this.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {             
@@ -95,6 +94,12 @@ class WButton extends Button {
 	public WButton(String title, Color color) {
 		super(title);
 		this.setBackground(color);
-		this.setFont(LabelledField.labelfont);
+		this.setFont(WFont.labelfont);
 	}
+}
+
+class WFont {
+	public static Font descriptionFont = new Font("Helvetica", Font.PLAIN, 12);
+	public static Font labelfont = new Font("Helvetica", Font.BOLD, 12);
+	
 }

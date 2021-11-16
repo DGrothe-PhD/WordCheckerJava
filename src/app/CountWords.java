@@ -10,7 +10,7 @@ public class CountWords extends CharRep {
 	private ArrayList<String> buf;
 	
 	private int mode;
-	private String[] userSearchTerms;
+	private ArrayList<String> userSearchTerms;
 	
 	protected static enum switchMode {
 		c_Numbers (0x1),
@@ -33,9 +33,17 @@ public class CountWords extends CharRep {
 	}
 	
 	public CountWords(String input, int mode) {
+		userSearchTerms = new ArrayList<String>();
 		if(input != "") {
-		userSearchTerms = input.split(System.lineSeparator());}
-		else {userSearchTerms = null;}
+			String[] buf = input.split(System.lineSeparator());
+			for (String x : buf) {
+				String y = clarify(x);
+				userSearchTerms.add(x);
+				if(x != y) userSearchTerms.add(y);
+			}
+		}
+		
+		//else {userSearchTerms = null;}
 		this.mode = mode;
 	}
 		
@@ -66,6 +74,7 @@ public class CountWords extends CharRep {
 		
 		String str2 = str.trim();
 		if(str2.startsWith("- Found")) {
+			str = clarify(str);
 			return str;
 		}
 		//replaceAll uses regex, whereas replace simply does not!
@@ -218,7 +227,7 @@ public class CountWords extends CharRep {
 	}
 	
 	void userPhraseFinder(String line) {
-		if(userSearchTerms.length == 1 && userSearchTerms[0].length()==0){
+		if(userSearchTerms.size() == 1 && userSearchTerms.get(0).length()==0){
 			return;
 		}
 		for(String w: userSearchTerms) {

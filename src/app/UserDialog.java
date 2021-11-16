@@ -2,18 +2,18 @@ package app;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
+//import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
+//import javax.imageio.ImageIO;
+//import javax.swing.JButton;
+//import javax.swing.JTextArea;
+//import javax.swing.ImageIcon;
 
 /** User dialog widget */
 public class UserDialog {
 
     private Frame mainFrame;
-    //private Label headerLabel;
     private String workingFolder;
 	   
     LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
@@ -28,7 +28,6 @@ public class UserDialog {
     	this.mode += mode;
     }
     
-    private Font labelfont = new Font("Helvetica", Font.BOLD, 12);
     private Color warnFG = new Color(255, 0,0);
     private Color normalFG = new Color(0,0,0);
     private Color openFileBG = new Color(255, 177, 91);
@@ -38,7 +37,7 @@ public class UserDialog {
     private Color clearBG = moss;
  
     public String selFile, selTargetFile, selTopicString = "", fileType = "";
-    public /*static*/ String[] userSearchTerms;
+    public String[] userSearchTerms;
     
     private static final String[] ALLOWED_INPUT_FILES = {
 			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
@@ -121,8 +120,9 @@ public class UserDialog {
         field_supplinfo = new LabelledField("Info:", "", green, false);
 	    
         textareaLabel = new Label("Search terms:");
-        textareaLabel.setFont(labelfont);
+        textareaLabel.setFont(WFont.labelfont);
         userTermsTextArea = new TextArea();
+        userTermsTextArea.setFont(WFont.descriptionFont);
         userTermsTextArea.setColumns(LabelledField.FIELD_WIDTH);
         userTermsTextArea.setRows(5);
         userTermsTextArea.setEditable(true);
@@ -182,7 +182,6 @@ public class UserDialog {
         gbc.gridy = 6;
         statusPanel.add(userTermsTextArea, gbc);
 	      
-        //mainFrame.add(headerLabel);
         mainFrame.add(controlPanel);
         mainFrame.add(statusPanel);
         mainFrame.setVisible(true);  
