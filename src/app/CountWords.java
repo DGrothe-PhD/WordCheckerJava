@@ -74,6 +74,7 @@ public class CountWords extends CharRep {
 		
 		String str2 = str.trim();
 		if(str2.startsWith("- Found")) {
+			str = clarify(str);
 			return str;
 		}
 		//replaceAll uses regex, whereas replace simply does not!
