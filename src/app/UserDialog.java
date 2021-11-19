@@ -2,18 +2,21 @@ package app;
 
 import java.awt.*;
 import java.awt.event.*;
-//import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
-//import javax.imageio.ImageIO;
-//import javax.swing.JButton;
-//import javax.swing.JTextArea;
-//import javax.swing.ImageIcon;
+import java.net.URISyntaxException;
+import java.net.URL;
+import javax.swing.JFrame;
+
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
 /** User dialog widget */
 public class UserDialog {
 
-    private Frame mainFrame;
+    private JFrame mainFrame;
     private String workingFolder;
 	   
     LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
@@ -37,7 +40,6 @@ public class UserDialog {
     private Color clearBG = moss;
  
     public String selFile, selTargetFile, selTopicString = "", fileType = "";
-    public String[] userSearchTerms;
     
     private static final String[] ALLOWED_INPUT_FILES = {
 			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
@@ -65,7 +67,22 @@ public class UserDialog {
     public String getSelectedFile() {
         return selFile;
     }
-	   
+	
+    public void githubOpen(){	
+        Desktop desktop = Desktop.getDesktop();
+
+        try {
+        	URL url = new URL("https://github.com/DGrothe-PhD/WordCheckerJava/");
+			desktop.browse(url.toURI());
+		}
+        catch (URISyntaxException e) {
+	    	setMessage("GitHub could not be opened in your browser.", 1);
+		}
+        catch (Exception oError){
+	        setMessage("GitHub opening button raised an exception.", 1);
+	    }
+	}
+    
     /** Open the results HTML file */
     public void htmlOpen(){	
         Desktop desktop = Desktop.getDesktop();
@@ -95,17 +112,62 @@ public class UserDialog {
 	   
 	   /** Widget settings */
     private void prepareGUI(){
-        mainFrame = new Frame("Java Wordchecker App");
-        mainFrame.setSize(440,360);
-        //Color moss = new Color(170,200,170);
+    	statusPanel = new Panel();
+    	controlPanel = new Panel();
+    	ImagePanel background;
+    	Label headline = new Label("analyze text files and find words");
+    	Label copyright = new Label("© 2021 Daniela Grothe");
+    	Button github = new Button("GitHub");
+    	
+    	github.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                githubOpen();
+            }
+        });
+    	
+    	mainFrame = new JFrame("Java Wordchecker App");
+    	mainFrame.setSize(440,460);
+    	mainFrame.setLayout(new GridLayout());
+    	
+    	Panel top = new Panel();
+    	GridBagLayout panelgrid = new GridBagLayout();
+    	top.setLayout(panelgrid);
+    	GridBagConstraints pgc = new GridBagConstraints();
+    	pgc.fill = GridBagConstraints.HORIZONTAL;
+        pgc.anchor = GridBagConstraints.NORTH;
+        pgc.gridheight = 1;
+    	pgc.gridx=0;
+    	pgc.gridy=0;
+    	top.add(controlPanel, pgc);
+    	pgc.gridheight = 2;
+    	pgc.gridx=0;
+    	pgc.gridy=2;
+    	top.add(statusPanel, pgc);
+    	
+    	Image image;
+    	try {
+    		image = ImageIO.read(getClass().getResource("./background.JPG"));
+        	background = new ImagePanel(image);
+        	background.setLayout(new FlowLayout());
+        	background.add(headline);
+        	background.add(top, "Center");
+        	background.add(copyright);
+        	background.add(github);
+        	mainFrame.add(background);
+    	}
+    	catch(Exception e) {
+    		mainFrame.setBackground(moss);
+    		mainFrame.add(headline);
+    		mainFrame.add(top, "Center");
+    		mainFrame.add(copyright);
+    		mainFrame.add(github);
+    	}
         Color light = new Color(190, 220, 190);
         Color darker = new Color(130,170,130);
         Color hint = new Color(130,170,130);
         Color green = new Color(160,180,170);
-        
-        mainFrame.setBackground(moss);
 
-        mainFrame.setLayout(new FlowLayout());
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent){
                 System.exit(0);
@@ -136,12 +198,10 @@ public class UserDialog {
             }
         });
         
-        controlPanel = new Panel();
         controlPanel.setLayout(new GridLayout(3,2));
         controlPanel.setBackground(darker);
         controlPanel.setSize(424,280);
-	      
-        statusPanel = new Panel();
+	    
         statusPanel.setBackground(moss);
         statusPanel.setSize(424,280);
 	      
@@ -181,9 +241,7 @@ public class UserDialog {
         statusPanel.add(field_supplinfo.thetextfield, gbc);
         gbc.gridy = 6;
         statusPanel.add(userTermsTextArea, gbc);
-	      
-        mainFrame.add(controlPanel);
-        mainFrame.add(statusPanel);
+	    
         mainFrame.setVisible(true);  
     }
 	   
@@ -194,7 +252,7 @@ public class UserDialog {
             field_status.thetextfield.setForeground(warnFG);
         }
         else {
-			   field_status.thetextfield.setForeground(normalFG);
+			field_status.thetextfield.setForeground(normalFG);
 		}
     }
 	   
@@ -226,10 +284,6 @@ public class UserDialog {
         if(s.length() > 5 && s.endsWith(".html")) return "Results_" + s; 
         return workingFolder + "Results_" + s + ".html";
     }
-	
-    public String[] getSearchTerms() {
-    	return userSearchTerms;
-    }
 	   
 	   /** File dialog and button actions */
     public void showFileDialog(){
@@ -238,19 +292,6 @@ public class UserDialog {
 
         WButton startButton = new WButton("Start", startButtonBG);
         startButton.setPreferredSize(new Dimension(116, 30));
-        
-        /*try{
-        	JButton startButton = new JButton("Start");
-            startButton.setPreferredSize(new Dimension(116, 30));
-            startButton.setBackground(startButtonBG);
-        	File imgFile=new File("start.png");
-        	Image imgio = ImageIO.read(imgFile);
-        	ImageIcon icon = new ImageIcon(imgio);
-            startButton.setIcon(icon);
-        }
-        catch(Exception exc) {
-        	System.out.println("Klappt nicht");
-        }*/
         
         WButton openButton = new WButton("Show Results", openHTMLBG);
         WButton closeButton = new WButton("Close window", moss);
@@ -428,5 +469,48 @@ public class UserDialog {
 
         mainFrame.setVisible(true);
         mainFrame.requestFocus();
+    }
+}
+
+
+@SuppressWarnings("serial")
+class ImagePanel extends JPanel {
+    private Image image;
+    private boolean tile;
+
+    ImagePanel(Image image) {
+        this.image = image;
+        this.tile = false;
+        //final JLabel foo = new JLabel("");
+        this.setSize(440,360);
+        //final JCheckBox checkBox = new JCheckBox();
+        /*checkBox.setAction(new AbstractAction("Tile") {
+            public void actionPerformed(ActionEvent e) {
+                tile = checkBox.isSelected();
+                repaint();
+            }
+        });*/
+        //add(foo);
+        //add(checkBox);
+        //add(bu4);//, BorderLayout.SOUTH);
+    };
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (tile) {
+            int iw = image.getWidth(this);
+            int ih = image.getHeight(this);
+            if (iw > 0 && ih > 0) {
+                for (int x = 0; x < getWidth(); x += iw) {
+                    for (int y = 0; y < getHeight(); y += ih) {
+                        g.drawImage(image, x, y, iw, ih, this);
+                    }
+                }
+            }
+        } else {
+        	g.drawImage(image, 0, 0, this);
+            //g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 }

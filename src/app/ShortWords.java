@@ -68,7 +68,7 @@ public class ShortWords {
 		"zwei", "zwölf", "öfter", "übel", "über", "übrig"
 	};
 	
-	public static String[] ListOfPhrases = {"oft he ", "tot he ", "fort he "};
+	public static String[] ListOfPhrases = {"oft he ", "tot he ", "fort he ", " ,", " ."};
 	
 	public static List<String> shortlistDE = Arrays.asList(shwDE);
 	public static List<String> shortlistEN = Arrays.asList(shwEN);
