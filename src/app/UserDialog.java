@@ -12,19 +12,34 @@ import javax.swing.JFrame;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.swing.JComboBox;
 
 /** User dialog widget */
 public class UserDialog {
 
     private JFrame mainFrame;
     private String workingFolder;
+    
+    private ReadJson jsonSearchWords;
 	   
-    LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
-    Label textareaLabel;
+    private LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
+    private Label textareaLabel, searchTermBoxLabel;
+    private Label headline = new Label("analyze text files and find words");
+    private Label copyright = new Label("© 2021 Daniela Grothe");
+    private Button github = new Button("GitHub");
+    private FileDialog fileDialog;
+    private WButton fileDialogButton, startButton, openButton, closeButton, clearButton;
+    
     private TextArea userTermsTextArea;
-
+    
+    public JCBox searchTermBox;
     private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
-    private Panel controlPanel, statusPanel;
+    private Panel controlPanel, statusPanel, top;
+    private ImagePanel background;
+    private Image image;
+    
+    private GridBagConstraints fieldGridConfig, pgc;
+    private GridBagLayout panelgrid, grid3;
     
     private int mode;
     public void switchMode(int mode) {
@@ -38,6 +53,10 @@ public class UserDialog {
     private Color openHTMLBG = new Color(92,177,92);
     private Color moss = new Color(170,200,170);
     private Color clearBG = moss;
+    private Color light = new Color(190, 220, 190);
+    private Color darker = new Color(130,170,130);
+    private Color hint = new Color(130,170,130);
+    private Color green = new Color(160,180,170);
  
     public String selFile, selTargetFile, selTopicString = "", fileType = "";
     
@@ -55,11 +74,35 @@ public class UserDialog {
             Dimension d = tk.getScreenSize();
             System.out.println("Screen width = " + d.width);
             System.out.println("Screen height = " + d.height);
+            
+        	mainFrame = new JFrame("Java Wordchecker App");
+        	mainFrame.setSize(440,460);
+        	mainFrame.setLayout(new GridLayout());        	
+        	
+        	makeFields();
+        	makeButtons();
 
             prepareGUI();
+            searchTermBox = new JCBox();
+            
+            addButtons();
+            addCheckboxGroup();
+            
+            positionFields();
+    	    
+            addListenersToUI();
+            
+            addListenersToButtons();
+            
             showFileDialog();
-        }
+            searchTermBox.connect(userTermsTextArea);
+            
+            mainFrame.setVisible(true);
+            mainFrame.requestFocus();
+            
+            }
         catch(AWTError awe) {
+        	//intended as fallback if UI cannot be shown on system
             System.out.println("Application window could not be opened.");
         }
     }
@@ -68,6 +111,11 @@ public class UserDialog {
         return selFile;
     }
 	
+    public void getSearchWordsFromJson(String key) {
+    	String rjs = jsonSearchWords.get(key);
+        userTermsTextArea.setText(rjs);
+    }
+    
     public void githubOpen(){	
         Desktop desktop = Desktop.getDesktop();
 
@@ -93,10 +141,13 @@ public class UserDialog {
 		} catch (Exception oError){
 	        setMessage("Output file could not be opened.", 1);
 	    }
+        finally{
+        	mainFrame.revalidate();
+        }
 	}
 	   
     /** Lets user select which tokens to collect */
-    private void makeCheckboxGroup() {
+    private void addCheckboxGroup() {
         mode = 15;
 		   
         chkNumbers = new ToggleFunction("Numbers", this, CountWords.switchMode.c_Numbers.getMode());
@@ -109,31 +160,26 @@ public class UserDialog {
     	controlPanel.add(chkWords);
     	controlPanel.add(chkUserTerms);
     }
-	   
-	   /** Widget settings */
+    
+	
     private void prepareGUI(){
+    	grid3 = new GridBagLayout();
     	statusPanel = new Panel();
+    	statusPanel.setBackground(moss);
+        statusPanel.setSize(424,280); 
+        statusPanel.setLayout(grid3);
+    	
     	controlPanel = new Panel();
-    	ImagePanel background;
-    	Label headline = new Label("analyze text files and find words");
-    	Label copyright = new Label("© 2021 Daniela Grothe");
-    	Button github = new Button("GitHub");
-    	
-    	github.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                githubOpen();
-            }
-        });
-    	
-    	mainFrame = new JFrame("Java Wordchecker App");
-    	mainFrame.setSize(440,460);
-    	mainFrame.setLayout(new GridLayout());
-    	
-    	Panel top = new Panel();
-    	GridBagLayout panelgrid = new GridBagLayout();
+    	controlPanel.setLayout(new GridLayout(3,2));
+        controlPanel.setBackground(darker);
+        controlPanel.setSize(424,280);
+        
+        top = new Panel();
+        panelgrid = new GridBagLayout();
     	top.setLayout(panelgrid);
-    	GridBagConstraints pgc = new GridBagConstraints();
+        fieldGridConfig = new GridBagConstraints();
+    	
+    	pgc = new GridBagConstraints();
     	pgc.fill = GridBagConstraints.HORIZONTAL;
         pgc.anchor = GridBagConstraints.NORTH;
         pgc.gridheight = 1;
@@ -145,7 +191,6 @@ public class UserDialog {
     	pgc.gridy=2;
     	top.add(statusPanel, pgc);
     	
-    	Image image;
     	try {
     		image = ImageIO.read(getClass().getResource("./background.JPG"));
         	background = new ImagePanel(image);
@@ -162,89 +207,95 @@ public class UserDialog {
     		mainFrame.add(top, "Center");
     		mainFrame.add(copyright);
     		mainFrame.add(github);
-    	}
-        Color light = new Color(190, 220, 190);
-        Color darker = new Color(130,170,130);
-        Color hint = new Color(130,170,130);
-        Color green = new Color(160,180,170);
+    	} 
+    }
 
-        mainFrame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent){
-                System.exit(0);
-            }        
-        });    
-	      
-        //labels and textfields
+    
+    public void makeFields() {
+    	searchTermBoxLabel = new Label("Search terms:");
+    	searchTermBoxLabel.setFont(WFont.labelfont);
+    	
+    	textareaLabel = new Label("Search terms:");
+        textareaLabel.setFont(WFont.labelfont);
+        
         field_topic = new LabelledField("Type topic:", "Result word list");
         field_targetFile = new LabelledField("Target file:", "Word_occurrences.html");
         field_status = new LabelledField("Selected folder:", "", hint, false);
         field_fileToAnalyze = new LabelledField("Selected file:", "- Please select a file -", light, false);
         field_supplinfo = new LabelledField("Info:", "", green, false);
-	    
-        textareaLabel = new Label("Search terms:");
-        textareaLabel.setFont(WFont.labelfont);
+        
         userTermsTextArea = new TextArea();
         userTermsTextArea.setFont(WFont.descriptionFont);
         userTermsTextArea.setColumns(LabelledField.FIELD_WIDTH);
         userTermsTextArea.setRows(5);
         userTermsTextArea.setEditable(true);
+    }
+    
+    public void makeButtons() {
+    	fileDialog = new FileDialog(mainFrame,"Select file");
+        fileDialogButton = new WButton("Open File", openFileBG);
+
+        startButton = new WButton("Start", startButtonBG);
+        startButton.setPreferredSize(new Dimension(116, 30));
         
-        userTermsTextArea.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-            	if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
-            		mainFrame.requestFocus();
-            	}
-            }
-        });
-        
-        controlPanel.setLayout(new GridLayout(3,2));
-        controlPanel.setBackground(darker);
-        controlPanel.setSize(424,280);
-	    
-        statusPanel.setBackground(moss);
-        statusPanel.setSize(424,280);
-	      
-        GridBagLayout grid3 = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
-        statusPanel.setLayout(grid3);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTH;
+        openButton = new WButton("Show Results", openHTMLBG);
+        closeButton = new WButton("Close window", moss);
+        clearButton = new WButton("Clear search", clearBG);
+    }
+    
+    public void addButtons() {
+    	Component[] abc = {fileDialogButton, startButton, openButton, closeButton, clearButton};
+        for (Component s:abc) controlPanel.add(s);
+    }
+    
+    //placement of UI elements
+    public void positionFields() {  	
+    	/// ~~~ gbc region ~~~
+        fieldGridConfig.fill = GridBagConstraints.HORIZONTAL;
+        fieldGridConfig.anchor = GridBagConstraints.NORTH;
         // left column
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        statusPanel.add(field_topic.thelabel, gbc);
+        fieldGridConfig.gridx = 0;
+        fieldGridConfig.gridy = 0;
+        statusPanel.add(field_topic.thelabel, fieldGridConfig);
         //gbc.gridx = 0;
-        gbc.gridy = 1;
-        statusPanel.add(field_targetFile.thelabel, gbc);
-        gbc.gridy = 3;
-        statusPanel.add(field_status.thelabel, gbc);
-        gbc.gridy = 4;
-        statusPanel.add(field_fileToAnalyze.thelabel, gbc);
-        gbc.gridy = 5;
-        statusPanel.add(field_supplinfo.thelabel, gbc);
-        gbc.gridy = 6;
-        statusPanel.add(textareaLabel, gbc);
+        fieldGridConfig.gridy = 1;
+        statusPanel.add(field_targetFile.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 3;
+        statusPanel.add(field_status.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 4;
+        statusPanel.add(field_fileToAnalyze.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 5;
+        statusPanel.add(field_supplinfo.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 32;
+        statusPanel.add(textareaLabel, fieldGridConfig);
 	      
         // right column is broader
-        gbc.gridwidth = 2;
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        statusPanel.add(field_topic.thetextfield, gbc);
-        gbc.gridy = 1;
-        statusPanel.add(field_targetFile.thetextfield, gbc);
-        gbc.gridy = 3;
-        statusPanel.add(field_status.thetextfield, gbc);
-        gbc.gridy = 4;
-        statusPanel.add(field_fileToAnalyze.thetextfield, gbc);
-        gbc.gridy = 5;
-        statusPanel.add(field_supplinfo.thetextfield, gbc);
-        gbc.gridy = 6;
-        statusPanel.add(userTermsTextArea, gbc);
-	    
-        mainFrame.setVisible(true);  
+        fieldGridConfig.gridwidth = 2;
+        fieldGridConfig.gridx = 1;
+        fieldGridConfig.gridy = 0;
+        statusPanel.add(field_topic.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 1;
+        statusPanel.add(field_targetFile.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 3;
+        statusPanel.add(field_status.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 4;
+        statusPanel.add(field_fileToAnalyze.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 5;
+        statusPanel.add(field_supplinfo.thetextfield, fieldGridConfig);
+        
+        /// snippet searchtermbox start
+        fieldGridConfig.gridx = 0;
+    	fieldGridConfig.gridy = 6;
+    	statusPanel.add(searchTermBoxLabel, fieldGridConfig);
+    	fieldGridConfig.gridx = 1;
+    	fieldGridConfig.gridy = 6;
+    	statusPanel.add(searchTermBox, fieldGridConfig);
+    	///snippet end
+    	
+        fieldGridConfig.gridy = 32;
+        statusPanel.add(userTermsTextArea, fieldGridConfig);
     }
-	   
+    
     /** show status messages */
     public void setMessage(String settext, int warning) {
         field_status.setText(settext);
@@ -256,7 +307,7 @@ public class UserDialog {
 		}
     }
 	   
-	   /** show extra message @param up to 3 strings */
+	/** show extra message @param up to 3 strings */
     public void setSupplMessage(String s, String... t) {
         String t1 = t.length > 0 ? t[0] : "";
         String t2 = t.length > 1 ? t[1] : "";
@@ -284,19 +335,65 @@ public class UserDialog {
         if(s.length() > 5 && s.endsWith(".html")) return "Results_" + s; 
         return workingFolder + "Results_" + s + ".html";
     }
-	   
+	
+    
+    public void addListenersToUI() {
+    	github.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                githubOpen();
+            }
+        });
+    	
+    	userTermsTextArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+            	if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+            		mainFrame.requestFocus();
+            	}
+            }
+        });
+    	
+    	mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent windowEvent){
+                System.exit(0);
+            }        
+        });   
+    	mainFrame.setFocusable(true);
+        mainFrame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            	if (event.getKeyChar() == KeyEvent.VK_ESCAPE) {
+            		mainFrame.dispose();
+            	}
+            }
+        });
+    }
+    
+    public void addListenersToButtons() {
+    	/** Opens the result HTML file (in the standard browser).*/
+        openButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                htmlOpen();
+                mainFrame.revalidate();
+            }
+        });
+        
+        openButton.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            	if (event.getKeyChar() == KeyEvent.VK_ENTER) {
+            		htmlOpen();
+            		mainFrame.revalidate();
+            	}
+            }
+        });
+    }
+    
 	   /** File dialog and button actions */
     public void showFileDialog(){
-        final FileDialog fileDialog = new FileDialog(mainFrame,"Select file");
-        WButton fileDialogButton = new WButton("Open File", openFileBG);
-
-        WButton startButton = new WButton("Start", startButtonBG);
-        startButton.setPreferredSize(new Dimension(116, 30));
-        
-        WButton openButton = new WButton("Show Results", openHTMLBG);
-        WButton closeButton = new WButton("Close window", moss);
-        WButton clearButton = new WButton("Clear search", clearBG);
-	    
+    	
         /** The Open File or Browse... button to select input text file.*/
         fileDialogButton.addActionListener(new ActionListener() {
             @Override
@@ -322,7 +419,8 @@ public class UserDialog {
                 if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
                 field_targetFile.setText(str);
                 field_topic.setText(str);
-                }
+                mainFrame.revalidate();
+            }
         });
 	      
         fileDialogButton.addKeyListener(new KeyAdapter() {
@@ -332,7 +430,7 @@ public class UserDialog {
             	fileDialogButton.requestFocus();
             }
             else if (event.getKeyChar() == KeyEvent.VK_ENTER) {
-            	//double code portion. perhaps to be revised.
+            	//TODO double code portion. perhaps to be revised.
             	setMessage("", 0);
                 fileDialog.setVisible(true);
                 workingFolder = ""+fileDialog.getDirectory();
@@ -355,6 +453,7 @@ public class UserDialog {
                 field_targetFile.setText(str);
                 field_topic.setText(str);
             }
+            //mainFrame.revalidate();
            }
         });
         
@@ -400,7 +499,8 @@ public class UserDialog {
                     System.out.println(wfe.getCause());
                 }
                 catch(Exception exc) {System.out.println("Some UI or other exception."+exc.getCause());}
-                }
+                finally {mainFrame.revalidate();}
+             }
         });
 	      
         closeButton.addActionListener(new ActionListener() {
@@ -435,40 +535,6 @@ public class UserDialog {
             }
         });
         
-        /** Opens the result HTML file (in the standard browser).*/
-        openButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                htmlOpen();
-            }
-        });
-        
-        openButton.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent event) {
-            	if (event.getKeyChar() == KeyEvent.VK_ENTER) {
-            		htmlOpen();
-            	}
-            }
-        });
-	      
-        Component[] abc = {fileDialogButton, startButton, openButton, closeButton, clearButton};
-        for (Component s:abc) controlPanel.add(s);
-	      
-        makeCheckboxGroup();
-        
-        mainFrame.setFocusable(true);
-        mainFrame.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent event) {
-            	if (event.getKeyChar() == KeyEvent.VK_ESCAPE) {
-            		mainFrame.dispose();
-            	}
-            }
-        });
-
-        mainFrame.setVisible(true);
-        mainFrame.requestFocus();
     }
 }
 
@@ -481,18 +547,7 @@ class ImagePanel extends JPanel {
     ImagePanel(Image image) {
         this.image = image;
         this.tile = false;
-        //final JLabel foo = new JLabel("");
         this.setSize(440,360);
-        //final JCheckBox checkBox = new JCheckBox();
-        /*checkBox.setAction(new AbstractAction("Tile") {
-            public void actionPerformed(ActionEvent e) {
-                tile = checkBox.isSelected();
-                repaint();
-            }
-        });*/
-        //add(foo);
-        //add(checkBox);
-        //add(bu4);//, BorderLayout.SOUTH);
     };
 
     @Override
@@ -510,7 +565,42 @@ class ImagePanel extends JPanel {
             }
         } else {
         	g.drawImage(image, 0, 0, this);
-            //g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         }
     }
+}
+
+class JCBox extends JComboBox<String> {
+	public ReadJson jsonSearchWords;
+	String rjs="";
+
+	public String[] choices;
+	
+	public String getSelectedList() {
+		return rjs;
+	}
+	
+	public JCBox() {
+		this.setFont(WFont.labelfont);
+		jsonSearchWords = new ReadJson();
+		choices = jsonSearchWords.getAll();
+		this.addItem("<choose a list>");
+		this.setSelectedItem("<choose a list>");
+		for(String s : choices) {
+			this.addItem(s);
+		}
+	}
+	
+	public void connect(TextArea textarea) {
+		this.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+			    if(e.getStateChange() == ItemEvent.SELECTED) {
+			        System.out.println("Hello!"+choices[0]+" "+choices[1]+" "+choices[2]);
+			        rjs = jsonSearchWords.get(getSelectedItem().toString());
+			        textarea.setText(rjs);
+			    }
+			}
+		});
+	}
+	
 }

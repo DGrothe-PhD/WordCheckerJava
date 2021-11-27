@@ -1,0 +1,13 @@
+{
+"jobOfferDE": [
+"reise", "Reise", "Assist", "befrist", "befrist", "Teilzeit", "Kunde", "Vertrieb", "Büro", "Homeoffice"
+],
+"weatherDE": [
+"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag",
+ "Regen", "Sonne", "sonnig", "wolkig", "Wolke", "Schnee", "Niederschl"
+],
+"months": [
+"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember", 
+"January", "February", "March", "April", "May", "June", "July", "October", "November", "December"
+]
+}
