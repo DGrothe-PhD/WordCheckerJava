@@ -211,7 +211,7 @@ public class CountWords extends CharRep {
 		
 		//So let's print out WordsList entries in alph. order.
 		for( String entry : ResultWordList ){
-			String worep = entry + "\t" + WordsList.get(entry);
+			String worep = entry + "&emsp;\t" + WordsList.get(entry);
 			CountWordReportLines.add(worep);
 		}
 

@@ -2,14 +2,12 @@ package app;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.JFrame;
 
-import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
@@ -539,9 +537,13 @@ public class UserDialog {
 }
 
 
-@SuppressWarnings("serial")
 class ImagePanel extends JPanel {
-    private Image image;
+	
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -617389724139894161L;
+	private Image image;
     private boolean tile;
 
     ImagePanel(Image image) {
@@ -570,6 +572,10 @@ class ImagePanel extends JPanel {
 }
 
 class JCBox extends JComboBox<String> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6742906931820220645L;
 	public ReadJson jsonSearchWords;
 	String rjs="";
 
