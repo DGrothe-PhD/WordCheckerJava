@@ -1,5 +1,9 @@
 # Jar file version
 
+## Version 1.2
+* New feature: Example search words from drop-down list
+* UI revised
+
 ## Version 1.1
 * New feature: Search terms can be entered and searched for.
 * Status text fields made read-only
