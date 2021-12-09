@@ -2,26 +2,42 @@ package app;
 
 import java.awt.*;
 import java.awt.event.*;
-//import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
-//import javax.imageio.ImageIO;
-//import javax.swing.JButton;
-//import javax.swing.JTextArea;
-//import javax.swing.ImageIcon;
+import java.net.URISyntaxException;
+import java.net.URL;
+import javax.swing.JFrame;
+
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import javax.swing.JComboBox;
 
 /** User dialog widget */
 public class UserDialog {
 
-    private Frame mainFrame;
+    private JFrame mainFrame;
     private String workingFolder;
+    
+    private ReadJson jsonSearchWords;
 	   
-    LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
-    Label textareaLabel;
+    private LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
+    private Label textareaLabel, searchTermBoxLabel;
+    private Label headline = new Label("analyze text files and find words");
+    private Label copyright = new Label("© 2021 Daniela Grothe");
+    private Button github = new Button("GitHub");
+    private FileDialog fileDialog;
+    private WButton fileDialogButton, startButton, openButton, closeButton, clearButton;
+    
     private TextArea userTermsTextArea;
-
+    
+    public JCBox searchTermBox;
     private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
-    private Panel controlPanel, statusPanel;
+    private Panel controlPanel, statusPanel, top;
+    private ImagePanel background;
+    private Image image;
+    
+    private GridBagConstraints fieldGridConfig, pgc;
+    private GridBagLayout panelgrid, grid3;
     
     private int mode;
     public void switchMode(int mode) {
@@ -35,9 +51,12 @@ public class UserDialog {
     private Color openHTMLBG = new Color(92,177,92);
     private Color moss = new Color(170,200,170);
     private Color clearBG = moss;
+    private Color light = new Color(190, 220, 190);
+    private Color darker = new Color(130,170,130);
+    private Color hint = new Color(130,170,130);
+    private Color green = new Color(160,180,170);
  
     public String selFile, selTargetFile, selTopicString = "", fileType = "";
-    public String[] userSearchTerms;
     
     private static final String[] ALLOWED_INPUT_FILES = {
 			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
@@ -53,11 +72,35 @@ public class UserDialog {
             Dimension d = tk.getScreenSize();
             System.out.println("Screen width = " + d.width);
             System.out.println("Screen height = " + d.height);
+            
+        	mainFrame = new JFrame("Java Wordchecker App");
+        	mainFrame.setSize(440,460);
+        	mainFrame.setLayout(new GridLayout());        	
+        	
+        	makeFields();
+        	makeButtons();
 
             prepareGUI();
+            searchTermBox = new JCBox();
+            
+            addButtons();
+            addCheckboxGroup();
+            
+            positionFields();
+    	    
+            addListenersToUI();
+            
+            addListenersToButtons();
+            
             showFileDialog();
-        }
+            searchTermBox.connect(userTermsTextArea);
+            
+            mainFrame.setVisible(true);
+            mainFrame.requestFocus();
+            
+            }
         catch(AWTError awe) {
+        	//intended as fallback if UI cannot be shown on system
             System.out.println("Application window could not be opened.");
         }
     }
@@ -65,7 +108,27 @@ public class UserDialog {
     public String getSelectedFile() {
         return selFile;
     }
-	   
+	
+    public void getSearchWordsFromJson(String key) {
+    	String rjs = jsonSearchWords.get(key);
+        userTermsTextArea.setText(rjs);
+    }
+    
+    public void githubOpen(){	
+        Desktop desktop = Desktop.getDesktop();
+
+        try {
+        	URL url = new URL("https://github.com/DGrothe-PhD/WordCheckerJava/");
+			desktop.browse(url.toURI());
+		}
+        catch (URISyntaxException e) {
+	    	setMessage("GitHub could not be opened in your browser.", 1);
+		}
+        catch (Exception oError){
+	        setMessage("GitHub opening button raised an exception.", 1);
+	    }
+	}
+    
     /** Open the results HTML file */
     public void htmlOpen(){	
         Desktop desktop = Desktop.getDesktop();
@@ -76,10 +139,13 @@ public class UserDialog {
 		} catch (Exception oError){
 	        setMessage("Output file could not be opened.", 1);
 	    }
+        finally{
+        	mainFrame.revalidate();
+        }
 	}
 	   
     /** Lets user select which tokens to collect */
-    private void makeCheckboxGroup() {
+    private void addCheckboxGroup() {
         mode = 15;
 		   
         chkNumbers = new ToggleFunction("Numbers", this, CountWords.switchMode.c_Numbers.getMode());
@@ -92,101 +158,142 @@ public class UserDialog {
     	controlPanel.add(chkWords);
     	controlPanel.add(chkUserTerms);
     }
-	   
-	   /** Widget settings */
+    
+	
     private void prepareGUI(){
-        mainFrame = new Frame("Java Wordchecker App");
-        mainFrame.setSize(440,360);
-        //Color moss = new Color(170,200,170);
-        Color light = new Color(190, 220, 190);
-        Color darker = new Color(130,170,130);
-        Color hint = new Color(130,170,130);
-        Color green = new Color(160,180,170);
+    	grid3 = new GridBagLayout();
+    	statusPanel = new Panel();
+    	statusPanel.setBackground(moss);
+        statusPanel.setSize(424,280); 
+        statusPanel.setLayout(grid3);
+    	
+    	controlPanel = new Panel();
+    	controlPanel.setLayout(new GridLayout(3,2));
+        controlPanel.setBackground(darker);
+        controlPanel.setSize(424,280);
         
-        mainFrame.setBackground(moss);
+        top = new Panel();
+        panelgrid = new GridBagLayout();
+    	top.setLayout(panelgrid);
+        fieldGridConfig = new GridBagConstraints();
+    	
+    	pgc = new GridBagConstraints();
+    	pgc.fill = GridBagConstraints.HORIZONTAL;
+        pgc.anchor = GridBagConstraints.NORTH;
+        pgc.gridheight = 1;
+    	pgc.gridx=0;
+    	pgc.gridy=0;
+    	top.add(controlPanel, pgc);
+    	pgc.gridheight = 2;
+    	pgc.gridx=0;
+    	pgc.gridy=2;
+    	top.add(statusPanel, pgc);
+    	
+    	try {
+    		image = ImageIO.read(getClass().getResource("/app/background.JPG"));
+        	background = new ImagePanel(image);
+        	background.setLayout(new FlowLayout());
+        	background.add(headline);
+        	background.add(top, "Center");
+        	background.add(copyright);
+        	background.add(github);
+        	mainFrame.add(background);
+    	}
+    	catch(Exception e) {
+    		mainFrame.setBackground(moss);
+    		mainFrame.add(headline);
+    		mainFrame.add(top, "Center");
+    		mainFrame.add(copyright);
+    		mainFrame.add(github);
+    	} 
+    }
 
-        mainFrame.setLayout(new FlowLayout());
-        mainFrame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent){
-                System.exit(0);
-            }        
-        });    
-	      
-        //labels and textfields
+    
+    public void makeFields() {
+    	searchTermBoxLabel = new Label("Search terms:");
+    	searchTermBoxLabel.setFont(WFont.labelfont);
+    	
+    	textareaLabel = new Label("Search terms:");
+        textareaLabel.setFont(WFont.labelfont);
+        
         field_topic = new LabelledField("Type topic:", "Result word list");
         field_targetFile = new LabelledField("Target file:", "Word_occurrences.html");
         field_status = new LabelledField("Selected folder:", "", hint, false);
         field_fileToAnalyze = new LabelledField("Selected file:", "- Please select a file -", light, false);
         field_supplinfo = new LabelledField("Info:", "", green, false);
-	    
-        textareaLabel = new Label("Search terms:");
-        textareaLabel.setFont(WFont.labelfont);
+        
         userTermsTextArea = new TextArea();
         userTermsTextArea.setFont(WFont.descriptionFont);
         userTermsTextArea.setColumns(LabelledField.FIELD_WIDTH);
         userTermsTextArea.setRows(5);
         userTermsTextArea.setEditable(true);
+    }
+    
+    public void makeButtons() {
+    	fileDialog = new FileDialog(mainFrame,"Select file");
+        fileDialogButton = new WButton("Open File", openFileBG);
+
+        startButton = new WButton("Start", startButtonBG);
+        startButton.setPreferredSize(new Dimension(116, 30));
         
-        userTermsTextArea.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-            	if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
-            		mainFrame.requestFocus();
-            	}
-            }
-        });
-        
-        controlPanel = new Panel();
-        controlPanel.setLayout(new GridLayout(3,2));
-        controlPanel.setBackground(darker);
-        controlPanel.setSize(424,280);
-	      
-        statusPanel = new Panel();
-        statusPanel.setBackground(moss);
-        statusPanel.setSize(424,280);
-	      
-        GridBagLayout grid3 = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
-        statusPanel.setLayout(grid3);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTH;
+        openButton = new WButton("Show Results", openHTMLBG);
+        closeButton = new WButton("Close window", moss);
+        clearButton = new WButton("Clear search", clearBG);
+    }
+    
+    public void addButtons() {
+    	Component[] abc = {fileDialogButton, startButton, openButton, closeButton, clearButton};
+        for (Component s:abc) controlPanel.add(s);
+    }
+    
+    //placement of UI elements
+    public void positionFields() {  	
+    	/// ~~~ gbc region ~~~
+        fieldGridConfig.fill = GridBagConstraints.HORIZONTAL;
+        fieldGridConfig.anchor = GridBagConstraints.NORTH;
         // left column
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        statusPanel.add(field_topic.thelabel, gbc);
+        fieldGridConfig.gridx = 0;
+        fieldGridConfig.gridy = 0;
+        statusPanel.add(field_topic.thelabel, fieldGridConfig);
         //gbc.gridx = 0;
-        gbc.gridy = 1;
-        statusPanel.add(field_targetFile.thelabel, gbc);
-        gbc.gridy = 3;
-        statusPanel.add(field_status.thelabel, gbc);
-        gbc.gridy = 4;
-        statusPanel.add(field_fileToAnalyze.thelabel, gbc);
-        gbc.gridy = 5;
-        statusPanel.add(field_supplinfo.thelabel, gbc);
-        gbc.gridy = 6;
-        statusPanel.add(textareaLabel, gbc);
+        fieldGridConfig.gridy = 1;
+        statusPanel.add(field_targetFile.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 3;
+        statusPanel.add(field_status.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 4;
+        statusPanel.add(field_fileToAnalyze.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 5;
+        statusPanel.add(field_supplinfo.thelabel, fieldGridConfig);
+        fieldGridConfig.gridy = 32;
+        statusPanel.add(textareaLabel, fieldGridConfig);
 	      
         // right column is broader
-        gbc.gridwidth = 2;
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        statusPanel.add(field_topic.thetextfield, gbc);
-        gbc.gridy = 1;
-        statusPanel.add(field_targetFile.thetextfield, gbc);
-        gbc.gridy = 3;
-        statusPanel.add(field_status.thetextfield, gbc);
-        gbc.gridy = 4;
-        statusPanel.add(field_fileToAnalyze.thetextfield, gbc);
-        gbc.gridy = 5;
-        statusPanel.add(field_supplinfo.thetextfield, gbc);
-        gbc.gridy = 6;
-        statusPanel.add(userTermsTextArea, gbc);
-	      
-        mainFrame.add(controlPanel);
-        mainFrame.add(statusPanel);
-        mainFrame.setVisible(true);  
+        fieldGridConfig.gridwidth = 2;
+        fieldGridConfig.gridx = 1;
+        fieldGridConfig.gridy = 0;
+        statusPanel.add(field_topic.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 1;
+        statusPanel.add(field_targetFile.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 3;
+        statusPanel.add(field_status.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 4;
+        statusPanel.add(field_fileToAnalyze.thetextfield, fieldGridConfig);
+        fieldGridConfig.gridy = 5;
+        statusPanel.add(field_supplinfo.thetextfield, fieldGridConfig);
+        
+        /// snippet searchtermbox start
+        fieldGridConfig.gridx = 0;
+    	fieldGridConfig.gridy = 6;
+    	statusPanel.add(searchTermBoxLabel, fieldGridConfig);
+    	fieldGridConfig.gridx = 1;
+    	fieldGridConfig.gridy = 6;
+    	statusPanel.add(searchTermBox, fieldGridConfig);
+    	///snippet end
+    	
+        fieldGridConfig.gridy = 32;
+        statusPanel.add(userTermsTextArea, fieldGridConfig);
     }
-	   
+    
     /** show status messages */
     public void setMessage(String settext, int warning) {
         field_status.setText(settext);
@@ -194,11 +301,11 @@ public class UserDialog {
             field_status.thetextfield.setForeground(warnFG);
         }
         else {
-			   field_status.thetextfield.setForeground(normalFG);
+			field_status.thetextfield.setForeground(normalFG);
 		}
     }
 	   
-	   /** show extra message @param up to 3 strings */
+	/** show extra message @param up to 3 strings */
     public void setSupplMessage(String s, String... t) {
         String t1 = t.length > 0 ? t[0] : "";
         String t2 = t.length > 1 ? t[1] : "";
@@ -227,35 +334,64 @@ public class UserDialog {
         return workingFolder + "Results_" + s + ".html";
     }
 	
-    public String[] getSearchTerms() {
-    	return userSearchTerms;
+    
+    public void addListenersToUI() {
+    	github.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                githubOpen();
+            }
+        });
+    	
+    	userTermsTextArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+            	if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+            		mainFrame.requestFocus();
+            	}
+            }
+        });
+    	
+    	mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent windowEvent){
+                System.exit(0);
+            }        
+        });   
+    	mainFrame.setFocusable(true);
+        mainFrame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            	if (event.getKeyChar() == KeyEvent.VK_ESCAPE) {
+            		mainFrame.dispose();
+            	}
+            }
+        });
     }
-	   
+    
+    public void addListenersToButtons() {
+    	/** Opens the result HTML file (in the standard browser).*/
+        openButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                htmlOpen();
+                mainFrame.revalidate();
+            }
+        });
+        
+        openButton.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+            	if (event.getKeyChar() == KeyEvent.VK_ENTER) {
+            		htmlOpen();
+            		mainFrame.revalidate();
+            	}
+            }
+        });
+    }
+    
 	   /** File dialog and button actions */
     public void showFileDialog(){
-        final FileDialog fileDialog = new FileDialog(mainFrame,"Select file");
-        WButton fileDialogButton = new WButton("Open File", openFileBG);
-
-        WButton startButton = new WButton("Start", startButtonBG);
-        startButton.setPreferredSize(new Dimension(116, 30));
-        
-        /*try{
-        	JButton startButton = new JButton("Start");
-            startButton.setPreferredSize(new Dimension(116, 30));
-            startButton.setBackground(startButtonBG);
-        	File imgFile=new File("start.png");
-        	Image imgio = ImageIO.read(imgFile);
-        	ImageIcon icon = new ImageIcon(imgio);
-            startButton.setIcon(icon);
-        }
-        catch(Exception exc) {
-        	System.out.println("Klappt nicht");
-        }*/
-        
-        WButton openButton = new WButton("Show Results", openHTMLBG);
-        WButton closeButton = new WButton("Close window", moss);
-        WButton clearButton = new WButton("Clear search", clearBG);
-	    
+    	
         /** The Open File or Browse... button to select input text file.*/
         fileDialogButton.addActionListener(new ActionListener() {
             @Override
@@ -281,7 +417,8 @@ public class UserDialog {
                 if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
                 field_targetFile.setText(str);
                 field_topic.setText(str);
-                }
+                mainFrame.revalidate();
+            }
         });
 	      
         fileDialogButton.addKeyListener(new KeyAdapter() {
@@ -291,7 +428,7 @@ public class UserDialog {
             	fileDialogButton.requestFocus();
             }
             else if (event.getKeyChar() == KeyEvent.VK_ENTER) {
-            	//double code portion. perhaps to be revised.
+            	//TODO double code portion. perhaps to be revised.
             	setMessage("", 0);
                 fileDialog.setVisible(true);
                 workingFolder = ""+fileDialog.getDirectory();
@@ -314,6 +451,7 @@ public class UserDialog {
                 field_targetFile.setText(str);
                 field_topic.setText(str);
             }
+            //mainFrame.revalidate();
            }
         });
         
@@ -359,7 +497,8 @@ public class UserDialog {
                     System.out.println(wfe.getCause());
                 }
                 catch(Exception exc) {System.out.println("Some UI or other exception."+exc.getCause());}
-                }
+                finally {mainFrame.revalidate();}
+             }
         });
 	      
         closeButton.addActionListener(new ActionListener() {
@@ -394,39 +533,79 @@ public class UserDialog {
             }
         });
         
-        /** Opens the result HTML file (in the standard browser).*/
-        openButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                htmlOpen();
-            }
-        });
-        
-        openButton.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent event) {
-            	if (event.getKeyChar() == KeyEvent.VK_ENTER) {
-            		htmlOpen();
-            	}
-            }
-        });
-	      
-        Component[] abc = {fileDialogButton, startButton, openButton, closeButton, clearButton};
-        for (Component s:abc) controlPanel.add(s);
-	      
-        makeCheckboxGroup();
-        
-        mainFrame.setFocusable(true);
-        mainFrame.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent event) {
-            	if (event.getKeyChar() == KeyEvent.VK_ESCAPE) {
-            		mainFrame.dispose();
-            	}
-            }
-        });
-
-        mainFrame.setVisible(true);
-        mainFrame.requestFocus();
     }
+}
+
+
+class ImagePanel extends JPanel {
+	
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -617389724139894161L;
+	private Image image;
+    private boolean tile;
+
+    ImagePanel(Image image) {
+        this.image = image;
+        this.tile = false;
+        this.setSize(440,360);
+    };
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (tile) {
+            int iw = image.getWidth(this);
+            int ih = image.getHeight(this);
+            if (iw > 0 && ih > 0) {
+                for (int x = 0; x < getWidth(); x += iw) {
+                    for (int y = 0; y < getHeight(); y += ih) {
+                        g.drawImage(image, x, y, iw, ih, this);
+                    }
+                }
+            }
+        } else {
+        	g.drawImage(image, 0, 0, this);
+        }
+    }
+}
+
+class JCBox extends JComboBox<String> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6742906931820220645L;
+	public ReadJson jsonSearchWords;
+	String rjs="";
+
+	public String[] choices;
+	
+	public String getSelectedList() {
+		return rjs;
+	}
+	
+	public JCBox() {
+		this.setFont(WFont.labelfont);
+		jsonSearchWords = new ReadJson();
+		choices = jsonSearchWords.getAll();
+		this.addItem("<choose a list>");
+		this.setSelectedItem("<choose a list>");
+		for(String s : choices) {
+			this.addItem(s);
+		}
+	}
+	
+	public void connect(TextArea textarea) {
+		this.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+			    if(e.getStateChange() == ItemEvent.SELECTED) {
+			        rjs = jsonSearchWords.get(getSelectedItem().toString());
+			        textarea.setText(rjs);
+			    }
+			}
+		});
+	}
+	
 }

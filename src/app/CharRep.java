@@ -40,6 +40,7 @@ public class CharRep {
 		umlaut.add(new zeichen(""+(char)0xfb, ""+(char)0xc3 + (char)0xbb));//û
 		umlaut.add(new zeichen(""+(char)0xfa, ""+(char)0xc3 + (char)0xba));//ú
 		umlaut.add(new zeichen(""+(char)0xf9, ""+(char)0xc3 + (char)0xb9));//ù
+		//umlaut.add(new zeichen(""+(char)0x85, "&#x2026;"));
 	}
 	
 	public String unapostrophe(String str) {
