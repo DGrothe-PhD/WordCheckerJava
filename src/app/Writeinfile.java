@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 public class Writeinfile {
 	
 	private int mode;
+	private Localization lang;
 		
 	PrintWriter pInit = null;
 	PrintWriter pWriter = null;
@@ -19,24 +20,40 @@ public class Writeinfile {
 	ArrayList<String> refSignTokens = new ArrayList<String>();
 	ArrayList<String> userSearchTokens = new ArrayList<String>();
 	
-	public Writeinfile(String filename, String topic, int mode) throws WriteFileException {
+	public Writeinfile(String filename, String topic, int mode, Localization lang)
+			throws WriteException {
 		pWriter = null;
+		pInit = null;
 		this.mode = mode;
+		this.lang = lang;
 		try {
 			pInit = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
 			pInit.println("<html><head>");
 			pInit.println("<title>Result</title><meta charset=\"UTF-8\"></meta>");
-			pInit.println("<style>details > summary {font-weight:bold;color:navy;} h3 {color:maroon;}</style>");
+			pInit.println("<style>"
+				+"details > summary {font-weight:bold;color:navy;} h3 {color:maroon;}"
+				+"</style>");
 			pInit.println("</head><body><font face=\"Helvetica\">");
 			pInit.println("<h1>Results of "+topic+":</h1>");
 			pInit.flush();
-			pInit.close();
+		}
+		catch (Exception wfe) {
+			throw new WriteException(lang.Messages("FilePrepFailed"));
+		}
+		finally{
+			if(pInit!=null) {
+				pInit.flush();
+				pInit.close();
+			}
+		}
+		
+		try {
 			//the boolean true inside FileWriter says to append the content
 			pWriter = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
 			// file overwritten, newline at line ends is automatically added
 		} 
 		catch (Exception wfe) {
-			throw new WriteFileException("Could not initialize file writing.");
+			throw new WriteException(lang.Messages("PossibleFileWriteError"));
 		}
 	}
 	
@@ -74,26 +91,27 @@ public class Writeinfile {
 		return u;
 	}
 
-	public void storeAllItems(ArrayList<String> targs) throws WriteFileException {
-		// stores all items, already sorted in alphabetical order, in sub-lists according to entry type
+	public void storeAllItems(ArrayList<String> targs) throws WriteException {
+		// stores all items, already sorted in alphabetical order, 
+		//in sub-lists according to entry type
 		
 		char cap = '0';
 		//cap will be set to first char of first word in alphabetical order
 		//regardless of which
 		try {
 			for( String entry : targs ){
-				if(entry.startsWith("- Found:")) {
+				if(entry.startsWith(lang.wrapPrefix("Found"))) {
 					userSearchTokens.add(entry);
 					continue;
 				}
 				
 				if (Character.isDigit(entry.charAt(0))) {
 					if(RegexList.hasISBN(entry)) {
-						specialTokens.add("ISBN candidate: "+entry);
+						specialTokens.add(lang.wrapPrefix("ISBN")+entry);
 						continue;
 					}
 					else if(RegexList.hasDateTime(entry)) {
-						specialTokens.add("Date or time pattern: "+ entry);
+						specialTokens.add(lang.wrapPrefix("Datetime")+ entry);
 						continue;
 					}
 					// Plain numbers can be excluded from the printed result.
@@ -101,7 +119,7 @@ public class Writeinfile {
 						continue;
 					}
 					else if(type_of_word != 1) {
-						insertNewSection("Tokens beginning with a digit:");
+						insertNewSection(lang.Header("Digits"));
 						type_of_word = 1;
 					}
 				}
@@ -112,11 +130,11 @@ public class Writeinfile {
 						continue;
 					}
 					else if(RegexList.hasEMail(entry)){
-						specialTokens.add("E-Mail address found: " +entry);
+						specialTokens.add(lang.wrapPrefix("EMail") +entry);
 						continue;
 					}
 					else if(RegexList.hasURL(entry)){
-						specialTokens.add("URL: " + entry);
+						specialTokens.add(lang.wrapPrefix("URL") + entry);
 						continue;
 					}
 					// Plain words can be excluded from the printed result.
@@ -127,7 +145,7 @@ public class Writeinfile {
 					else {
 						//words
 						if(type_of_word != 2) {
-							insertNewSection("Words:");
+							insertNewSection(lang.Header("Words"));
 						}
 						type_of_word = 2;
 						char curr_char = entry.charAt(0);
@@ -135,13 +153,15 @@ public class Writeinfile {
 						String u = startsWithUmlaut(entry);
 						
 						if(curr_char!= cap) {
-							//insert an alph. section line if the word starts with different character
+							//insert an alph. section line if the word starts with 
+							//different character
 							//insert full first symbol if umlaut
 							cap = curr_char;
 							pWriter.println("");
 							pWriter.println("<h3>__"+(u==""?cap:"Umlaut")+"____</h3>");
 						}
-						pWriter.println( StringCompare.compareWords(entry)+"<br>");
+						
+						pWriter.println( StringCompare.compareWords(entry, lang)+"<br>");
 						continue;
 					}
 				}
@@ -163,26 +183,27 @@ public class Writeinfile {
 				pWriter.println( entry+"<br>");
 			}
 			
-			insertNewSection("Special tokens found:");
+			insertNewSection(lang.Header("specialTokens"));
 			Collections.sort(specialTokens);
 			for (String o:specialTokens) {
 				pWriter.println(o+"<br>");
 			}
 			if(refSignTokens.size()>0) {
-				insertNewSection("Reference signs found:");
+				insertNewSection(lang.Header("refSigns"));
 				for (String o:refSignTokens) {
 					pWriter.println(o+"<br>");
 				}
 			}
 			if(userSearchTokens.size()>0) {
-				insertNewSection("Searched tokens found:");
+				insertNewSection(lang.Header("userST"));
 				for (String o:userSearchTokens) {
 					pWriter.println(o+"<br>");
 				}
 			}
 		}
 		catch(Exception wfe){
-			throw new WriteFileException("Error: File may have not been written.");
+			close();
+			throw new WriteException(lang.Messages("PossibleFileWriteError"));
 		}
 	}
 	
@@ -192,5 +213,9 @@ public class Writeinfile {
 		pWriter.println("</font></body></html>");
 		pWriter.flush();
 		pWriter.close();
+	}
+	
+	protected void close() {
+		if(pWriter!=null) pWriter.close();
 	}
 }

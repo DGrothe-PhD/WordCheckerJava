@@ -1,19 +1,19 @@
 package app;
 
-/** diff code taken from Java Blog Buch By Stefan Kiesel Published May 27, 2009, edited May 6, 2010 at 20:47 
+/** diff code taken from 
+ * Java Blog Buch By Stefan Kiesel Published May 27, 2009, edited May 6, 2010 at 20:47 
  * https://www.java-blog-buch.de/c-levenshtein-distanz/ 
  * downloaded on March 16, 2021 at 14:52 GMT+1
  * */
 import java.util.*;
 
-public class StringCompare {
+public class StringCompare extends Localization {
 	
 	static Vector<Integer> mins = new Vector<Integer>();
 	static String subseq ="", dfs = "", theword = "";
 	private static int NUMW = 5;
 	private static double ALLOVAR = 0.5;
 	
-	//java.util.LinkedList is fine with addLast, removeFirst
 	static LinkedList<String> words = new LinkedList<String>();
 	
 	public static int diff(String firstword, String secondword) {
@@ -56,15 +56,6 @@ public class StringCompare {
 		//blanks for differences in similar words
 		if (matrix[firs.length()][seco.length()] < ALLOVAR *firs.length()) {
 			subseq="###";
-			/*if(firs.charAt(0) != seco.charAt(0)) {subseq+="_";}
-			else {subseq+=firs.charAt(0);}
-			mins.add(getMinValue(matrix[1]));
-			//
-			for (int a = 2; a < firs.length() + 1; a++) {
-				mins.add(getMinValue(matrix[a]));
-				if(mins.get(a-1) > mins.get(a-2)) {subseq+="_";}
-				else {subseq+= firs.charAt(a-1);}
-			}*/
 		}
 		return matrix[firs.length()][seco.length()];
 	}
@@ -77,7 +68,7 @@ public class StringCompare {
 	    return minValue;
 	}
 	
-	public static String showDifference(String a, String b) {
+	public static String showDifference(String a, String b, Localization lang) {
 		/** compare two words, return message **/
 		String worda = a, wordb = b;
 		int occa=0, occb=0;
@@ -102,23 +93,23 @@ public class StringCompare {
 					return "";
 				}
 				//when words are similar
-				return "; <em>"+ ((occa >= occb && occb > 0)?"also found":"more frequent")
-						+ ":</em> " + b + " (" + Integer.toString(occb)+ "x) ";
+				return "; <em>"+ ((occa>=occb && occb>0)?lang.Prefix("also"):lang.Prefix("more"))
+					+ ":</em> " + b + " (" + Integer.toString(occb)+ "x) ";
 			}
 			return "";
 		}
 		catch(Exception sdEx) {
 			//entry frequency parsing failed
 			diff(worda, wordb);
-			return "; "+ b + " (nn times)";
+			return "; "+ b + " (nn "+lang.Prefix("times")+")";
 		}
 	}
 	
-	public static String compareWords(String a) {
+	public static String compareWords(String a, Localization lang) {
 		/** word is compared to the preceding {NUMW} words */
 		dfs = a;
 		for(String s: words) {
-			dfs += showDifference(a,s);
+			dfs += showDifference(a,s,lang);
 		}
 		//shift by one
 		words.addLast(a);

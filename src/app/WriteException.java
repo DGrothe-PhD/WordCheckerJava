@@ -1,12 +1,12 @@
 package app;
 
 /** Writing exceptions are handled separately */
-public class WriteFileException extends Exception {
+public class WriteException extends Exception {
 	private static final long serialVersionUID = -6474905865752155884L;
-	public WriteFileException(){
+	public WriteException(){
 		super();
 	}
-	public WriteFileException(String s) {
+	public WriteException(String s) {
 		super(s);
 	}
 }

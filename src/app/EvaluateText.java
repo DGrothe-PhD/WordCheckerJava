@@ -10,13 +10,13 @@ public class EvaluateText
 	CountWords cwo;
 	String content = "";
 
-	public EvaluateText(String input, int mode) {
-		cwo = new CountWords(input, mode);
+	public EvaluateText(String input, int mode, Localization lang) {
+		cwo = new CountWords(input, mode, lang);
 	}
-    public void eTextToolBox(String filename) {
+    public void eTextToolBox(String filename, Localization lang) throws Exception {
         String filePath = filename;
  
-        System.out.println( readAllBytesJava7( filePath ) );
+        System.out.println( readAllBytesJava7( filePath, lang ) );
         cwo.cwoToolBox(content);
     }
     
@@ -26,14 +26,17 @@ public class EvaluateText
     public int GetNumberOfWords() {
     	return cwo.GetNOW();
     }
-    //Read file content into string with - Files.readAllBytes(Path path)
  
-    private int readAllBytesJava7(String filePath) {
+    private int readAllBytesJava7(String filePath, Localization lang) 
+    		throws IOException, WriteException {
         try {
         	content = new String ( Files.readAllBytes( Paths.get(filePath)) );
         } 
         catch (IOException e) {
-            e.printStackTrace();
+            throw e;
+        }
+        catch (Exception e) {
+        	throw new WriteException(lang.Messages("Internal error"));
         }
         return 0;
     }

@@ -3,9 +3,11 @@ package app;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 import javax.swing.JFrame;
 
 import javax.imageio.ImageIO;
@@ -14,15 +16,17 @@ import javax.swing.JComboBox;
 
 /** User dialog widget */
 public class UserDialog {
-
+	
+	private Localization lang = new Localization();
     private JFrame mainFrame;
     private String workingFolder;
     
     private ReadJson jsonSearchWords;
 	   
-    private LabelledField field_topic, field_targetFile, field_status, field_fileToAnalyze, field_supplinfo;
+    private LabelledField field_topic, field_targetFile, field_status;
+    private LabelledField field_fileToAnalyze, field_supplinfo;
     private Label textareaLabel, searchTermBoxLabel;
-    private Label headline = new Label("analyze text files and find words");
+    private Label headline = new Label(lang.Element("description"));
     private Label copyright = new Label("© 2021 Daniela Grothe");
     private Button github = new Button("GitHub");
     private FileDialog fileDialog;
@@ -60,10 +64,12 @@ public class UserDialog {
     
     private static final String[] ALLOWED_INPUT_FILES = {
 			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
-			   ".java", ".cpp", ".hpp", ".csv", ".cs"};
+			   ".java", ".cpp", ".hpp", ".csv", ".cs"
+	};
     private static final char[] ILLEGAL_CHARACTERS = {
 			   '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*',
-			   '\\', '<', '>', '|', '\"', ':' };
+			   '\\', '<', '>', '|', '\"', ':'
+	};
     private TimeCalc tc;
 	
     public UserDialog(){
@@ -73,7 +79,7 @@ public class UserDialog {
             System.out.println("Screen width = " + d.width);
             System.out.println("Screen height = " + d.height);
             
-        	mainFrame = new JFrame("Java Wordchecker App");
+        	mainFrame = new JFrame("Java Wordchecker");
         	mainFrame.setSize(440,460);
         	mainFrame.setLayout(new GridLayout());        	
         	
@@ -81,7 +87,7 @@ public class UserDialog {
         	makeButtons();
 
             prepareGUI();
-            searchTermBox = new JCBox();
+            searchTermBox = new JCBox(lang);
             
             addButtons();
             addCheckboxGroup();
@@ -121,11 +127,8 @@ public class UserDialog {
         	URL url = new URL("https://github.com/DGrothe-PhD/WordCheckerJava/");
 			desktop.browse(url.toURI());
 		}
-        catch (URISyntaxException e) {
-	    	setMessage("GitHub could not be opened in your browser.", 1);
-		}
         catch (Exception oError){
-	        setMessage("GitHub opening button raised an exception.", 1);
+	        setMessage(lang.Messages("GitHubNotOpening"), 1);
 	    }
 	}
     
@@ -135,23 +138,24 @@ public class UserDialog {
 
         try {
             URI uri = new File(selTargetFile).toURI();
-				desktop.browse(uri);
-		} catch (Exception oError){
-	        setMessage("Output file could not be opened.", 1);
+			desktop.browse(uri);
+		}
+        catch (Exception oError){
+	        setMessage(lang.Messages("OutputFileNotOpening"), 1);
 	    }
-        finally{
-        	mainFrame.revalidate();
-        }
+        finally{mainFrame.revalidate();}
 	}
 	   
     /** Lets user select which tokens to collect */
     private void addCheckboxGroup() {
         mode = 15;
 		   
-        chkNumbers = new ToggleFunction("Numbers", this, CountWords.switchMode.c_Numbers.getMode());
-        chkSymbols = new ToggleFunction("Symbols", this, CountWords.switchMode.c_Symbols.getMode());
-        chkWords = new ToggleFunction("Words", this, CountWords.switchMode.c_Words.getMode());
-        chkUserTerms = new ToggleFunction("Search terms", this, CountWords.switchMode.c_UserTerms.getMode());
+        chkNumbers = new ToggleFunction(lang.Element("Numbers"), this, CountWords.switchMode.c_Numbers.getMode());
+        chkSymbols = new ToggleFunction(lang.Element("Symbols"), this, CountWords.switchMode.c_Symbols.getMode());
+        chkWords   = new ToggleFunction(lang.Element("Words"), this, CountWords.switchMode.c_Words.getMode());
+        chkUserTerms = new ToggleFunction(lang.Element("Search terms"), this,
+        		CountWords.switchMode.c_UserTerms.getMode()
+        );
         
         controlPanel.add(chkNumbers);
         controlPanel.add(chkSymbols);
@@ -190,7 +194,7 @@ public class UserDialog {
     	top.add(statusPanel, pgc);
     	
     	try {
-    		image = ImageIO.read(getClass().getResource("./background.JPG"));
+    		image = ImageIO.read(getClass().getResource("/app/background.JPG"));
         	background = new ImagePanel(image);
         	background.setLayout(new FlowLayout());
         	background.add(headline);
@@ -210,17 +214,24 @@ public class UserDialog {
 
     
     public void makeFields() {
-    	searchTermBoxLabel = new Label("Search terms:");
+    	searchTermBoxLabel = new Label(lang.Element("Search terms:"));
     	searchTermBoxLabel.setFont(WFont.labelfont);
     	
-    	textareaLabel = new Label("Search terms:");
+    	textareaLabel = new Label(lang.Element("Edit search terms:"));
         textareaLabel.setFont(WFont.labelfont);
         
-        field_topic = new LabelledField("Type topic:", "Result word list");
-        field_targetFile = new LabelledField("Target file:", "Word_occurrences.html");
-        field_status = new LabelledField("Selected folder:", "", hint, false);
-        field_fileToAnalyze = new LabelledField("Selected file:", "- Please select a file -", light, false);
-        field_supplinfo = new LabelledField("Info:", "", green, false);
+        field_topic = new LabelledField(
+        		lang.Element("Type topic:"), lang.Element("Result word list")
+        );
+        field_targetFile = new LabelledField(
+        		lang.Element("Target file:"), lang.Element("Word_occurrences.html")
+        );
+        field_status = new LabelledField(lang.Element("Selected folder:"), "", hint, false);
+        field_fileToAnalyze = new LabelledField(
+        		lang.Element("Selected file:"),
+        		"- "+lang.Element("Please select a file")+" -", light, false
+        );
+        field_supplinfo = new LabelledField(lang.Element("Info:"), "", green, false);
         
         userTermsTextArea = new TextArea();
         userTermsTextArea.setFont(WFont.descriptionFont);
@@ -230,15 +241,15 @@ public class UserDialog {
     }
     
     public void makeButtons() {
-    	fileDialog = new FileDialog(mainFrame,"Select file");
-        fileDialogButton = new WButton("Open File", openFileBG);
+    	fileDialog = new FileDialog(mainFrame, lang.Element("Select file"));
+        fileDialogButton = new WButton(lang.Element("Open file"), openFileBG);
 
-        startButton = new WButton("Start", startButtonBG);
+        startButton = new WButton(lang.Element("Start"), startButtonBG);
         startButton.setPreferredSize(new Dimension(116, 30));
         
-        openButton = new WButton("Show Results", openHTMLBG);
-        closeButton = new WButton("Close window", moss);
-        clearButton = new WButton("Clear search", clearBG);
+        openButton = new WButton(lang.Element("Show Results"), openHTMLBG);
+        closeButton = new WButton(lang.Element("Close window"), moss);
+        clearButton = new WButton(lang.Element("Clear search"), clearBG);
     }
     
     public void addButtons() {
@@ -327,7 +338,7 @@ public class UserDialog {
             if(s.contains(""+c)) {illchar += (""+c);}
         } 
         if(illchar.length()>0) {
-            setMessage("Symbols "+illchar+" are not allowed in filenames", 1);
+            setMessage(MessageFormat.format(lang.Messages("BadSymbolInFilename"), illchar), 1);
             return null;
         }
         if(s.length() > 5 && s.endsWith(".html")) return "Results_" + s; 
@@ -451,10 +462,10 @@ public class UserDialog {
                 field_targetFile.setText(str);
                 field_topic.setText(str);
             }
-            //mainFrame.revalidate();
+            mainFrame.revalidate();
            }
         });
-        
+        //internal file reading error
         /** The start button. When pressed, chosen file is processed, 
         * and results are written into the target file. */
         startButton.addActionListener(new ActionListener() {
@@ -463,38 +474,46 @@ public class UserDialog {
                 tc = new TimeCalc();
                 try{
                     if (selFile == null || selFile.length()<2) {
-                        setMessage("Please select a file before clicking Start.", 1);
+                        setMessage(lang.Messages("PleaseSelectFile"), 1);
+                        throw new WriteException("");
                     }
-                    
-                    if(fileType.length()<2) {
+                    else if(fileType.length()<2) {
                         setMessage(
-                            "Please choose a text file, of types:"+
+                            lang.Messages("suggestFileType")+
                                 String.join(", ", ALLOWED_INPUT_FILES), 1);
-                        throw new IllegalArgumentException("File type not allowed");
+                        throw new WriteException("");
                     }
                     selTargetFile = setWritingTarget();
                     
                     String str = userTermsTextArea.getText();
                     
-                    EvaluateText etx = new EvaluateText(str, mode);
+                    EvaluateText etx = new EvaluateText(str, mode, lang);
                     
-                    Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText(), mode);
-                    
-                    try{etx.eTextToolBox(selFile);}
-                    catch(Exception exc) {System.out.println("EtextToolbox went wrong.");}
-                    
-                    try{WordPlace.storeAllItems(etx.GetWordsList());}
-                    catch(Exception exc) {System.out.println("WordPlace Storage went wrong.");}
-                    
-                    WordPlace.finishWriting();
-
-                    fileType = "";
-                    setSupplMessage(Integer.toString(etx.GetNumberOfWords())+" words counted.",
-                        tc.getDuration());
+                    try{
+                    	etx.eTextToolBox(selFile, lang);
+                    	Writeinfile WordPlace = new Writeinfile(selTargetFile, field_topic.getText(), mode, lang);
+                    	WordPlace.storeAllItems(etx.GetWordsList());
+                    	WordPlace.finishWriting();
+                    	fileType = "";
+                        setSupplMessage(Integer.toString(etx.GetNumberOfWords())+
+                        		lang.Suffix("wordscounted"),
+                            tc.getDuration());
+                    }
+                    catch(IOException exc) {
+                    	setSupplWarning(lang.Messages("FileNotRead"));
+                    }
+                    catch(WriteException wfe) {
+                        setSupplWarning(wfe.getMessage());
+                        System.out.println(wfe.getCause());
+                    }
+                    catch(Exception exc) {setSupplWarning(lang.Messages("Internal error"));}
                 }
-                catch(WriteFileException wfe) {
-                    setSupplWarning(wfe.getMessage());
-                    System.out.println(wfe.getCause());
+                
+                catch(WriteException wfe) {
+                	if(wfe.getMessage() != "") {
+                		setSupplWarning(wfe.getMessage());
+                		System.out.println(wfe.getCause());
+                	}
                 }
                 catch(Exception exc) {System.out.println("Some UI or other exception."+exc.getCause());}
                 finally {mainFrame.revalidate();}
@@ -585,12 +604,13 @@ class JCBox extends JComboBox<String> {
 		return rjs;
 	}
 	
-	public JCBox() {
+	public JCBox(Localization lang) {
 		this.setFont(WFont.labelfont);
-		jsonSearchWords = new ReadJson();
+		jsonSearchWords = new ReadJson(lang);
 		choices = jsonSearchWords.getAll();
-		this.addItem("<choose a list>");
-		this.setSelectedItem("<choose a list>");
+		String preset = "<"+lang.Element("ChooseList")+">";
+		this.addItem(preset);
+		this.setSelectedItem(preset);
 		for(String s : choices) {
 			this.addItem(s);
 		}
@@ -601,7 +621,6 @@ class JCBox extends JComboBox<String> {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 			    if(e.getStateChange() == ItemEvent.SELECTED) {
-			        System.out.println("Hello!"+choices[0]+" "+choices[1]+" "+choices[2]);
 			        rjs = jsonSearchWords.get(getSelectedItem().toString());
 			        textarea.setText(rjs);
 			    }

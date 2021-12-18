@@ -8,6 +8,7 @@ public class CountWords extends CharRep {
 	public int num_of_lines;
 	public int num_of_words;
 	private ArrayList<String> buf;
+	private Localization lang;
 	
 	private int mode;
 	private ArrayList<String> userSearchTerms;
@@ -32,7 +33,8 @@ public class CountWords extends CharRep {
 		}
 	}
 	
-	public CountWords(String input, int mode) {
+	public CountWords(String input, int mode, Localization lang) {
+		this.lang = lang;
 		userSearchTerms = new ArrayList<String>();
 		if(input != "") {
 			String[] buf = input.split(System.lineSeparator());
@@ -73,7 +75,7 @@ public class CountWords extends CharRep {
 	private String TrimWord(String str) {
 		
 		String str2 = str.trim();
-		if(str2.startsWith("- Found")) {
+		if(str2.startsWith("- "+lang.Prefix("Found"))) {
 			str = clarify(str);
 			return str;
 		}
@@ -221,7 +223,7 @@ public class CountWords extends CharRep {
 	void phraseFinder(String line) {
 		for(String w: ShortWords.ListOfPhrases) {
 			if(line.contains(w)) {
-				buf.add(" - Phrase found: "+ w);
+				buf.add(lang.wrapPrefix("Phrasefound")+ w);
 			}
 		}
 	}
@@ -247,7 +249,7 @@ public class CountWords extends CharRep {
 					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - 20 - leftspace));
 				}
 				String a = line.substring(leftbound,  rightbound);
-				buf.add("- Found: \""+w+"\" in: "+ a);
+				buf.add("- "+lang.Prefix("Found")+" \""+w+"\" "+lang.Prefix("in")+": "+ a);
 			}
 		}
 	}

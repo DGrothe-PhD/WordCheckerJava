@@ -3,7 +3,6 @@ package app;
 import java.time.Duration;
 import java.time.Instant;
 
-//Greenwich time!?
 public class TimeCalc {
 	
 	Instant starttime, endtime;
@@ -20,7 +19,8 @@ public class TimeCalc {
 	public void endTime() {
 		if (!clock_stopped) {
 			endtime = Instant.now();
-			durString = ("" + Duration.between(starttime, endtime)).replace("PT","").replace("S"," sec.");
+			durString = (""+ Duration.between(starttime, endtime)).replace("PT","");
+			durString = durString.replace("S"," sec.");
 			clock_stopped = true;
 		}
 	}
