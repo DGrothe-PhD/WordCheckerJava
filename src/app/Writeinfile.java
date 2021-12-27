@@ -10,20 +10,27 @@ public class Writeinfile {
 	
 	private int mode;
 	private Localization lang;
-		
+	StringCompare comp;
 	PrintWriter pInit = null;
 	PrintWriter pWriter = null;
 	int type_of_word = 0;
 	boolean detailsOpen = false;
 	
-	ArrayList<String> specialTokens = new ArrayList<String>();
-	ArrayList<String> refSignTokens = new ArrayList<String>();
-	ArrayList<String> userSearchTokens = new ArrayList<String>();
+	ArrayList<String> specialTokens;
+	ArrayList<String> refSignTokens;
+	ArrayList<String> userSearchTokens;
+	
+	private void init() {
+		specialTokens = new ArrayList<String>();
+		refSignTokens = new ArrayList<String>();
+		userSearchTokens = new ArrayList<String>();
+		pWriter = null;
+		pInit = null;
+	}
 	
 	public Writeinfile(String filename, String topic, int mode, Localization lang)
 			throws WriteException {
-		pWriter = null;
-		pInit = null;
+		init();
 		this.mode = mode;
 		this.lang = lang;
 		try {
@@ -94,7 +101,7 @@ public class Writeinfile {
 	public void storeAllItems(ArrayList<String> targs) throws WriteException {
 		// stores all items, already sorted in alphabetical order, 
 		//in sub-lists according to entry type
-		
+		comp = new StringCompare();
 		char cap = '0';
 		//cap will be set to first char of first word in alphabetical order
 		//regardless of which
@@ -161,7 +168,7 @@ public class Writeinfile {
 							pWriter.println("<h3>__"+(u==""?cap:"Umlaut")+"____</h3>");
 						}
 						
-						pWriter.println( StringCompare.compareWords(entry, lang)+"<br>");
+						pWriter.println( comp.compareWords(entry, lang)+"<br>");
 						continue;
 					}
 				}
