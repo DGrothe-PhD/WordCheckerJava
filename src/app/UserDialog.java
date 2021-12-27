@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import javax.swing.JFrame;
@@ -21,7 +20,7 @@ public class UserDialog {
     private JFrame mainFrame;
     private String workingFolder;
     
-    private ReadJson jsonSearchWords;
+    private SearchWords jsonSearchWords;
 	   
     private LabelledField field_topic, field_targetFile, field_status;
     private LabelledField field_fileToAnalyze, field_supplinfo;
@@ -34,7 +33,7 @@ public class UserDialog {
     
     private TextArea userTermsTextArea;
     
-    public JCBox searchTermBox;
+    public JCBox searchTermBox, localizationBox;
     private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
     private Panel controlPanel, statusPanel, top;
     private ImagePanel background;
@@ -87,7 +86,8 @@ public class UserDialog {
         	makeButtons();
 
             prepareGUI();
-            searchTermBox = new JCBox(lang);
+            searchTermBox = new JCBox("<"+lang.Element("ChooseList")+">");
+            localizationBox = new JCBox("Language settings");
             
             addButtons();
             addCheckboxGroup();
@@ -99,12 +99,14 @@ public class UserDialog {
             addListenersToButtons();
             
             showFileDialog();
+            
             searchTermBox.connect(userTermsTextArea);
+            localizationBox.connect(lang);
             
             mainFrame.setVisible(true);
             mainFrame.requestFocus();
             
-            }
+        }
         catch(AWTError awe) {
         	//intended as fallback if UI cannot be shown on system
             System.out.println("Application window could not be opened.");
@@ -116,7 +118,7 @@ public class UserDialog {
     }
 	
     public void getSearchWordsFromJson(String key) {
-    	String rjs = jsonSearchWords.get(key);
+    	String rjs = jsonSearchWords.getText(key);
         userTermsTextArea.setText(rjs);
     }
     
@@ -154,7 +156,7 @@ public class UserDialog {
         chkSymbols = new ToggleFunction(lang.Element("Symbols"), this, CountWords.switchMode.c_Symbols.getMode());
         chkWords   = new ToggleFunction(lang.Element("Words"), this, CountWords.switchMode.c_Words.getMode());
         chkUserTerms = new ToggleFunction(lang.Element("Search terms"), this,
-        		CountWords.switchMode.c_UserTerms.getMode()
+        	CountWords.switchMode.c_UserTerms.getMode()
         );
         
         controlPanel.add(chkNumbers);
@@ -224,7 +226,7 @@ public class UserDialog {
         		lang.Element("Type topic:"), lang.Element("Result word list")
         );
         field_targetFile = new LabelledField(
-        		lang.Element("Target file:"), lang.Element("Word_occurrences.html")
+        		lang.Element("Target file:"), "Word_occurrences.html"
         );
         field_status = new LabelledField(lang.Element("Selected folder:"), "", hint, false);
         field_fileToAnalyze = new LabelledField(
@@ -299,6 +301,8 @@ public class UserDialog {
     	fieldGridConfig.gridx = 1;
     	fieldGridConfig.gridy = 6;
     	statusPanel.add(searchTermBox, fieldGridConfig);
+    	fieldGridConfig.gridy = 8;
+    	statusPanel.add(localizationBox, fieldGridConfig);
     	///snippet end
     	
         fieldGridConfig.gridy = 32;
@@ -595,8 +599,9 @@ class JCBox extends JComboBox<String> {
 	 * 
 	 */
 	private static final long serialVersionUID = 6742906931820220645L;
-	public ReadJson jsonSearchWords;
+	public SearchWords jsonData;
 	String rjs="";
+	String defaultDescription = "";
 
 	public String[] choices;
 	
@@ -604,25 +609,57 @@ class JCBox extends JComboBox<String> {
 		return rjs;
 	}
 	
-	public JCBox(Localization lang) {
-		this.setFont(WFont.labelfont);
-		jsonSearchWords = new ReadJson(lang);
-		choices = jsonSearchWords.getAll();
-		String preset = "<"+lang.Element("ChooseList")+">";
-		this.addItem(preset);
-		this.setSelectedItem(preset);
-		for(String s : choices) {
-			this.addItem(s);
+	public JCBox(String defaultDescription) {
+		try {
+			this.defaultDescription = defaultDescription;
+			/*this.setFont(WFont.labelfont);
+			jsonData = new SearchWords();
+			choices = jsonData.getAll();
+			this.addItem(defaultDescription);
+			this.setSelectedItem(defaultDescription);
+			for(String s : choices) {
+				this.addItem(s);
+			}*/
+		}
+		catch (Exception exc){
+			//this.setSelectedItem(exc.toString());
 		}
 	}
 	
 	public void connect(TextArea textarea) {
+		///adding functionality
+		try {
+			this.setFont(WFont.labelfont);
+			jsonData = new SearchWords();
+			choices = jsonData.getAll();
+			this.addItem(defaultDescription);
+			this.setSelectedItem(defaultDescription);
+			for(String s : choices) {
+				this.addItem(s);
+			}
+		}
+		catch (Exception exc){
+			this.setSelectedItem(exc.toString());
+		}
+		///add listener
 		this.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 			    if(e.getStateChange() == ItemEvent.SELECTED) {
-			        rjs = jsonSearchWords.get(getSelectedItem().toString());
+			        rjs = jsonData.getText(getSelectedItem().toString());
 			        textarea.setText(rjs);
+			    }
+			}
+		});
+	}
+	
+	public void connect(Localization lang) {
+		this.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+			    if(e.getStateChange() == ItemEvent.SELECTED) {
+			    	String foo = getSelectedItem().toString();
+			        lang.switchTo(foo);
 			    }
 			}
 		});

@@ -1,27 +1,40 @@
 package app;
 
+import java.io.InputStream;
 import java.util.*;
 
-public class Localization {
+import org.json.JSONObject;
+
+public class Localization extends ReadJson{
+	JSONObject dic;
+
 	static Dictionary<String, String> headers = new Hashtable<String, String>();
 	static Dictionary<String, String> prefixes = new Hashtable<String, String>();
 	static Dictionary<String, String> suffixes = new Hashtable<String, String>();
 	static Dictionary<String, String> messages = new Hashtable<String, String>();
 	static Dictionary<String, String> Localizing = new Hashtable<String, String>();
 	
-	public Localization() {
-		headers.put("specialTokens", "Special tokens found:");
-		headers.put("Words", "Words:");
-		headers.put("Digits", "Tokens beginning with a digit:");
-		headers.put("refSigns", "Reference signs found:");
-		headers.put("userST", "Searched tokens found:");
+	protected void switchTo(String listname){
+		dic = obj.getJSONObject(listname);
+	}
+	
+	private String lookUpField(String key) {
+    	if(dic.has(key))
+    		return dic.getString(key);
+    	System.out.println("Key "+key+" was not found.");
+    	return "Empty key";
+    }
+	
+	public Localization(){
+		super("/json/localized.json");
+		switchTo("EN");
 		
 		prefixes.put("ISBN", "ISBN candidate");
 		prefixes.put("URL", "URL");
 		prefixes.put("EMail", "E-Mail address found");
 		prefixes.put("Datetime", "Date or time pattern");
 		prefixes.put("Found", "Found");
-		prefixes.put("Phrasefound", "Phrase found");
+		prefixes.put("Phrasefound", "Standard typo");
 		prefixes.put("also", "also found");
 		prefixes.put("more", "more frequent");
 		prefixes.put("times", "times");
@@ -66,7 +79,7 @@ public class Localization {
 	}
 	
 	public String Header(String key) {
-		return headers.get(key);
+		return lookUpField(key);
 	}
 	
 	public String Prefix(String key) {
@@ -87,14 +100,14 @@ public class Localization {
 	
 	public String Element(String key, Dictionary<String, String> dic) {
 		if(((Hashtable<String, String>) dic).containsKey(key))
-		return dic.get(key);
+			return dic.get(key);
 		System.out.println("Key "+key+" was not found.");
 		return "Empty key";
 	}
 	
 	public String Element(String key) {
 		if(((Hashtable<String, String>) Localizing).containsKey(key))
-		return Localizing.get(key);
+			return Localizing.get(key);
 		System.out.println("Key "+key+" was not found.");
 		return "Empty key";
 	}
