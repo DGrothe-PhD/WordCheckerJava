@@ -75,7 +75,7 @@ public class CountWords extends CharRep {
 	private String TrimWord(String str) {
 		
 		String str2 = str.trim();
-		if(str2.startsWith("- "+lang.Prefix("Found"))) {
+		if(str2.startsWith("- "+lang.Header("Found"))) {
 			str = clarify(str);
 			return str;
 		}
@@ -249,7 +249,7 @@ public class CountWords extends CharRep {
 					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - 20 - leftspace));
 				}
 				String a = line.substring(leftbound,  rightbound);
-				buf.add("- "+lang.Prefix("Found")+" \""+w+"\" "+lang.Prefix("in")+": "+ a);
+				buf.add("- "+lang.Header("Found")+" \""+w+"\" "+lang.Header("in")+": "+ a);
 			}
 		}
 	}

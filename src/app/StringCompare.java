@@ -89,7 +89,7 @@ public class StringCompare {
 					return "";
 				}
 				//when words are similar
-				return "; <em>"+ ((occa>=occb && occb>0)?lang.Prefix("also"):lang.Prefix("more"))
+				return "; <em>"+ ((occa>=occb && occb>0)?lang.Header("also"):lang.Header("more"))
 					+ ":</em> " + b + " (" + Integer.toString(occb)+ "x) ";
 			}
 			return "";
@@ -97,7 +97,7 @@ public class StringCompare {
 		catch(Exception sdEx) {
 			//entry frequency parsing failed
 			diff(worda, wordb);
-			return "; "+ b + " (nn "+lang.Prefix("times")+")";
+			return "; "+ b + " (nn "+lang.Header("times")+")";
 		}
 	}
 	

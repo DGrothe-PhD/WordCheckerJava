@@ -36,7 +36,7 @@ public class EvaluateText
             throw e;
         }
         catch (Exception e) {
-        	throw new WriteException(lang.Messages("Internal error"));
+        	throw new WriteException(lang.Header("Internal error"));
         }
         return 0;
     }

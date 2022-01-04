@@ -36,16 +36,17 @@ public class Writeinfile {
 		try {
 			pInit = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
 			pInit.println("<html><head>");
-			pInit.println("<title>Result</title><meta charset=\"UTF-8\"></meta>");
+			pInit.println("<title>"+lang.Header("Results")
+				+"</title><meta charset=\"UTF-8\"></meta>");
 			pInit.println("<style>"
 				+"details > summary {font-weight:bold;color:navy;} h3 {color:maroon;}"
 				+"</style>");
 			pInit.println("</head><body><font face=\"Helvetica\">");
-			pInit.println("<h1>Results of "+topic+":</h1>");
+			pInit.println("<h1>"+lang.Header("Results")+" - "+topic+":</h1>");
 			pInit.flush();
 		}
 		catch (Exception wfe) {
-			throw new WriteException(lang.Messages("FilePrepFailed"));
+			throw new WriteException(lang.Header("FilePrepFailed"));
 		}
 		finally{
 			if(pInit!=null) {
@@ -60,7 +61,7 @@ public class Writeinfile {
 			// file overwritten, newline at line ends is automatically added
 		} 
 		catch (Exception wfe) {
-			throw new WriteException(lang.Messages("PossibleFileWriteError"));
+			throw new WriteException(lang.Header("PossibleFileWriteError"));
 		}
 	}
 	
@@ -210,7 +211,7 @@ public class Writeinfile {
 		}
 		catch(Exception wfe){
 			close();
-			throw new WriteException(lang.Messages("PossibleFileWriteError"));
+			throw new WriteException(lang.Header("PossibleFileWriteError"));
 		}
 	}
 	
