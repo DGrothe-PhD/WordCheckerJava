@@ -108,7 +108,7 @@ public class Writeinfile {
 		//regardless of which
 		try {
 			for( String entry : targs ){
-				if(entry.startsWith(lang.wrapPrefix("Found"))) {
+				if(entry.startsWith("- "+lang.Header("Found"))) {
 					userSearchTokens.add(entry);
 					continue;
 				}
