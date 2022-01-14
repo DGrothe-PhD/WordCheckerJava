@@ -8,6 +8,7 @@ public class CountWords extends CharRep {
 	public int num_of_lines;
 	public int num_of_words;
 	private ArrayList<String> buf;
+	private Localization lang;
 	
 	private int mode;
 	private ArrayList<String> userSearchTerms;
@@ -32,7 +33,8 @@ public class CountWords extends CharRep {
 		}
 	}
 	
-	public CountWords(String input, int mode) {
+	public CountWords(String input, int mode, Localization lang) {
+		this.lang = lang;
 		userSearchTerms = new ArrayList<String>();
 		if(input != "") {
 			String[] buf = input.split(System.lineSeparator());
@@ -73,7 +75,7 @@ public class CountWords extends CharRep {
 	private String TrimWord(String str) {
 		
 		String str2 = str.trim();
-		if(str2.startsWith("- Found")) {
+		if(str2.startsWith("- "+lang.Header("Found"))) {
 			str = clarify(str);
 			return str;
 		}
@@ -163,8 +165,8 @@ public class CountWords extends CharRep {
 				lines[j] = lines[j].replace("\t", " ");
 				lines[j] = lines[j].replace(thebom, "");
 				if(lines[j].length()==0) continue;
-				phraseFinder(lines[j]);
-				userPhraseFinder(lines[j]);
+				phraseFinder(lines[j], j);
+				userPhraseFinder(lines[j], j);
 			
 				for (String bar: lines[j].split(" ")) {
 					buf.add(bar);
@@ -179,7 +181,7 @@ public class CountWords extends CharRep {
 				lines[j] = lines[j].replace("\t", " ");
 				lines[j] = lines[j].replace(thebom, "");
 				if(lines[j].length()==0) continue;
-				phraseFinder(lines[j]);
+				phraseFinder(lines[j], j);
 			
 				for (String bar: lines[j].split(" ")) {
 					buf.add(bar);
@@ -218,15 +220,17 @@ public class CountWords extends CharRep {
 		System.out.println(num_of_words+" words counted!");
 	}
 	
-	void phraseFinder(String line) {
+	void phraseFinder(String line, int linenumber) {
+		int j=linenumber+1;
 		for(String w: ShortWords.ListOfPhrases) {
 			if(line.contains(w)) {
-				buf.add(" - Phrase found: "+ w);
+				buf.add(lang.wrapPrefix("Phrasefound")+ w
+						+ lang.Header("in")+" "+j+": "+line);
 			}
 		}
 	}
 	
-	void userPhraseFinder(String line) {
+	void userPhraseFinder(String line, int linenumber) {
 		if(userSearchTerms.size() == 1 && userSearchTerms.get(0).length()==0){
 			return;
 		}
@@ -246,8 +250,10 @@ public class CountWords extends CharRep {
 				if(fixpoint - 20 - leftspace > 0) {
 					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - 20 - leftspace));
 				}
-				String a = line.substring(leftbound,  rightbound);
-				buf.add("- Found: \""+w+"\" in: "+ a);
+				String a = line.substring(leftbound, rightbound);
+				int j= linenumber+1;
+				buf.add("- "+lang.Header("Found")+" \""+w+"\" "
+						+lang.Header("in")+" "+j+": "+ a);
 			}
 		}
 	}

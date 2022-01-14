@@ -1,0 +1,27 @@
+{
+"jobOfferDE": [
+	"reise", "Reise", "Assist", "befrist", "befrist", "Teilzeit", "Kunde", 
+	"Vertrieb", "Büro", "Homeoffice"
+],
+"weatherEN": [
+	"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+	"rain", "sun", "cloudy", "clouds", "snow", "ice", "precipitation", "wet"
+],
+"weatherDE": [
+	"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag",
+	"Regen", "Sonne", "sonnig", "wolkig", "Wolke", "Schnee", "Niederschl"
+],
+"months": [
+	"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", 
+	"Oktober", "November", "Dezember", "January", "February", "March", "April", "May", 
+	"June", "July", "October", "November", "December", "Jan.", "Feb.", "Mar.", "Apr.", 
+	"Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Okt.", "Nov.", "Dec.", "Dez."
+],
+"units": [
+	" kg", " km", " mph", " mile", " m", " cm", " mm", " l ", " ml", "mW",
+	"seconds", " min", "hour", "days", " week", " month", "year", "percent", 
+	"Sekunde", "Min.", "Minute", "Std", "Stunde", " Tage", " Woche", 
+	" Monat", "monat", "Jahr", "jähr",
+	" Kilo", " Gramm", "Liter", "Milli", "Prozent", " Euro", " $"
+]
+}

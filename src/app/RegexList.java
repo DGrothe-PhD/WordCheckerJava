@@ -87,12 +87,14 @@ public class RegexList {
 			if(s.contains("@") && s.length() > 4 && Character.isAlphabetic(s.charAt(0))) {
 				int q = s.indexOf("@");
 				int r = s.indexOf("\t");
-				String buf = s.substring(q+1,(r>q+1?r:len));//read from "@" to tab if any
-				if(s.contains("/@")) b = false;//typical pattern for URLs with GPS coordinates, not e-mail
+				String buf = s.substring(q+1,(r>q+1?r:len));
+				//read from "@" to tab if any
+				if(s.contains("/@")) b = false;
+				//typical pattern for URLs with GPS coordinates, not e-mail
 				else b = (Character.isLetterOrDigit(buf.charAt(0)) && buf.contains("."));
 			}
 		}
-		catch(Exception e){System.out.println("hasEMail error"); return false;}
+		catch(Exception e){return false;}
 		return b;
 	}
 }

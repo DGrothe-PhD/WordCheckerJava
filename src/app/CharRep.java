@@ -37,6 +37,7 @@ public class CharRep {
 		umlaut.add(new zeichen(""+(char)0xe2, ""+(char)0xc3 + (char)0xa2));//â
 		umlaut.add(new zeichen(""+(char)0xe1, ""+(char)0xc3 + (char)0xa1));//á
 		umlaut.add(new zeichen(""+(char)0xe0, ""+(char)0xc3 + (char)0xa0));//à
+		umlaut.add(new zeichen(""+(char)0xee, ""+(char)0xc3 + (char)0xae));//î
 		umlaut.add(new zeichen(""+(char)0xfb, ""+(char)0xc3 + (char)0xbb));//û
 		umlaut.add(new zeichen(""+(char)0xfa, ""+(char)0xc3 + (char)0xba));//ú
 		umlaut.add(new zeichen(""+(char)0xf9, ""+(char)0xc3 + (char)0xb9));//ù
@@ -53,6 +54,14 @@ public class CharRep {
 	public String clarify(String str) {
 		try{String w = unapostrophe(str);
 		for(zeichen z : umlaut) w = w.replace(z.ansi, z.utf);
+		return w;
+		}
+		catch(Exception e) {System.out.println(e); return str;}
+	}
+	
+	public String toANSI(String str) {
+		try{String w = str;
+		for(zeichen z : umlaut) w = w.replace(z.utf, z.ansi);
 		return w;
 		}
 		catch(Exception e) {System.out.println(e); return str;}

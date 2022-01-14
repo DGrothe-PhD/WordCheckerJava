@@ -4,15 +4,16 @@ import java.util.*;
 public class ShortWords {
 	// caps : case-sensitive words
 	static String[] capsDE = {
-		"AG", "mbB", "Bälde", "Fall", "Frau", "GmbH", "Inc", "Info", "Ltd", "Mann", "Paar", 
-		"Seite", "Tages", "Teile", "Titel", "Herr"
+		"AG", "mbB", "Bälde", "Fall", "Frau", "GmbH", "Inc", "Info", "Ltd",
+		"Mann", "Paar", "Seite", "Tages", "Teile", "Titel", "Herr"
 	};
 	static String[] capsEN = {
 			"Mr", "Mrs", "Miss", "GmbH", "Inc", "Corp", "Ltd"
 	};
 	
 	static String[] shwEN = {
-		"and", "been", "by", "his", "her", "is", "it", "my", "mine", "of", "off", "on", "or", "take", "that", "the", "they", "them", 
+		"and", "been", "by", "his", "her", "is", "it", "my", "mine", "of", 
+		"off", "on", "or", "take", "that", "the", "they", "them", 
 		"then", "this", "these", "when"
 	};
 	
@@ -68,7 +69,9 @@ public class ShortWords {
 		"zwei", "zwölf", "öfter", "übel", "über", "übrig"
 	};
 	
-	public static String[] ListOfPhrases = {"oft he ", "tot he ", "fort he ", "ist he ", " ,", " ."};
+	public static String[] ListOfPhrases = {
+		"oft he ", "tot he ", "fort he ", "ist he ", " ,", " .", "um so"
+	};
 	
 	public static List<String> shortlistDE = Arrays.asList(shwDE);
 	public static List<String> shortlistEN = Arrays.asList(shwEN);
