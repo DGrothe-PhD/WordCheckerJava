@@ -44,14 +44,14 @@ public class CharRep {
 		//umlaut.add(new zeichen(""+(char)0x85, "&#x2026;"));
 	}
 	
-	public String unapostrophe(String str) {
+	protected String unapostrophe(String str) {
 		String loc=str;
 		if(loc.startsWith(apost)) loc= loc.substring(3);
 		if(loc.endsWith(apost)) loc=loc.replaceAll(apost, "");
 		return loc;
 	}
 	
-	public String clarify(String str) {
+	protected String clarify(String str) {
 		try{String w = unapostrophe(str);
 		for(zeichen z : umlaut) w = w.replace(z.ansi, z.utf);
 		return w;

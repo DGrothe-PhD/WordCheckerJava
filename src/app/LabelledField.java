@@ -1,29 +1,30 @@
 package app;
 
 import java.awt.Color;
-import java.awt.Label;
-import java.awt.TextField;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import java.awt.event.*;
+
+import javax.swing.JButton;
+import javax.swing.border.Border;
+import javax.swing.border.SoftBevelBorder;
+
 import java.awt.Checkbox;
 import java.awt.Font;
-import java.awt.Button;
 
 /** inner class for labelled fields */
-class LabelledField extends TextField {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 424211L;
-	protected static int FIELD_WIDTH = 40;
+class LabelledField /*extends TextField*/ {
+	
+	protected static int FIELD_WIDTH = 30;
 	String thepreset = "";
-	Label thelabel;
-	TextField thetextfield;
+	JLabel thelabel;
+	JTextField thetextfield;
 	   
 	public LabelledField(String title, String preset) {
-		thelabel = new Label(title);
+		thelabel = new JLabel(title);
 		thelabel.setFont(WFont.labelfont);
 		thepreset = preset;
-		thetextfield = new TextField(FIELD_WIDTH);
+		thetextfield = new JTextField(FIELD_WIDTH);
 		thetextfield.setFont(WFont.descriptionFont);
 		thetextfield.setText(preset);
 	}
@@ -85,14 +86,17 @@ class ToggleFunction extends Checkbox {
 	}
 }
 
-class WButton extends Button {
+class WButton extends JButton {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -5037983284871342515L;
-
+	private Border raised = new SoftBevelBorder(SoftBevelBorder.RAISED);
+	// github.setBorder(raised);
+	
 	public WButton(String title, Color color) {
 		super(title);
+		this.setBorder(raised);
 		this.setBackground(color);
 		this.setFont(WFont.labelfont);
 	}

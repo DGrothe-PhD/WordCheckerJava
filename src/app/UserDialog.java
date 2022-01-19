@@ -1,7 +1,6 @@
 package app;
 
 import java.awt.*;
-//import java.awt.FileDialog.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +8,9 @@ import java.net.URI;
 import java.net.URL;
 import java.text.MessageFormat;
 import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.border.Border;
+import javax.swing.border.SoftBevelBorder;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -27,7 +29,7 @@ public class UserDialog {
     private Label textareaLabel, searchTermBoxLabel;
     private Label headline;
     private Label copyright = new Label("© 2021 Daniela Grothe");
-    private Button github = new Button("GitHub");
+    private JButton github = new JButton("GitHub");
     
     private WButton fileDialogButton, startButton, openButton, closeButton, clearButton;
     
@@ -50,7 +52,7 @@ public class UserDialog {
     	this.mode += mode;
     }
     
-    public String selFile, selTargetFile, selTopicString = "", fileType = "";
+    private String selFile, selTargetFile, fileType = "";
     private static final String[] ALLOWED_INPUT_FILES = {
 			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
 			   ".java", ".cpp", ".hpp", ".csv", ".cs"
@@ -129,7 +131,7 @@ public class UserDialog {
         userTermsTextArea.setText(rjs);
     }
     
-    public void githubOpen(){	
+    private void githubOpen(){	
         Desktop desktop = Desktop.getDesktop();
 
         try {
@@ -142,7 +144,7 @@ public class UserDialog {
 	}
     
     /** Open the results HTML file */
-    public void htmlOpen(){	
+    private void htmlOpen(){	
         Desktop desktop = Desktop.getDesktop();
 
         try {
@@ -209,6 +211,10 @@ public class UserDialog {
         	background.add(headline);
         	background.add(top, "Center");
         	background.add(copyright);
+        	Border raised = new SoftBevelBorder(SoftBevelBorder.RAISED);
+        	github.setBorder(raised);
+        	github.setSize(20,50);
+        	github.setBackground(moss);
         	background.add(github);
         	mainFrame.add(background);
     	}
@@ -222,7 +228,7 @@ public class UserDialog {
     }
 
     
-    public void makeFields() {
+    private void makeFields() {
     	searchTermBoxLabel = new Label(lang.getANSI("Search terms:"));
     	searchTermBoxLabel.setFont(WFont.labelfont);
     	
@@ -261,13 +267,13 @@ public class UserDialog {
         clearButton = new WButton(lang.getANSI("Clear search"), clearBG);
     }
     
-    public void addTextToButtons() {
+    protected void addTextToButtons() {
     	fileDialog.setTitle(lang.getANSI("Select file"));
-    	fileDialogButton.setLabel(lang.getANSI("Open file"));
-    	startButton.setLabel(lang.getANSI("Start"));
-        openButton.setLabel(lang.getANSI("Show Results"));
-        closeButton.setLabel(lang.getANSI("Close window"));
-        clearButton.setLabel(lang.getANSI("Clear search"));
+    	fileDialogButton.setText(lang.getANSI("Open file"));
+    	startButton.setText(lang.getANSI("Start"));
+        openButton.setText(lang.getANSI("Show Results"));
+        closeButton.setText(lang.getANSI("Close window"));
+        clearButton.setText(lang.getANSI("Clear search"));
         
         headline.setText(lang.getANSI("description"));
         chkNumbers.setLabel(lang.getANSI("Numbers"));
@@ -464,7 +470,6 @@ public class UserDialog {
                         break;
                     }
                 }
-                selTopicString = field_topic.getText();
                 String str = field_fileToAnalyze.getText();
                 if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
                 field_targetFile.setText(str);
@@ -497,7 +502,6 @@ public class UserDialog {
                         break;
                     }
                 }
-                selTopicString = field_topic.getText();
                 String str = field_fileToAnalyze.getText();
                 if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
                 field_targetFile.setText(str);

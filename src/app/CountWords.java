@@ -5,8 +5,8 @@ import java.util.*;
 
 /** Words counting class */
 public class CountWords extends CharRep {
-	public int num_of_lines;
-	public int num_of_words;
+	private int num_of_lines;
+	private int num_of_words;
 	private ArrayList<String> buf;
 	private Localization lang;
 	
@@ -52,7 +52,7 @@ public class CountWords extends CharRep {
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
 	// punctuation ",;\"\\/()[]{}!?"
-	public ArrayList<String> CountWordReportLines = new ArrayList<String>();
+	private ArrayList<String> CountWordReportLines = new ArrayList<String>();
 	
 	public int GetNOL() {
 		return num_of_lines;
@@ -103,7 +103,7 @@ public class CountWords extends CharRep {
 	}
 	
 	/** Add a word to the WordsList. If new, add, if already in list, increment counter */
-	public void AddWord(String str) {
+	private void AddWord(String str) {
 		try {
 			String str2 = TrimWord(str);
 			// Finding words and incrementing occurrence counts
@@ -124,7 +124,7 @@ public class CountWords extends CharRep {
 	}
 	
 	/** this method shall gather alphanumeric sequences with low amount of hyphens etc. */
-	public void AddNumbersAndWords(String str) {
+	private void AddNumbersAndWords(String str) {
 		String str2 = TrimWord(str);
 		
 		try {
@@ -220,7 +220,7 @@ public class CountWords extends CharRep {
 		System.out.println(num_of_words+" words counted!");
 	}
 	
-	void phraseFinder(String line, int linenumber) {
+	private void phraseFinder(String line, int linenumber) {
 		int j=linenumber+1;
 		for(String w: ShortWords.ListOfPhrases) {
 			if(line.contains(w)) {
@@ -230,7 +230,7 @@ public class CountWords extends CharRep {
 		}
 	}
 	
-	void userPhraseFinder(String line, int linenumber) {
+	private void userPhraseFinder(String line, int linenumber) {
 		if(userSearchTerms.size() == 1 && userSearchTerms.get(0).length()==0){
 			return;
 		}
