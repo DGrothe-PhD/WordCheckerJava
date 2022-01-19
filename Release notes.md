@@ -1,5 +1,8 @@
 # Jar file version
 
+## Version 1.3
+* New: Translation in German and French available
+
 ## Version 1.2
 * New feature: Example search words from drop-down list
 * UI revised
