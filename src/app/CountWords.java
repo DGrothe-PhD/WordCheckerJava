@@ -13,11 +13,13 @@ public class CountWords extends CharRep {
 	private int mode;
 	private ArrayList<String> userSearchTerms;
 	
+	protected boolean sortDictOrder = true;
+	
 	protected static enum switchMode {
-		c_Numbers (0x1),
-		c_Symbols (0x2),
-		c_Words (0x4),
-		c_UserTerms (0x8);
+		c_Numbers (0x01),
+		c_Symbols (0x02),
+		c_Words (0x04),
+		c_UserTerms (0x08);
 		
 		private int mode;
 		switchMode(int mode){
@@ -209,7 +211,23 @@ public class CountWords extends CharRep {
 		for( Map.Entry<String, Integer> entry : WordsList.entrySet() ){
 		    ResultWordList.add(entry.getKey());
 		}
-		Collections.sort(ResultWordList);
+		if(sortDictOrder) {
+			Collections.sort(ResultWordList, new Comparator<String>() {
+				@Override
+				public int compare(String s, String t) {
+					String t_to_low = t.toLowerCase();
+					String s_to_low = s.toLowerCase();
+					if(t_to_low == s_to_low) {
+						t_to_low += t;
+						s_to_low += s;
+					}
+					return s_to_low.compareTo(t_to_low);
+				}
+			});
+		}
+		else{
+			Collections.sort(ResultWordList);
+		}
 		
 		//So let's print out WordsList entries in alph. order.
 		for( String entry : ResultWordList ){
@@ -221,20 +239,21 @@ public class CountWords extends CharRep {
 	}
 	
 	private void phraseFinder(String line, int linenumber) {
-		int j=linenumber+1;
-		for(String w: ShortWords.ListOfPhrases) {
-			if(line.contains(w)) {
-				buf.add(lang.wrapPrefix("Phrasefound")+ w
-						+ lang.Header("in")+" "+j+": "+line);
-			}
-		}
+		userPhraseFinder(line, linenumber, ShortWords.ListOfPhrases, lang.Header("Phrasefound"));
 	}
 	
 	private void userPhraseFinder(String line, int linenumber) {
-		if(userSearchTerms.size() == 1 && userSearchTerms.get(0).length()==0){
+		userPhraseFinder(line, linenumber,
+				userSearchTerms.toArray(new String[userSearchTerms.size()]),
+				lang.Header("Found"));
+	}
+	
+	private void userPhraseFinder(String line, int linenumber, String[] al, String prefix) {
+		int j= linenumber+1;
+		if(al.length == 1 && al[0].length()==0){
 			return;
 		}
-		for(String w: userSearchTerms) {
+		for(String w: al) {
 			if(line.length()>0 && line.contains(w)) {
 				int fixpoint = line.indexOf(w);
 				int leftspace = 0;
@@ -251,8 +270,7 @@ public class CountWords extends CharRep {
 					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - 20 - leftspace));
 				}
 				String a = line.substring(leftbound, rightbound);
-				int j= linenumber+1;
-				buf.add("- "+lang.Header("Found")+" \""+w+"\" "
+				buf.add("- "+prefix+" &quot;"+w+"&quot; "
 						+lang.Header("in")+" "+j+": "+ a);
 			}
 		}

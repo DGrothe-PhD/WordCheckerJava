@@ -160,7 +160,7 @@ public class Writeinfile {
 						
 						String u = startsWithUmlaut(entry);
 						
-						if(curr_char!= cap) {
+						if(Character.toLowerCase(curr_char)!= Character.toLowerCase(cap)) {
 							//insert an alph. section line if the word starts with 
 							//different character
 							//insert full first symbol if umlaut
