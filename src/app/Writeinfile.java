@@ -3,8 +3,7 @@ package app;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class Writeinfile {
 	
@@ -45,8 +44,22 @@ public class Writeinfile {
 			pInit.println("<h1>"+lang.Header("Results")+" - "+topic+":</h1>");
 			pInit.flush();
 		}
+		catch (FileNotFoundException fne) {
+			String fne_string = fne.toString();
+			if(fne_string.contains(lang.Header("Access"))) {
+				throw new WriteException(lang.Header("FilePrepFailed")
+						+System.lineSeparator()+lang.Header("Access denied reason")
+						+System.lineSeparator()+fne_string
+				);
+			}
+			throw new WriteException(lang.Header("FilePrepFailed")
+					+System.lineSeparator()+fne_string
+			);
+		}
 		catch (Exception wfe) {
-			throw new WriteException(lang.Header("FilePrepFailed"));
+			throw new WriteException(lang.Header("FilePrepFailed")
+					+System.lineSeparator()+wfe.toString()
+			);
 		}
 		finally{
 			if(pInit!=null) {

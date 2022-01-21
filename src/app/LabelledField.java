@@ -2,7 +2,9 @@ package app;
 
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.text.JTextComponent;
 import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import java.awt.event.*;
 
 import javax.swing.JButton;
@@ -13,39 +15,107 @@ import java.awt.Checkbox;
 import java.awt.Font;
 
 /** inner class for labelled fields */
-class LabelledField /*extends TextField*/ {
-	
-	protected static int FIELD_WIDTH = 30;
-	String thepreset = "";
-	JLabel thelabel;
-	JTextField thetextfield;
-	   
+class LabelledField extends LabelledComponent {
+	JTextField jcomp;
+	 
 	public LabelledField(String title, String preset) {
-		thelabel = new JLabel(title);
-		thelabel.setFont(WFont.labelfont);
-		thepreset = preset;
-		thetextfield = new JTextField(FIELD_WIDTH);
-		thetextfield.setFont(WFont.descriptionFont);
-		thetextfield.setText(preset);
+		super(title, preset);
+		setup();
 	}
 	
 	public LabelledField(String title, String preset, Color bgcolor) {
-		this(title, preset);
-		thetextfield.setBackground(bgcolor);
+		super(title, preset, bgcolor);
+		setup();
 	}
 	public LabelledField(String title, String preset, Color bgcolor, boolean editable) {
-		this(title, preset);
-		if(!editable) thelabel.setFont(WFont.descriptionFont);
-		thetextfield.setBackground(bgcolor);
-		thetextfield.setEditable(editable);
+		super(title, preset, bgcolor, editable);
+		setup();
 	}
 	
-	public String getText() {
-		return thetextfield.getText();
+	private void setup() {
+		jcomp = new JTextField();
+		format(jcomp);
 	}
+	
 	public void setText(String displayedtext) {
-		thetextfield.setText(displayedtext);
+		jcomp.setText(displayedtext);
 	}
+	public String getText() {
+		return jcomp.getText();
+	}
+	
+	protected void setForeground(Color color) {
+		jcomp.setForeground(color);
+	}
+}
+
+class LabelledArea extends LabelledComponent {
+	JTextArea jcomp;
+	   
+	/*public LabelledArea(String title, String preset) {
+		super(title, preset);
+		setup();
+	}
+	public LabelledArea(String title, String preset, Color bgcolor) {
+		super(title, preset, bgcolor);
+		setup();
+	}*/
+	
+	public LabelledArea(String title, String preset, Color bgcolor, boolean editable) {
+		super(title, preset, bgcolor, editable);
+		setup();
+	}
+	
+	private void setup() {
+		jcomp = new JTextArea();
+		format(jcomp);
+		jcomp.setRows(3);
+		jcomp.setLineWrap(true);
+	}
+	
+	public void setText(String displayedtext) {
+		jcomp.setText(displayedtext);
+	}
+	public String getText() {
+		return jcomp.getText();
+	}
+	protected void setForeground(Color color) {
+		jcomp.setForeground(color);
+	}
+}
+
+abstract class LabelledComponent {
+	
+	protected static int FIELD_WIDTH = 30;
+	String thepreset = "", thetitle="";
+	JLabel thelabel;
+	Color bgcolor;
+	Boolean editable = true;
+	   
+	public LabelledComponent(String title, String preset) {
+		thetitle = title;
+		thelabel = new JLabel(title);
+		thelabel.setFont(WFont.labelfont);
+		thepreset = preset;
+	}
+	
+	public LabelledComponent(String title, String preset, Color bgcolor) {
+		this(title, preset);
+		this.bgcolor=bgcolor;
+	}
+	public LabelledComponent(String title, String preset, Color bgcolor, boolean editable) {
+		this(title, preset, bgcolor);
+		this.editable = editable;
+	}
+
+	protected void format(JTextComponent comp) {
+		comp.setFont(WFont.descriptionFont);
+		comp.setText(this.thepreset);
+		if(bgcolor!=null) comp.setBackground(bgcolor);
+		if(!editable) thelabel.setFont(WFont.descriptionFont);
+		comp.setEditable(editable);
+	}
+	
 }
 
 class ToggleFunction extends Checkbox {
@@ -92,7 +162,6 @@ class WButton extends JButton {
 	 */
 	private static final long serialVersionUID = -5037983284871342515L;
 	private Border raised = new SoftBevelBorder(SoftBevelBorder.RAISED);
-	// github.setBorder(raised);
 	
 	public WButton(String title, Color color) {
 		super(title);

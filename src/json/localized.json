@@ -1,4 +1,5 @@
 {"DE": {
+	"Access denied reason": "Dateizugriff wurde verweigert. Mögliche Ursache: fehlende Administratorrechte oder gesperrtes Laufwerk",
 	"BadSymbolInFilename": "Zeichen {0} ist/sind in Dateinamen nicht erlaubt",
 	"ChooseList": "Liste auswählen",
 	"Clear search": "Suchfeld leeren",        
@@ -48,6 +49,7 @@
 	"wordscounted": " Wörter gezählt."
 },
 "FR": {
+	"Access denied reason": "Accès au fichier a été refusé. Possible: Droits de l'administrateur necessaires ou un mémoire externe bloqué",
 	"BadSymbolInFilename": "Caractère {0} n'est pas accepté dans un nom de fichier",
 	"ChooseList": "Sélectionner une liste",
 	"Clear search": "Vider la recherche",        
@@ -97,6 +99,7 @@
 	"wordscounted": " mots comptés."
 },
 "EN": {
+	"Access denied reason": "File access denied. Possible reason: administrator rights needed, or external volume is blocked",
 	"BadSymbolInFilename": "Symbols {0} are not allowed in filenames",
 	"ChooseList": "choose a list",
 	"Clear search": "Clear search",        

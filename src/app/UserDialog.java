@@ -25,7 +25,8 @@ public class UserDialog {
     private SearchWords jsonSearchWords;
 	   
     private LabelledField field_topic, field_targetFile, field_status;
-    private LabelledField field_fileToAnalyze, field_supplinfo;
+    private LabelledField field_fileToAnalyze;
+	private LabelledArea field_supplinfo;
     private Label textareaLabel, searchTermBoxLabel;
     private Label headline;
     private Label copyright = new Label("© 2021 Daniela Grothe");
@@ -246,7 +247,7 @@ public class UserDialog {
         		lang.getANSI("Selected file:"),
         		"- "+lang.getANSI("Please select a file")+" -", light, false
         );
-        field_supplinfo = new LabelledField(lang.getANSI("Info:"), "", green, false);
+        field_supplinfo = new LabelledArea(lang.getANSI("Info:"), "", green, false);
         
         userTermsTextArea = new TextArea();
         userTermsTextArea.setFont(WFont.descriptionFont);
@@ -325,15 +326,15 @@ public class UserDialog {
         fieldGridConfig.gridwidth = 2;
         fieldGridConfig.gridx = 1;
         fieldGridConfig.gridy = 0;
-        statusPanel.add(field_topic.thetextfield, fieldGridConfig);
+        statusPanel.add(field_topic.jcomp, fieldGridConfig);
         fieldGridConfig.gridy = 1;
-        statusPanel.add(field_targetFile.thetextfield, fieldGridConfig);
+        statusPanel.add(field_targetFile.jcomp, fieldGridConfig);
         fieldGridConfig.gridy = 3;
-        statusPanel.add(field_status.thetextfield, fieldGridConfig);
+        statusPanel.add(field_status.jcomp, fieldGridConfig);
         fieldGridConfig.gridy = 4;
-        statusPanel.add(field_fileToAnalyze.thetextfield, fieldGridConfig);
+        statusPanel.add(field_fileToAnalyze.jcomp, fieldGridConfig);
         fieldGridConfig.gridy = 5;
-        statusPanel.add(field_supplinfo.thetextfield, fieldGridConfig);
+        statusPanel.add(field_supplinfo.jcomp, fieldGridConfig);
         
         /// snippet searchtermbox start
         fieldGridConfig.gridx = 0;
@@ -355,10 +356,10 @@ public class UserDialog {
     private void setMessage(String settext, int warning) {
         field_status.setText(settext);
         if(warning == 1) {
-            field_status.thetextfield.setForeground(warnFG);
+            field_status.jcomp.setForeground(warnFG);
         }
         else {
-			field_status.thetextfield.setForeground(normalFG);
+			field_status.jcomp.setForeground(normalFG);
 		}
     }
 	   
@@ -367,13 +368,13 @@ public class UserDialog {
         String t1 = t.length > 0 ? t[0] : "";
         String t2 = t.length > 1 ? t[1] : "";
 	    field_supplinfo.setText(s + " " + t1 + " "+ t2);
-        field_supplinfo.thetextfield.setForeground(normalFG);
+        field_supplinfo.setForeground(normalFG);
     }
     private void setSupplWarning(String s, String... t) {
         String t1 = t.length > 0 ? t[0] : "";
         String t2 = t.length > 1 ? t[1] : "";
         field_supplinfo.setText(s + " " + t1 + " "+ t2);
-        field_supplinfo.thetextfield.setForeground(warnFG);
+        field_supplinfo.setForeground(warnFG);
     }
 	   
     private String setWritingTarget() {
