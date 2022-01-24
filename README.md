@@ -8,6 +8,11 @@ Unchecking symbols can be useful if a source text contains some mathematical exp
 
 With regular expressions, simple filtering for data types similar to ISBN, date or time, URLs or e-mail addresses is done; these tokens are listed separately as well. As regular expressions can be fiddly, I focused on a simple and stable solution so this filtering may not always yield perfect results.
 
+## Use cases
+* Find out which ISBNs, e-mail addresses or URLs occurred in a long e-mail or messenger thread.
+* Have all occurrences of a word or a name been spelt in the same manner
+* Does a text contain a specific search term, at which line number and in which context does the search term appear?
+
 ## Usage
 `Open File`: browse to a text file. Set the topic (this will be the HTML title) and the target filename. The ending `.html` will be added automatically if missing. Target file will be placed in the same folder as the source text file (folder choice button may be implemented later).
 
