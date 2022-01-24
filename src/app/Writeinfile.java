@@ -131,15 +131,15 @@ public class Writeinfile {
 						specialTokens.add(lang.wrapPrefix("ISBN")+entry);
 						continue;
 					}
-					else if(RegexList.hasDateTime(entry)) {
+					if(RegexList.hasDateTime(entry)) {
 						specialTokens.add(lang.wrapPrefix("Datetime")+ entry);
 						continue;
 					}
 					// Plain numbers can be excluded from the printed result.
-					else if(!CountWords.switchMode.c_Numbers.isMode(mode)) {
+					if(!CountWords.switchMode.c_Numbers.isMode(mode)) {
 						continue;
 					}
-					else if(type_of_word != 1) {
+					if(type_of_word != 1) {
 						insertNewSection(lang.Header("Digits"));
 						type_of_word = 1;
 					}
@@ -150,16 +150,17 @@ public class Writeinfile {
 						specialTokens.add(entry);
 						continue;
 					}
-					else if(RegexList.hasEMail(entry)){
+					if(RegexList.hasEMail(entry)){
 						specialTokens.add(lang.wrapPrefix("EMail") +entry);
 						continue;
 					}
-					else if(RegexList.hasURL(entry)){
+					
+					if(RegexList.hasURL(entry)){
 						specialTokens.add(lang.wrapPrefix("URL") + entry);
 						continue;
 					}
 					// Plain words can be excluded from the printed result.
-					else if(!CountWords.switchMode.c_Words.isMode(mode)) {
+					if(!CountWords.switchMode.c_Words.isMode(mode)) {
 						type_of_word = 2;
 						continue;
 					}
@@ -192,10 +193,14 @@ public class Writeinfile {
 						refSignTokens.add(entry);
 						continue;
 					}
-					else if(!CountWords.switchMode.c_Symbols.isMode(mode)) {
+					if(RegexList.hasEMail(entry)){
+						specialTokens.add(lang.wrapPrefix("EMail") +entry);
 						continue;
 					}
-					else if (entry.length()>0) {
+					if(!CountWords.switchMode.c_Symbols.isMode(mode)) {
+						continue;
+					}
+					if (entry.length()>0) {
 						specialTokens.add(entry);
 						continue;
 					}	

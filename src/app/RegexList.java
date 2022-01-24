@@ -39,14 +39,19 @@ public class RegexList {
 		return mat.find();
 	}
 	
-	public static String url = "(\\:\\/\\/)?[a-zA-Z0-9]*[\\.][a-zA-Z0-9]*[\\.\\/]";
+	//public static String url = "(\\:\\/\\/)?[a-zA-Z0-9]*[\\.][a-zA-Z0-9]*[\\.\\/]";
+	public static String url = "(\\:\\/\\/)?[a-zA-Z0-9]*[\\.][a-zA-Z0-9]+[\\.\\/][a-zA-Z]{2}";
+	public static String shorturl = "^[a-zA-Z0-9]*[\\.][a-zA-Z]{2}$";
 	public static Pattern urlpatt = Pattern.compile(url);
+	public static Pattern shorturlpatt = Pattern.compile(shorturl);
 	
 	/** Finds a number similar to a date or time in a @param string, 
 	 * @return boolean true if such a number was found.*/
 	public static boolean hasURL(String s) {
-		Matcher mat = urlpatt.matcher(s);
-		return mat.find();
+		String str = s.substring(0, s.lastIndexOf("&"));
+		Matcher mat = urlpatt.matcher(str);
+		Matcher shortmat = shorturlpatt.matcher(str);
+		return (mat.find() || shortmat.find());
 	}
 	
 	public static String somealnum = "[a-zA-Z0-9].[a-zA-Z0-9]*";
@@ -81,10 +86,10 @@ public class RegexList {
 	
 	public static boolean hasEMail(String s) {
 		boolean b = false;
-		//FIXME doesn't match usu.al@email.com pattern 
+
 		try{
 			int len = s.length();
-			if(s.contains("@") && s.length() > 4 && Character.isAlphabetic(s.charAt(0))) {
+			if(s.contains("@") && s.length() > 4 ) {
 				int q = s.indexOf("@");
 				int r = s.indexOf("\t");
 				String buf = s.substring(q+1,(r>q+1?r:len));
