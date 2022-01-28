@@ -1,5 +1,10 @@
 # Jar file version
 
+## Latest
+* Enlarged info message field
+* More verbose exception handling
+* Words are sorted as in German Duden and dictionaries (lowercase words before uppercase words)
+
 ## Version 1.3
 * New: Translation in German and French available
 
