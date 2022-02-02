@@ -212,18 +212,7 @@ public class CountWords extends CharRep {
 		    ResultWordList.add(entry.getKey());
 		}
 		if(sortDictOrder) {
-			Collections.sort(ResultWordList, new Comparator<String>() {
-				@Override
-				public int compare(String s, String t) {
-					String t_to_low = t.toLowerCase();
-					String s_to_low = s.toLowerCase();
-					if(t_to_low == s_to_low) {
-						t_to_low += t;
-						s_to_low += s;
-					}
-					return s_to_low.compareTo(t_to_low);
-				}
-			});
+			ResultWordList.sort(String.CASE_INSENSITIVE_ORDER.thenComparing(Comparator.reverseOrder()));
 		}
 		else{
 			Collections.sort(ResultWordList);
