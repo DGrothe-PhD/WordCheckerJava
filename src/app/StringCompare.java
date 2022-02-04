@@ -80,13 +80,27 @@ public class StringCompare {
 			}
 			
 			diff(worda, wordb);
-			//TODO remove subseq handling
+			//
 			if(subseq.length() > 0) {
 				if(ShortWords.isStopWordDE(worda) && ShortWords.isStopWordDE(wordb)) {
 					return "";
 				}
 				if(ShortWords.isStopWordEN(worda) && ShortWords.isStopWordEN(wordb)) {
 					return "";
+				}
+				
+				//Anagram checker
+				char[] cha = worda.replace("&emsp;", "").toCharArray();
+				Arrays.sort(cha);
+				String ta = new String(cha);
+				char[] chb = wordb.replace("&emsp;", "").toCharArray();
+				Arrays.sort(chb);
+				String tb = new String(chb);
+				
+				if(ta.equals(tb.strip())) {
+					//FIXME does not work yet
+					return "; <em><font color=red>"+ ((occa>=occb && occb>0)?lang.Header("also")+" (A)":lang.Header("more")+" (A)")
+							+ ":</font></em> " + b + " (" + Integer.toString(occb)+ "x) ";
 				}
 				//when words are similar
 				return "; <em>"+ ((occa>=occb && occb>0)?lang.Header("also"):lang.Header("more"))

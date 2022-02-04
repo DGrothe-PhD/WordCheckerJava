@@ -232,7 +232,7 @@ public class UserDialog {
     private void makeFields() {
     	searchTermBoxLabel = new Label(lang.getANSI("Search terms:"));
     	searchTermBoxLabel.setFont(WFont.labelfont);
-    	
+        
     	textareaLabel = new Label(lang.getANSI("Edit search terms:"));
         textareaLabel.setFont(WFont.labelfont);
         
@@ -284,6 +284,7 @@ public class UserDialog {
         
         searchTermBoxLabel.setText(lang.getANSI("Search terms:"));
         textareaLabel.setText(lang.getANSI("Edit search terms:"));
+        
         if(field_topic.getText() == lang.getANSI("Result word list"))
         	field_topic.setText(lang.getANSI("Result word list"));
         field_topic.thelabel.setText(lang.getANSI("Type topic:"));
