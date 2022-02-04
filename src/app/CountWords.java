@@ -14,6 +14,7 @@ public class CountWords extends CharRep {
 	private ArrayList<String> userSearchTerms;
 	
 	protected boolean sortDictOrder = true;
+	protected int halfsnip = 20;
 	
 	protected static enum switchMode {
 		c_Numbers (0x01),
@@ -35,8 +36,9 @@ public class CountWords extends CharRep {
 		}
 	}
 	
-	public CountWords(String input, int mode, Localization lang) {
+	public CountWords(String input, int mode, Localization lang, int halfsnip) {
 		this.lang = lang;
+		this.halfsnip = halfsnip;
 		userSearchTerms = new ArrayList<String>();
 		if(input != "") {
 			String[] buf = input.split(System.lineSeparator());
@@ -49,6 +51,10 @@ public class CountWords extends CharRep {
 		
 		//else {userSearchTerms = null;}
 		this.mode = mode;
+	}
+	
+	public CountWords(String input, int mode, Localization lang) {
+		this(input, mode, lang, 20);
 	}
 		
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
@@ -246,7 +252,7 @@ public class CountWords extends CharRep {
 			if(line.length()>0 && line.contains(w)) {
 				int fixpoint = line.indexOf(w);
 				int leftspace = 0;
-				int b = fixpoint+w.length()+20;
+				int b = fixpoint+w.length()+halfsnip;
 				int rightbound = line.length();
 				if(b < line.length()-1) {
 					rightbound = Math.max(line.indexOf(" ",b), b);
@@ -255,8 +261,8 @@ public class CountWords extends CharRep {
 					leftspace = b - line.length()+1;
 				}
 				int leftbound = 0;
-				if(fixpoint - 20 - leftspace > 0) {
-					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - 20 - leftspace));
+				if(fixpoint - halfsnip - leftspace > 0) {
+					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - halfsnip - leftspace));
 				}
 				String a = line.substring(leftbound, rightbound);
 				buf.add("- "+prefix+" &quot;"+w+"&quot; "
