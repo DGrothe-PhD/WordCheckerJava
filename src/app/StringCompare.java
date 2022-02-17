@@ -100,18 +100,18 @@ public class StringCompare {
 				if(ta.equals(tb.strip())) {
 					//FIXME does not work yet
 					return "; <em><font color=red>"+ ((occa>=occb && occb>0)?lang.Header("also")+" (A)":lang.Header("more")+" (A)")
-							+ ":</font></em> " + b + " (" + Integer.toString(occb)+ "x) ";
+							+ ":</font></em> " + b;
 				}
 				//when words are similar
 				return "; <em>"+ ((occa>=occb && occb>0)?lang.Header("also"):lang.Header("more"))
-					+ ":</em> " + b + " (" + Integer.toString(occb)+ "x) ";
+					+ ":</em> " + b;
 			}
 			return "";
 		}
 		catch(Exception sdEx) {
 			//entry frequency parsing failed
 			diff(worda, wordb);
-			return "; "+ b + " (nn "+lang.Header("times")+")";
+			return "; "+ b;
 		}
 	}
 	

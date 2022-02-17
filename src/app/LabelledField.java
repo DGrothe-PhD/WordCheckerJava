@@ -15,7 +15,7 @@ import java.awt.Checkbox;
 import java.awt.Font;
 
 /** inner class for labelled fields */
-class LabelledField extends LabelledComponent {
+class LabelledField extends LabelledComponent<JTextField> {
 	JTextField jcomp;
 	 
 	public LabelledField(String title, String preset) {
@@ -32,7 +32,7 @@ class LabelledField extends LabelledComponent {
 		setup();
 	}
 	
-	private void setup() {
+	protected void setup() {
 		jcomp = new JTextField();
 		format(jcomp);
 	}
@@ -49,24 +49,15 @@ class LabelledField extends LabelledComponent {
 	}
 }
 
-class LabelledArea extends LabelledComponent {
+class LabelledArea extends LabelledComponent<JTextArea> {
 	JTextArea jcomp;
-	   
-	/*public LabelledArea(String title, String preset) {
-		super(title, preset);
-		setup();
-	}
-	public LabelledArea(String title, String preset, Color bgcolor) {
-		super(title, preset, bgcolor);
-		setup();
-	}*/
 	
 	public LabelledArea(String title, String preset, Color bgcolor, boolean editable) {
 		super(title, preset, bgcolor, editable);
 		setup();
 	}
 	
-	private void setup() {
+	protected void setup() {
 		jcomp = new JTextArea();
 		format(jcomp);
 		jcomp.setRows(3);
@@ -84,8 +75,9 @@ class LabelledArea extends LabelledComponent {
 	}
 }
 
-abstract class LabelledComponent {
+abstract class LabelledComponent<T extends JTextComponent> {
 	
+	T jcomp;
 	protected static int FIELD_WIDTH = 30;
 	String thepreset = "", thetitle="";
 	JLabel thelabel;
@@ -97,18 +89,20 @@ abstract class LabelledComponent {
 		thelabel = new JLabel(title);
 		thelabel.setFont(WFont.labelfont);
 		thepreset = preset;
+		setup();
 	}
 	
 	public LabelledComponent(String title, String preset, Color bgcolor) {
 		this(title, preset);
 		this.bgcolor=bgcolor;
 	}
+	
 	public LabelledComponent(String title, String preset, Color bgcolor, boolean editable) {
 		this(title, preset, bgcolor);
 		this.editable = editable;
 	}
 
-	protected void format(JTextComponent comp) {
+	protected void format(T comp) {
 		comp.setFont(WFont.descriptionFont);
 		comp.setText(this.thepreset);
 		if(bgcolor!=null) comp.setBackground(bgcolor);
@@ -116,6 +110,13 @@ abstract class LabelledComponent {
 		comp.setEditable(editable);
 	}
 	
+	public abstract void setText(String displayedtext);
+	public abstract String getText();
+	protected abstract void setup();
+	
+	protected void setForeground(Color color) {
+		jcomp.setForeground(color);
+	}
 }
 
 class ToggleFunction extends Checkbox {
