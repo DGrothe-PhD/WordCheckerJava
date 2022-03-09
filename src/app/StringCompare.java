@@ -10,6 +10,7 @@ import java.util.*;
 public class StringCompare {
 	
 	private String subseq ="";
+	private int levenshtein_distance;
 	private static int NUMW = 5;
 	private static double ALLOVAR = 0.5;
 	
@@ -17,6 +18,7 @@ public class StringCompare {
 	
 	public StringCompare() {
 		subseq = "";
+		levenshtein_distance = 0;
 		words = new LinkedList<String>();
 	}
 	
@@ -32,6 +34,7 @@ public class StringCompare {
 			word_a = secondword;
 		}
 		
+		levenshtein_distance = 0;
 		subseq = "";
 		int matrix[][] = new int[word_a.length() + 1][word_b.length() + 1];
 		int i;
@@ -57,6 +60,8 @@ public class StringCompare {
 				matrix[a][b] = mini;
 			}
 		}
+		
+		levenshtein_distance = matrix[word_a.length()][word_b.length()];
 		//blanks for differences in similar words
 		if (matrix[word_a.length()][word_b.length()] < ALLOVAR *word_a.length()) {
 			subseq="###";
@@ -89,19 +94,36 @@ public class StringCompare {
 					return "";
 				}
 				
+				if(levenshtein_distance < 3) {
+					return "; "+ ((occa>=occb && occb>0)?lang.Header("also")+" (A)":lang.Header("more")+" (*)")
+							+ ": <em><b><font color=red>" + b + "</font></b></em>";
+				}
+				
 				//Anagram checker
 				char[] cha = worda.replace("&emsp;", "").toCharArray();
 				Arrays.sort(cha);
 				String ta = new String(cha);
+				ta = ta.strip();
 				char[] chb = wordb.replace("&emsp;", "").toCharArray();
 				Arrays.sort(chb);
 				String tb = new String(chb);
+				tb = tb.strip();
 				
-				if(ta.equals(tb.strip())) {
-					//FIXME does not work yet
-					return "; <em><font color=red>"+ ((occa>=occb && occb>0)?lang.Header("also")+" (A)":lang.Header("more")+" (A)")
-							+ ":</font></em> " + b;
+				if(ta.equals(tb)) {
+					return "; "+ ((occa>=occb && occb>0)?lang.Header("also")+" (A)":lang.Header("more")+" (A)")
+							+ ": <em><font color=red>" + b + "</font></em>";
 				}
+				
+				//Word starting with same letter sequence
+				if(worda.substring(0,7).equals(wordb.substring(0,7))) {
+					return "; "+ ((occa>=occb && occb>0)?lang.Header("also")+" (S)":lang.Header("more")+" (S)")
+							+ ": <em><b><font color=blue>" + b + "</font></b></em>";
+				}
+				if(worda.substring(0,4).equals(wordb.substring(0,4))) {
+					return "; "+ ((occa>=occb && occb>0)?lang.Header("also")+" (S)":lang.Header("more")+" (S)")
+							+ ": <em><font color=navy>" + b + "</font></em>";
+				}
+				
 				//when words are similar
 				return "; <em>"+ ((occa>=occb && occb>0)?lang.Header("also"):lang.Header("more"))
 					+ ":</em> " + b;

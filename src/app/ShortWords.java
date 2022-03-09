@@ -70,7 +70,7 @@ public class ShortWords {
 	};
 	
 	public static String[] ListOfPhrases = {
-		"oft he ", "tot he ", "fort he ", "ist he ", " ,", " .", " um so"
+		"oft he ", "tot he ", "fort he ", "ist he ", " ,", " .", " um so", "cih"
 	};
 	
 	public static List<String> shortlistDE = Arrays.asList(shwDE);
