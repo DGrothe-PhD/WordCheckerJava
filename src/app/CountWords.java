@@ -249,6 +249,9 @@ public class CountWords extends CharRep {
 			return;
 		}
 		for(String w: al) {
+			//empty lines in search word field are ignored
+			if(w.equals("")) continue;
+			
 			if(line.length()>0 && line.contains(w)) {
 				int fixpoint = line.indexOf(w);
 				int leftspace = 0;
