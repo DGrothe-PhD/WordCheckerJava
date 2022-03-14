@@ -1,9 +1,11 @@
 # Jar file version
 
-## Latest
+## Version 1.4
 * Enlarged info message field
 * More verbose exception handling
 * Words are sorted as in German Duden and dictionaries (lowercase words before uppercase words)
+* Words are highlighted if anagrams or beginning by the same prefix
+* Empty lines are ignored
 
 ## Version 1.3
 * New: Translation in German and French available
