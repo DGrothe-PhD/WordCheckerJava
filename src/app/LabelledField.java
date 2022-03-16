@@ -11,10 +11,10 @@ import javax.swing.JButton;
 import javax.swing.border.Border;
 import javax.swing.border.SoftBevelBorder;
 
-import java.awt.Checkbox;
+import javax.swing.JCheckBox;
 import java.awt.Font;
 
-/** inner class for labelled fields */
+/** fields with text label derived from JTextField */
 class LabelledField extends LabelledComponent<JTextField> {
 	JTextField jcomp;
 	 
@@ -49,6 +49,7 @@ class LabelledField extends LabelledComponent<JTextField> {
 	}
 }
 
+/**  text area with text label derived from JTextArea */
 class LabelledArea extends LabelledComponent<JTextArea> {
 	JTextArea jcomp;
 	
@@ -119,7 +120,7 @@ abstract class LabelledComponent<T extends JTextComponent> {
 	}
 }
 
-class ToggleFunction extends Checkbox {
+class ToggleFunction extends JCheckBox {
 
 	/**
 	 * 
@@ -129,16 +130,17 @@ class ToggleFunction extends Checkbox {
 	String name;
 	
 	public void changeState() {
-		if(this.getState()) {
-			this.setState(false);
+		if(this.isSelected()) {
+			this.setSelected(false);
 		}
 		else {
-			this.setState(true);
+			this.setSelected(true);
 		}
 	}
 	
 	public ToggleFunction(String name, UserDialog udi, int level) {
 		super(name, true);
+		setOpaque(false);
 		this.setFont(WFont.labelfont);
 		this.name = name;
 		this.addItemListener(new ItemListener() {
@@ -149,8 +151,7 @@ class ToggleFunction extends Checkbox {
 		this.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {      
             	if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-            		changeState();
-            		udi.switchMode((getState()?1:(-1))*level);
+            		changeState();//fires ItemListener
             	}
             }
         });
