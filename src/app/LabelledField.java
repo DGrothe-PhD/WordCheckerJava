@@ -1,10 +1,11 @@
 package app;
 
-import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.*;
 
 import javax.swing.JButton;
@@ -12,7 +13,6 @@ import javax.swing.border.Border;
 import javax.swing.border.SoftBevelBorder;
 
 import javax.swing.JCheckBox;
-import java.awt.Font;
 
 /** fields with text label derived from JTextField */
 class LabelledField extends LabelledComponent<JTextField> {

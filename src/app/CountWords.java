@@ -41,7 +41,7 @@ public class CountWords extends CharRep {
 		this.halfsnip = halfsnip;
 		userSearchTerms = new ArrayList<String>();
 		if(input != "") {
-			String[] buf = input.split(System.lineSeparator());
+			String[] buf = input.split("\\R");
 			for (String x : buf) {
 				String y = clarify(x);
 				userSearchTerms.add(x);

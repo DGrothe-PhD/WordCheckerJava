@@ -2,11 +2,16 @@ package app;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+
 import java.text.MessageFormat;
+import java.awt.Color;
+
+import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.border.Border;
@@ -14,6 +19,8 @@ import javax.swing.border.SoftBevelBorder;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 
 /** User dialog widget */
@@ -27,14 +34,15 @@ public class UserDialog {
     private LabelledField field_topic, field_targetFile, field_status;
     private LabelledField field_fileToAnalyze;
 	private LabelledArea field_supplinfo;
-    private Label textareaLabel, searchTermBoxLabel;
-    private Label headline;
-    private Label copyright = new Label("© 2021 Daniela Grothe");
+    private JLabel textareaLabel, searchTermBoxLabel;
+    private JLabel headline;
+    private JLabel copyright = new JLabel("© 2021 Daniela Grothe");
     private JButton github = new JButton("GitHub");
     
     private WButton fileDialogButton, startButton, openButton, closeButton, clearButton;
     
-    private TextArea userTermsTextArea;
+    private JScrollPane listScroller;
+    private JTextArea userTermsTextArea;
     
     private JCBox searchTermBox, localizationBox;
     private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
@@ -81,7 +89,7 @@ public class UserDialog {
         try {
         	lang = new Localization();
         	jsonSearchWords = new SearchWords();
-        	headline = new Label(lang.getANSI("description"));
+        	headline = new JLabel(lang.getANSI("description"));
         	
         	Toolkit tk = Toolkit.getDefaultToolkit();
             Dimension d = tk.getScreenSize();
@@ -96,7 +104,17 @@ public class UserDialog {
         	makeButtons();
 
             prepareGUI();
+            
             searchTermBox = new JCBox("...", jsonSearchWords);
+            
+            listScroller = new JScrollPane(userTermsTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+            		JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            int height_of_scrollbar = listScroller.getVerticalScrollBar().getHeight();
+            
+            listScroller.getVerticalScrollBar().setPreferredSize(new Dimension(19, height_of_scrollbar));
+            //listScroller.setPreferredSize(new Dimension(100, 100));//.setSize(100,700);
+            //listScroller.setBounds(0,0,1500, 995);
+            
             localizationBox = new JCBox("Language settings", lang);
             
             addButtons();
@@ -110,16 +128,18 @@ public class UserDialog {
             
             showFileDialog();
             
-            searchTermBox.connect(userTermsTextArea, jsonSearchWords);
+            statusPanel.setVisible(true);
+            searchTermBox.connect(this, userTermsTextArea, jsonSearchWords);
             localizationBox.connect(this, lang);
             
             mainFrame.setVisible(true);
             mainFrame.requestFocus();
             
         }
-        catch(AWTError awe) {
+        catch(Exception awe) {
         	//intended as fallback if UI cannot be shown on system
-            System.out.println("Application window could not be opened.");
+            System.out.println("Application window could not be opened. Reason:");
+            System.out.println(awe.toString());
         }
     }
 	   
@@ -230,10 +250,10 @@ public class UserDialog {
 
     
     private void makeFields() {
-    	searchTermBoxLabel = new Label(lang.getANSI("Search terms:"));
+    	searchTermBoxLabel = new JLabel(lang.getANSI("Search terms:"));
     	searchTermBoxLabel.setFont(WFont.labelfont);
         
-    	textareaLabel = new Label(lang.getANSI("Edit search terms:"));
+    	textareaLabel = new JLabel(lang.getANSI("Edit search terms:"));
         textareaLabel.setFont(WFont.labelfont);
         
         field_topic = new LabelledField(
@@ -249,7 +269,7 @@ public class UserDialog {
         );
         field_supplinfo = new LabelledArea(lang.getANSI("Info:"), "", green, false);
         
-        userTermsTextArea = new TextArea();
+        userTermsTextArea = new JTextArea();
         userTermsTextArea.setFont(WFont.descriptionFont);
         userTermsTextArea.setColumns(LabelledField.FIELD_WIDTH);
         userTermsTextArea.setRows(5);
@@ -277,10 +297,10 @@ public class UserDialog {
         clearButton.setText(lang.getANSI("Clear search"));
         
         headline.setText(lang.getANSI("description"));
-        chkNumbers.setLabel(lang.getANSI("Numbers"));
-        chkSymbols.setLabel(lang.getANSI("Symbols"));
-        chkWords.setLabel(lang.getANSI("Words"));
-        chkUserTerms.setLabel(lang.getANSI("Search terms"));
+        chkNumbers.setText(lang.getANSI("Numbers"));
+        chkSymbols.setText(lang.getANSI("Symbols"));
+        chkWords.setText(lang.getANSI("Words"));
+        chkUserTerms.setText(lang.getANSI("Search terms"));
         
         searchTermBoxLabel.setText(lang.getANSI("Search terms:"));
         textareaLabel.setText(lang.getANSI("Edit search terms:"));
@@ -344,13 +364,15 @@ public class UserDialog {
     	statusPanel.add(searchTermBoxLabel, fieldGridConfig);
     	fieldGridConfig.gridx = 1;
     	fieldGridConfig.gridy = 6;
+    	
+    	statusPanel.add(listScroller);
     	statusPanel.add(searchTermBox, fieldGridConfig);
     	fieldGridConfig.gridy = 8;
     	statusPanel.add(localizationBox, fieldGridConfig);
     	///snippet end
     	
         fieldGridConfig.gridy = 32;
-        statusPanel.add(userTermsTextArea, fieldGridConfig);
+        statusPanel.add(listScroller, fieldGridConfig);
     }
     
     /** show status messages */
@@ -657,6 +679,7 @@ class JCBox extends JComboBox<String> {
 		try {
 			this.defaultDescription = defaultDescription;
 			this.setFont(WFont.labelfont);
+			this.setLightWeightPopupEnabled(false);
 			choices = jsonData.getAll();
 			this.addItem(defaultDescription);
 			this.setSelectedItem(defaultDescription);
@@ -669,7 +692,7 @@ class JCBox extends JComboBox<String> {
 		}
 	}
 	
-	public void connect(TextArea textarea, SearchWords jsonData) {
+	public void connect(UserDialog ud, JTextArea textarea, SearchWords jsonData) {
 		///adding functionality
 		
 		///add listener
@@ -679,6 +702,7 @@ class JCBox extends JComboBox<String> {
 			    if(e.getStateChange() == ItemEvent.SELECTED) {
 			        rjs = jsonData.getText(getSelectedItem().toString());
 			        textarea.setText(rjs);
+			        ud.mainFrame.revalidate();
 			    }
 			}
 		});
