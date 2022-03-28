@@ -22,6 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+//import javax.swing.JFileChooser;
 
 /** User dialog widget */
 public class UserDialog {
@@ -46,7 +48,7 @@ public class UserDialog {
     
     private JCBox searchTermBox, localizationBox;
     private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
-    private Panel controlPanel, statusPanel, top;
+    private JPanel controlPanel, statusPanel, top;
     private ImagePanel background;
     private Image image;
     
@@ -56,6 +58,7 @@ public class UserDialog {
     //technical stuff
     private String workingFolder;
     private FileDialog fileDialog;
+    //private JFileChooser fileDialog;
     private int mode;
     public void switchMode(int mode) {
     	this.mode += mode;
@@ -112,8 +115,6 @@ public class UserDialog {
             int height_of_scrollbar = listScroller.getVerticalScrollBar().getHeight();
             
             listScroller.getVerticalScrollBar().setPreferredSize(new Dimension(19, height_of_scrollbar));
-            //listScroller.setPreferredSize(new Dimension(100, 100));//.setSize(100,700);
-            //listScroller.setBounds(0,0,1500, 995);
             
             localizationBox = new JCBox("Language settings", lang);
             
@@ -198,17 +199,17 @@ public class UserDialog {
 	
     private void prepareGUI(){
     	grid3 = new GridBagLayout();
-    	statusPanel = new Panel();
+    	statusPanel = new JPanel();
     	statusPanel.setBackground(moss);
         statusPanel.setSize(424,280); 
         statusPanel.setLayout(grid3);
     	
-    	controlPanel = new Panel();
+    	controlPanel = new JPanel();
     	controlPanel.setLayout(new GridLayout(3,2));
         controlPanel.setBackground(darker);
         controlPanel.setSize(424,280);
         
-        top = new Panel();
+        top = new JPanel();
         panelgrid = new GridBagLayout();
     	top.setLayout(panelgrid);
         fieldGridConfig = new GridBagConstraints();
@@ -278,6 +279,8 @@ public class UserDialog {
     
     private void makeButtons() {
     	fileDialog = new FileDialog(mainFrame, lang.getANSI("Select file"));
+    	//fileDialog = new JFileChooser(mainFrame);
+    	//fileDialog.setDialogTitle(lang.getANSI("Select file"));
         fileDialogButton = new WButton(lang.getANSI("Open file"), openFileBG);
 
         startButton = new WButton(lang.getANSI("Start"), startButtonBG);
@@ -317,8 +320,8 @@ public class UserDialog {
     }
     
     private void addButtons() {
-    	Component[] abc = {fileDialogButton, startButton, openButton, closeButton, clearButton};
-        for (Component s:abc) controlPanel.add(s);
+    	JComponent[] abc = {fileDialogButton, startButton, openButton, closeButton, clearButton};
+        for (JComponent s:abc) controlPanel.add(s);
     }
     
     //placement of UI elements
@@ -434,11 +437,8 @@ public class UserDialog {
             }
         });
     	
-    	mainFrame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent){
-                System.exit(0);
-            }        
-        });   
+    	mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	
     	mainFrame.setFocusable(true);
         mainFrame.addKeyListener(new KeyAdapter() {
             @Override
