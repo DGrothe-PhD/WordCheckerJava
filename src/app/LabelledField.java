@@ -111,13 +111,11 @@ abstract class LabelledComponent<T extends JTextComponent> {
 		comp.setEditable(editable);
 	}
 	
+	//abstract methods that need to handle instances of T
 	public abstract void setText(String displayedtext);
 	public abstract String getText();
 	protected abstract void setup();
-	
-	protected void setForeground(Color color) {
-		jcomp.setForeground(color);
-	}
+	protected abstract void setForeground(Color color);
 }
 
 class ToggleFunction extends JCheckBox {

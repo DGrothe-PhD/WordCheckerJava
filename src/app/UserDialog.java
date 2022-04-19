@@ -584,7 +584,7 @@ public class UserDialog {
                 		System.out.println(wfe.getCause());
                 	}
                 }
-                catch(Exception exc) {System.out.println("Some UI or other exception."+exc.getCause());}
+                catch(Exception exc) {System.out.println("Some UI or other exception."+exc.getCause()+exc.toString());}
                 finally {mainFrame.revalidate();}
              }
         });
