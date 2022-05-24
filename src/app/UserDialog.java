@@ -55,7 +55,6 @@ public class UserDialog {
     private GridBagConstraints fieldGridConfig, pgc;
     private GridBagLayout panelgrid, grid3;
     
-    //technical stuff
     private String workingFolder;
     private FileDialog fileDialog;
     //private JFileChooser fileDialog;
@@ -308,14 +307,12 @@ public class UserDialog {
         searchTermBoxLabel.setText(lang.getANSI("Search terms:"));
         textareaLabel.setText(lang.getANSI("Edit search terms:"));
         
-        if(field_topic.getText() == lang.getANSI("Result word list"))
-        	field_topic.setText(lang.getANSI("Result word list"));
+        field_topic.setText(lang.getANSI("Result word list"));
         field_topic.thelabel.setText(lang.getANSI("Type topic:"));
         field_targetFile.thelabel.setText(lang.getANSI("Target file:"));
         field_status.thelabel.setText(lang.getANSI("Selected folder:"));
         field_fileToAnalyze.thelabel.setText(lang.getANSI("Selected file:"));
-        if(field_fileToAnalyze.getText()== lang.getANSI("Please select a file"))
-        	field_fileToAnalyze.setText(lang.getANSI("Please select a file"));
+        field_fileToAnalyze.setText(lang.getANSI("Please select a file"));
         field_supplinfo.thelabel.setText(lang.getANSI("Info:"));
     }
     
@@ -381,12 +378,7 @@ public class UserDialog {
     /** show status messages */
     private void setMessage(String settext, int warning) {
         field_status.setText(settext);
-        if(warning == 1) {
-            field_status.jcomp.setForeground(warnFG);
-        }
-        else {
-			field_status.jcomp.setForeground(normalFG);
-		}
+        field_status.jcomp.setForeground(warning==1?warnFG:normalFG);
     }
 	   
 	/** show extra message @param up to 3 strings */
@@ -407,6 +399,7 @@ public class UserDialog {
         // Validate results filename from input text field
         String s = field_targetFile.getText();
         String illchar = "";
+        
         for(char c:ILLEGAL_CHARACTERS) {
             if(s.contains(""+c)) {illchar += (""+c);}
         } 
@@ -479,25 +472,8 @@ public class UserDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setMessage("", 0);
-                fileDialog.setVisible(true);
-                workingFolder = ""+fileDialog.getDirectory();
-	            
-                selFile = workingFolder + fileDialog.getFile();
-                field_status.setText("..." + workingFolder);
-                field_fileToAnalyze.setText(fileDialog.getFile());
-                field_supplinfo.setText("");
-	            
-                fileType="";
-                for(String str:ALLOWED_INPUT_FILES) {
-                    if(selFile.endsWith(str)) {
-                        fileType=str;
-                        break;
-                    }
-                }
-                String str = field_fileToAnalyze.getText();
-                if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
-                field_targetFile.setText(str);
-                field_topic.setText(str);
+                fileDialog.setVisible(true);	            
+                processFile();
                 mainFrame.revalidate();
             }
         });
@@ -509,27 +485,9 @@ public class UserDialog {
             	fileDialogButton.requestFocus();
             }
             else if (event.getKeyChar() == KeyEvent.VK_ENTER) {
-            	//TODO double code portion. perhaps to be revised.
             	setMessage("", 0);
-                fileDialog.setVisible(true);
-                workingFolder = ""+fileDialog.getDirectory();
-	            
-                selFile = workingFolder + fileDialog.getFile();
-                field_status.setText("..." + workingFolder);
-                field_fileToAnalyze.setText(fileDialog.getFile());
-                field_supplinfo.setText("");
-	            
-                fileType="";
-                for(String str:ALLOWED_INPUT_FILES) {
-                    if(selFile.endsWith(str)) {
-                        fileType=str;
-                        break;
-                    }
-                }
-                String str = field_fileToAnalyze.getText();
-                if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
-                field_targetFile.setText(str);
-                field_topic.setText(str);
+                fileDialog.setVisible(true);	            
+                processFile();
             }
             mainFrame.revalidate();
            }
@@ -621,6 +579,27 @@ public class UserDialog {
             }
         });
         
+    }
+
+    private void processFile() {
+    	workingFolder = ""+fileDialog.getDirectory();
+    	selFile = workingFolder + fileDialog.getFile();
+        field_status.setText("..." + workingFolder);
+        field_fileToAnalyze.setText(fileDialog.getFile());
+        field_supplinfo.setText("");
+        
+        fileType="";
+        for(String str:ALLOWED_INPUT_FILES) {
+            if(selFile.endsWith(str)) {
+                fileType=str;
+                break;
+            }
+        }
+        
+        String str = field_fileToAnalyze.getText();
+        if(str.lastIndexOf('.')>0) str = str.substring(0,str.lastIndexOf('.'));
+        field_targetFile.setText(str);
+        field_topic.setText(str);
     }
 }
 

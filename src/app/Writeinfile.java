@@ -96,17 +96,16 @@ public class Writeinfile {
 			"ë", "í", "ï", "ì", "î", "ó", "ò", "ô", "ú", "ù", "û",
 			};
 	
-	public String startsWithUmlaut(String str) {
+	public String startUmlautOrEmpty(String str) {
 		String u = "";
 		if(str.charAt(0) == (char)0xc3) {
 			u+= (""+ str.charAt(0)+str.charAt(1));
+			return u;
 		}
-		else {
-			for (String s: uml) {
-				if(str.startsWith(s)) {
-					u= s;
-					break;
-				}
+		for (String s: uml) {
+			if(str.startsWith(s)) {
+				u= s;
+				break;
 			}
 		}
 		return u;
@@ -172,11 +171,10 @@ public class Writeinfile {
 						type_of_word = 2;
 						char curr_char = entry.charAt(0);
 						
-						String u = startsWithUmlaut(entry);
+						String u = startUmlautOrEmpty(entry);
 						
 						if(Character.toLowerCase(curr_char)!= Character.toLowerCase(cap)) {
-							//insert an alph. section line if the word starts with 
-							//different character
+							//insert alph. section line if word starts with different character
 							//insert full first symbol if umlaut
 							cap = curr_char;
 							pWriter.println("");
@@ -211,20 +209,16 @@ public class Writeinfile {
 			
 			insertNewSection(lang.Header("specialTokens"));
 			Collections.sort(specialTokens);
-			for (String o:specialTokens) {
-				pWriter.println(o+"<br>");
-			}
+			
+			specialTokens.forEach(item -> pWriter.println(item+"<br>"));
+			
 			if(refSignTokens.size()>0) {
 				insertNewSection(lang.Header("refSigns"));
-				for (String o:refSignTokens) {
-					pWriter.println(o+"<br>");
-				}
+				refSignTokens.forEach(item -> pWriter.println(item+"<br>"));
 			}
 			if(userSearchTokens.size()>0) {
 				insertNewSection(lang.Header("userST"));
-				for (String o:userSearchTokens) {
-					pWriter.println(o+"<br>");
-				}
+				userSearchTokens.forEach(item -> pWriter.println(item+"<br>"));
 			}
 		}
 		catch(Exception wfe){

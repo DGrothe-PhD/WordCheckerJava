@@ -9,9 +9,9 @@ public class Word implements Comparator<Word>, Comparable<Word>{
 		name = the_name;
 		count = 1;
 	}
-	public void Increment() {
+	/*public void Increment() {
 		count+=1;
-	}
+	}*/
 	public int getCount() {
 		return count;
 	}
@@ -29,8 +29,8 @@ public class Word implements Comparator<Word>, Comparable<Word>{
 	public boolean equals(Object o){
         if(o instanceof Word){
              Word p = (Word) o;
-             return this.name.equals(p.getWord());
-        } else
-             return false;
+             return this.name.equals(p.name);
+        }
+        return false;
     }
 }
