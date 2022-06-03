@@ -3,6 +3,7 @@ package app;
 import java.util.ArrayList;
 import java.util.*; 
 
+
 /** Words counting class */
 public class CountWords extends CharRep {
 	private int num_of_lines;
@@ -14,7 +15,6 @@ public class CountWords extends CharRep {
 	private ArrayList<String> userSearchTerms;
 	
 	protected boolean sortDictOrder = true;
-	protected int halfsnip = 20;
 	
 	protected static enum switchMode {
 		c_Numbers (0x01),
@@ -36,9 +36,11 @@ public class CountWords extends CharRep {
 		}
 	}
 	
-	public CountWords(String input, int mode, Localization lang, int halfsnip) {
+	
+	public CountWords(String input, int mode, Localization lang) {
+		//prepare search terms, that were entered by user, for search
 		this.lang = lang;
-		this.halfsnip = halfsnip;
+		
 		userSearchTerms = new ArrayList<String>();
 		if(input != "") {
 			String[] buf = input.split("\\R");
@@ -52,10 +54,7 @@ public class CountWords extends CharRep {
 		//else {userSearchTerms = null;}
 		this.mode = mode;
 	}
-	
-	public CountWords(String input, int mode, Localization lang) {
-		this(input, mode, lang, 20);
-	}
+
 		
 	/*private String[][] brackets = {{"(",")"}, {"[","]"}, {"{","}"},
 			{"\"","\""}, {"„","“"}, {"«","»"}, {"»","«"}};*/
@@ -255,7 +254,7 @@ public class CountWords extends CharRep {
 			if(line.length()>0 && line.contains(w)) {
 				int fixpoint = line.indexOf(w);
 				int leftspace = 0;
-				int b = fixpoint+w.length()+halfsnip;
+				int b = fixpoint+w.length()+ Settings.halfsnip;
 				int rightbound = line.length();
 				if(b < line.length()-1) {
 					rightbound = Math.max(line.indexOf(" ",b), b);
@@ -264,8 +263,8 @@ public class CountWords extends CharRep {
 					leftspace = b - line.length()+1;
 				}
 				int leftbound = 0;
-				if(fixpoint - halfsnip - leftspace > 0) {
-					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - halfsnip - leftspace));
+				if(fixpoint - Settings.halfsnip - leftspace > 0) {
+					leftbound = Math.max(0, line.lastIndexOf(" ", fixpoint - Settings.halfsnip - leftspace));
 				}
 				String a = line.substring(leftbound, rightbound);
 				buf.add("- "+prefix+" &quot;"+w+"&quot; "

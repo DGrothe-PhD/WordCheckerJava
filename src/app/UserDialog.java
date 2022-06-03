@@ -48,6 +48,8 @@ public class UserDialog {
     
     private JCBox searchTermBox, localizationBox;
     private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
+    private JComboBox<Integer> extractLength;
+    private Integer[] extractLengthValues = new Integer[] {10, 20, 50, 100, 150};
     private JPanel controlPanel, statusPanel, top;
     private ImagePanel background;
     private Image image;
@@ -189,10 +191,13 @@ public class UserDialog {
         	CountWords.switchMode.c_UserTerms.getMode()
         );
         
+        extractLength = new JComboBox<Integer>(extractLengthValues);
+        
         controlPanel.add(chkNumbers);
         controlPanel.add(chkSymbols);
     	controlPanel.add(chkWords);
     	controlPanel.add(chkUserTerms);
+    	controlPanel.add(extractLength);
     }
     
 	
@@ -500,6 +505,7 @@ public class UserDialog {
             public void actionPerformed(ActionEvent e){
                 tc = new TimeCalc();
                 try{
+                	Settings.setExtractSize((int) extractLength.getSelectedItem());
                     if (selFile == null || selFile.length()<2) {
                         setMessage(lang.getANSI("PleaseSelectFile"), 1);
                         throw new WriteException("");
