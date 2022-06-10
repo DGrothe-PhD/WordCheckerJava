@@ -1,5 +1,8 @@
 # Jar file version
 
+## Version 1.5
+* Length of text snippet for occurring search words can be customized
+
 ## Version 1.4
 * Enlarged info message field
 * More verbose exception handling
@@ -7,6 +10,7 @@
 * Words are highlighted if anagrams or beginning by the same prefix
 * Empty lines are ignored
 
+<details><summary><h1>Prior versions</h1>&nbsp;<em>click to open</em></summary>
 ## Version 1.3
 * New: Translation in German and French available
 
@@ -22,3 +26,4 @@
 
 ## Verion 1.0
 Basic algorithm works. Some UI elements prepared.
+</details>
