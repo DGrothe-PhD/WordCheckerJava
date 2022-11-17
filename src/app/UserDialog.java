@@ -36,7 +36,7 @@ public class UserDialog {
     private LabelledField field_topic, field_targetFile, field_status;
     private LabelledField field_fileToAnalyze;
 	private LabelledArea field_supplinfo;
-    private JLabel textareaLabel, searchTermBoxLabel;
+    private JLabel textareaLabel, searchTermBoxLabel, extractLengthLabel;
     private JLabel headline;
     private JLabel copyright = new JLabel("© 2021 Daniela Grothe");
     private JButton github = new JButton("GitHub");
@@ -93,7 +93,7 @@ public class UserDialog {
         try {
         	lang = new Localization();
         	jsonSearchWords = new SearchWords();
-        	headline = new JLabel(lang.getANSI("description"));
+        	headline = new JLabel(lang.getLocalizedText("description"));
         	
         	Toolkit tk = Toolkit.getDefaultToolkit();
             Dimension d = tk.getScreenSize();
@@ -162,7 +162,7 @@ public class UserDialog {
 			desktop.browse(url.toURI());
 		}
         catch (Exception oError){
-	        setMessage(lang.getANSI("GitHubNotOpening"), 1);
+	        setMessage(lang.getLocalizedText("GitHubNotOpening"), 1);
 	    }
 	}
     
@@ -175,7 +175,7 @@ public class UserDialog {
 			desktop.browse(uri);
 		}
         catch (Exception oError){
-	        setMessage(lang.getANSI("OutputFileNotOpening"), 1);
+	        setMessage(lang.getLocalizedText("OutputFileNotOpening"), 1);
 	    }
         finally{mainFrame.revalidate();}
 	}
@@ -184,19 +184,21 @@ public class UserDialog {
     private void addCheckboxGroup() {
         mode = 15;
 		   
-        chkNumbers = new ToggleFunction(lang.getANSI("Numbers"), this, CountWords.switchMode.c_Numbers.getMode());
-        chkSymbols = new ToggleFunction(lang.getANSI("Symbols"), this, CountWords.switchMode.c_Symbols.getMode());
-        chkWords   = new ToggleFunction(lang.getANSI("Words"), this, CountWords.switchMode.c_Words.getMode());
-        chkUserTerms = new ToggleFunction(lang.getANSI("Search terms"), this,
+        chkNumbers = new ToggleFunction(lang.getLocalizedText("Numbers"), this, CountWords.switchMode.c_Numbers.getMode());
+        chkSymbols = new ToggleFunction(lang.getLocalizedText("Symbols"), this, CountWords.switchMode.c_Symbols.getMode());
+        chkWords   = new ToggleFunction(lang.getLocalizedText("Words"), this, CountWords.switchMode.c_Words.getMode());
+        chkUserTerms = new ToggleFunction(lang.getLocalizedText("Search terms"), this,
         	CountWords.switchMode.c_UserTerms.getMode()
         );
         
+        extractLengthLabel = new JLabel(lang.getLocalizedText("Extract length:"));
         extractLength = new JComboBox<Integer>(extractLengthValues);
         
         controlPanel.add(chkNumbers);
         controlPanel.add(chkSymbols);
     	controlPanel.add(chkWords);
     	controlPanel.add(chkUserTerms);
+    	controlPanel.add(extractLengthLabel);
     	controlPanel.add(extractLength);
     }
     
@@ -255,24 +257,24 @@ public class UserDialog {
 
     
     private void makeFields() {
-    	searchTermBoxLabel = new JLabel(lang.getANSI("Search terms:"));
+    	searchTermBoxLabel = new JLabel(lang.getLocalizedText("Search terms:"));
     	searchTermBoxLabel.setFont(WFont.labelfont);
         
-    	textareaLabel = new JLabel(lang.getANSI("Edit search terms:"));
+    	textareaLabel = new JLabel(lang.getLocalizedText("Edit search terms:"));
         textareaLabel.setFont(WFont.labelfont);
         
         field_topic = new LabelledField(
-        		lang.getANSI("Type topic:"), lang.getANSI("Result word list")
+        		lang.getLocalizedText("Type topic:"), lang.getLocalizedText("Result word list")
         );
         field_targetFile = new LabelledField(
-        		lang.getANSI("Target file:"), "Word_occurrences.html"
+        		lang.getLocalizedText("Target file:"), "Word_occurrences.html"
         );
-        field_status = new LabelledField(lang.getANSI("Selected folder:"), "", hint, false);
+        field_status = new LabelledField(lang.getLocalizedText("Selected folder:"), "", hint, false);
         field_fileToAnalyze = new LabelledField(
-        		lang.getANSI("Selected file:"),
-        		"- "+lang.getANSI("Please select a file")+" -", light, false
+        		lang.getLocalizedText("Selected file:"),
+        		"- "+lang.getLocalizedText("Please select a file")+" -", light, false
         );
-        field_supplinfo = new LabelledArea(lang.getANSI("Info:"), "", green, false);
+        field_supplinfo = new LabelledArea(lang.getLocalizedText("Info:"), "", green, false);
         
         userTermsTextArea = new JTextArea();
         userTermsTextArea.setFont(WFont.descriptionFont);
@@ -282,43 +284,46 @@ public class UserDialog {
     }
     
     private void makeButtons() {
-    	fileDialog = new FileDialog(mainFrame, lang.getANSI("Select file"));
+    	fileDialog = new FileDialog(mainFrame, lang.getLocalizedText("Select file"));
     	//fileDialog = new JFileChooser(mainFrame);
     	//fileDialog.setDialogTitle(lang.getANSI("Select file"));
-        fileDialogButton = new WButton(lang.getANSI("Open file"), openFileBG);
+        fileDialogButton = new WButton(lang.getLocalizedText("Open file"), openFileBG);
 
-        startButton = new WButton(lang.getANSI("Start"), startButtonBG);
+        startButton = new WButton(lang.getLocalizedText("Start"), startButtonBG);
         startButton.setPreferredSize(new Dimension(116, 30));
         
-        openButton = new WButton(lang.getANSI("Show Results"), openHTMLBG);
-        closeButton = new WButton(lang.getANSI("Close window"), moss);
-        clearButton = new WButton(lang.getANSI("Clear search"), clearBG);
+        openButton = new WButton(lang.getLocalizedText("Show Results"), openHTMLBG);
+        closeButton = new WButton(lang.getLocalizedText("Close window"), moss);
+        clearButton = new WButton(lang.getLocalizedText("Clear search"), clearBG);
     }
     
     protected void addTextToButtons() {
-    	fileDialog.setTitle(lang.getANSI("Select file"));
-    	fileDialogButton.setText(lang.getANSI("Open file"));
-    	startButton.setText(lang.getANSI("Start"));
-        openButton.setText(lang.getANSI("Show Results"));
-        closeButton.setText(lang.getANSI("Close window"));
-        clearButton.setText(lang.getANSI("Clear search"));
+    	fileDialog.setTitle(lang.getLocalizedText("Select file"));
+    	fileDialogButton.setText(lang.getLocalizedText("Open file"));
+    	startButton.setText(lang.getLocalizedText("Start"));
+        openButton.setText(lang.getLocalizedText("Show Results"));
+        closeButton.setText(lang.getLocalizedText("Close window"));
+        clearButton.setText(lang.getLocalizedText("Clear search"));
         
-        headline.setText(lang.getANSI("description"));
-        chkNumbers.setText(lang.getANSI("Numbers"));
-        chkSymbols.setText(lang.getANSI("Symbols"));
-        chkWords.setText(lang.getANSI("Words"));
-        chkUserTerms.setText(lang.getANSI("Search terms"));
+        headline.setText(lang.getLocalizedText("description"));
+        chkNumbers.setText(lang.getLocalizedText("Numbers"));
+        chkSymbols.setText(lang.getLocalizedText("Symbols"));
+        chkWords.setText(lang.getLocalizedText("Words"));
+        chkUserTerms.setText(lang.getLocalizedText("Search terms"));
         
-        searchTermBoxLabel.setText(lang.getANSI("Search terms:"));
-        textareaLabel.setText(lang.getANSI("Edit search terms:"));
+        searchTermBoxLabel.setText(lang.getLocalizedText("Search terms:"));
+        extractLengthLabel.setText(lang.getLocalizedText("Extract length:"));
+        textareaLabel.setText(lang.getLocalizedText("Edit search terms:"));
         
-        field_topic.setText(lang.getANSI("Result word list"));
-        field_topic.thelabel.setText(lang.getANSI("Type topic:"));
-        field_targetFile.thelabel.setText(lang.getANSI("Target file:"));
-        field_status.thelabel.setText(lang.getANSI("Selected folder:"));
-        field_fileToAnalyze.thelabel.setText(lang.getANSI("Selected file:"));
-        field_fileToAnalyze.setText(lang.getANSI("Please select a file"));
-        field_supplinfo.thelabel.setText(lang.getANSI("Info:"));
+        field_topic.setText(lang.getLocalizedText("Result word list"));
+        field_topic.thelabel.setText(lang.getLocalizedText("Type topic:"));
+        field_targetFile.thelabel.setText(lang.getLocalizedText("Target file:"));
+        field_status.thelabel.setText(lang.getLocalizedText("Selected folder:"));
+        field_fileToAnalyze.thelabel.setText(lang.getLocalizedText("Selected file:"));
+        if(field_fileToAnalyze.getText().startsWith("-")) {
+        	field_fileToAnalyze.setText(lang.getLocalizedText("Please select a file"));
+        }
+        field_supplinfo.thelabel.setText(lang.getLocalizedText("Info:"));
     }
     
     private void addButtons() {
@@ -409,10 +414,10 @@ public class UserDialog {
             if(s.contains(""+c)) {illchar += (""+c);}
         } 
         if(illchar.length()>0) {
-            setMessage(MessageFormat.format(lang.getANSI("BadSymbolInFilename"), illchar), 1);
+            setMessage(MessageFormat.format(lang.getLocalizedText("BadSymbolInFilename"), illchar), 1);
             return null;
         }
-        String fileprefix = lang.getANSI("Results")+"_";
+        String fileprefix = lang.getLocalizedText("Results")+"_";
         if(s.length() > 5 && s.endsWith(".html")) return fileprefix + s; 
         return workingFolder + fileprefix + s + ".html";
     }
@@ -507,12 +512,12 @@ public class UserDialog {
                 try{
                 	Settings.setExtractSize((int) extractLength.getSelectedItem());
                     if (selFile == null || selFile.length()<2) {
-                        setMessage(lang.getANSI("PleaseSelectFile"), 1);
+                        setMessage(lang.getLocalizedText("PleaseSelectFile"), 1);
                         throw new WriteException("");
                     }
                     else if(fileType.length()<2) {
                         setMessage(
-                            lang.getANSI("suggestFileType")+
+                            lang.getLocalizedText("suggestFileType")+
                                 String.join(", ", ALLOWED_INPUT_FILES), 1);
                         throw new WriteException("");
                     }
@@ -529,17 +534,17 @@ public class UserDialog {
                     	WordPlace.finishWriting();
                     	fileType = "";
                         setSupplMessage(Integer.toString(etx.GetNumberOfWords())+
-                        		lang.getANSI("wordscounted"),
+                        		lang.getLocalizedText("wordscounted"),
                             tc.getDuration());
                     }
                     catch(IOException exc) {
-                    	setSupplWarning(lang.getANSI("FileNotRead"));
+                    	setSupplWarning(lang.getLocalizedText("FileNotRead"));
                     }
                     catch(WriteException wfe) {
                         setSupplWarning(wfe.getMessage());
                         System.out.println(wfe.getCause());
                     }
-                    catch(Exception exc) {setSupplWarning(lang.getANSI("Internal error"));}
+                    catch(Exception exc) {setSupplWarning(lang.getLocalizedText("Internal error"));}
                 }
                 
                 catch(WriteException wfe) {

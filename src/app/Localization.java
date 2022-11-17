@@ -27,7 +27,7 @@ public class Localization extends ReadJson{
 		return lookUpField(key);
 	}
 	
-	public String getANSI(String key) {
+	public String getLocalizedText(String key) {
 		return charRep.toANSI(lookUpField(key));
 	}
 	
