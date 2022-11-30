@@ -49,7 +49,7 @@ public class UserDialog {
     private JCBox searchTermBox, localizationBox;
     private ToggleFunction chkNumbers, chkSymbols, chkWords, chkUserTerms;
     private JComboBox<Integer> extractLength;
-    private Integer[] extractLengthValues = new Integer[] {10, 20, 50, 100, 150};
+    private Integer[] extractLengthValues = new Integer[] {10, 20, 50, 75, 100, 120, 150};
     private JPanel controlPanel, statusPanel, top;
     private ImagePanel background;
     private Image image;
@@ -101,7 +101,7 @@ public class UserDialog {
             System.out.println("Screen height = " + d.height);
             
         	mainFrame = new JFrame("Java Wordchecker");
-        	mainFrame.setSize(500,460);
+        	mainFrame.setSize(600,460);
         	mainFrame.setLayout(new GridLayout());        	
         	
         	makeFields();
@@ -280,6 +280,7 @@ public class UserDialog {
         userTermsTextArea.setFont(WFont.descriptionFont);
         userTermsTextArea.setColumns(LabelledField.FIELD_WIDTH);
         userTermsTextArea.setRows(5);
+        userTermsTextArea.setToolTipText(lang.getLocalizedText("Edit tooltip"));
         userTermsTextArea.setEditable(true);
     }
     
@@ -314,6 +315,7 @@ public class UserDialog {
         searchTermBoxLabel.setText(lang.getLocalizedText("Search terms:"));
         extractLengthLabel.setText(lang.getLocalizedText("Extract length:"));
         textareaLabel.setText(lang.getLocalizedText("Edit search terms:"));
+        userTermsTextArea.setToolTipText(lang.getLocalizedText("Edit tooltip"));
         
         field_topic.setText(lang.getLocalizedText("Result word list"));
         field_topic.thelabel.setText(lang.getLocalizedText("Type topic:"));

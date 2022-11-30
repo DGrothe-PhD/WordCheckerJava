@@ -10,7 +10,7 @@ import java.util.*;
 public class StringCompare {
 	
 	private String subseq ="";
-	private int levenshtein_distance;
+	private int levenshteinDistance;
 	private static int NUMW = 5;
 	private static double ALLOVAR = 0.5;
 	
@@ -18,7 +18,7 @@ public class StringCompare {
 	
 	public StringCompare() {
 		subseq = "";
-		levenshtein_distance = 0;
+		levenshteinDistance = 0;
 		words = new LinkedList<String>();
 	}
 	
@@ -34,7 +34,7 @@ public class StringCompare {
 			word_a = secondword;
 		}
 		
-		levenshtein_distance = 0;
+		levenshteinDistance = 0;
 		subseq = "";
 		int matrix[][] = new int[word_a.length() + 1][word_b.length() + 1];
 		int i;
@@ -61,7 +61,7 @@ public class StringCompare {
 			}
 		}
 		
-		levenshtein_distance = matrix[word_a.length()][word_b.length()];
+		levenshteinDistance = matrix[word_a.length()][word_b.length()];
 		//blanks for differences in similar words
 		if (matrix[word_a.length()][word_b.length()] < ALLOVAR *word_a.length()) {
 			subseq="###";
@@ -94,20 +94,22 @@ public class StringCompare {
 					return "";
 				}
 				
-				if(levenshtein_distance < 3) {
+				if(levenshteinDistance < 3) {
 					return "; "+ ((occa>=occb && occb>0)?lang.Header("also")+" (A)":lang.Header("more")+" (*)")
 							+ ": <em><b><font color=red>" + b + "</font></b></em>";
 				}
 				
-				//Anagram checker
+				//Anagram and hyphen checker
 				char[] cha = worda.replace("&emsp;", "").toCharArray();
 				Arrays.sort(cha);
 				String ta = new String(cha);
 				ta = ta.strip();
+				ta = ta.replaceAll("-", "");
 				char[] chb = wordb.replace("&emsp;", "").toCharArray();
 				Arrays.sort(chb);
 				String tb = new String(chb);
 				tb = tb.strip();
+				tb = tb.replaceAll("-", "");
 				
 				if(ta.equals(tb)) {
 					return "; "+ ((occa>=occb && occb>0)?lang.Header("also")+" (A)":lang.Header("more")+" (A)")

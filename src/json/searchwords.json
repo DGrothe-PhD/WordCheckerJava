@@ -1,14 +1,15 @@
 {
 "jobOfferDE": [
-	"reise", "Reise", "Assist", "befrist", "befrist", "Teilzeit", "Kunde", 
-	"Vertrieb", "Büro", "Homeoffice"
+	"reise", "Reise", "Assist", "befrist", "Teilzeit", "Kunde", 
+	"Vertrieb", "Büro", "Homeoffice", "remote", "Projekt", "Gehaltsvorstellung", "Anschreiben", "Lebenslauf",
+	"Zeugnisse", "Bewerbungsfrist", "Startup", "einschlägig", "Studium", "Ausbildung"
 ],
 "weatherEN": [
-	"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+	"yesterday", "tomorrow", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 	"rain", "sun", "cloudy", "clouds", "snow", "ice", "precipitation", "wet"
 ],
 "weatherDE": [
-	"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag",
+	"gestern", "morgen", "übermorgen", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag",
 	"Regen", "Sonne", "sonnig", "wolkig", "Wolke", "Schnee", "Niederschl"
 ],
 "months": [
