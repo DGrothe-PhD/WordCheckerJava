@@ -68,7 +68,7 @@ public class UserDialog {
     private String selFile, selTargetFile, fileType = "";
     private static final String[] ALLOWED_INPUT_FILES = {
 			   ".txt", ".md", ".tex", ".py", ".rb", ".yml", "html",
-			   ".java", ".cpp", ".hpp", ".csv", ".cs"
+			   "eml", ".java", ".cpp", ".hpp", ".csv", ".cs"
 	};
     private static final char[] ILLEGAL_CHARACTERS = {
 			   '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*',
@@ -518,9 +518,8 @@ public class UserDialog {
                         throw new WriteException("");
                     }
                     else if(fileType.length()<2) {
-                        setMessage(
-                            lang.getLocalizedText("suggestFileType")+
-                                String.join(", ", ALLOWED_INPUT_FILES), 1);
+                        setMessage(lang.getLocalizedText("suggestFileType")+
+                                " .txt, .html, .tex, .csv, ...", 1);
                         throw new WriteException("");
                     }
                     selTargetFile = setWritingTarget();
