@@ -230,6 +230,11 @@ public class Writeinfile {
 	/** finish the html file */
 	public void finishWriting() {
 		insertParEnd();
+		pWriter.println("<h1>"+lang.Header("List of Abbreviations")+"</h1>");
+		pWriter.println("<ul>");
+		pWriter.println("<li>"+lang.Header("(S): Words beginning with same letter sequence")+"</li>");
+		pWriter.println("<li>"+lang.Header("(A): Anagrams or words with extra hyphens")+"</li>");
+		pWriter.println("</ul>");
 		pWriter.println("</font></body></html>");
 		pWriter.flush();
 		pWriter.close();

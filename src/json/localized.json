@@ -48,7 +48,10 @@
 	"suggestFileType": "Bitte Textdatei folgenden Typs auswählen:",
 	"times": "Vorkommen",
 	"userST": "Gefundene Suchbegriffe:",
-	"wordscounted": " Wörter gezählt."
+	"wordscounted": " Wörter gezählt.",
+	"List of Abbreviations": "Verwendete Abkürzungen",
+	"(S): Words beginning with same letter sequence": "(S): Wörter, die mit derselben Buchstabenfolge beginnen",
+	"(A): Anagrams or words with extra hyphens": "(A): Anagramme oder Wörter mit zusätzlichem Bindestrich"
 },
 "FR": {
 	"Access denied reason": "Accès au fichier a été refusé. Possible: Droits de l'administrateur necessaires ou un mémoire externe bloqué",
@@ -100,7 +103,10 @@
 	"suggestFileType": "Sélectionnez un fichier d'un de ces formats:",
 	"times": "fois",
 	"userST": "Termes de recherche trouvés:",
-	"wordscounted": " mots comptés."
+	"wordscounted": " mots comptés.",
+	"List of Abbreviations": "Tableau d'abr�viations",
+	"(S): Words beginning with same letter sequence": "(S): Les mots qui commencent avec la même suite de caractères",
+	"(A): Anagrams or words with extra hyphens": "(A): Les anagrammes ou des mots avec plus de traits d'union"
 },
 "EN": {
 	"Access denied reason": "File access denied. Possible reason: administrator rights needed, or external volume is blocked",
@@ -152,6 +158,9 @@
 	"suggestFileType": "Please choose a text file, of types:",
 	"times": "times",
 	"userST": "Searched tokens found:",
-	"wordscounted": " words counted."
+	"wordscounted": " words counted.",
+	"List of Abbreviations": "List of Abbreviations",
+	"(S): Words beginning with same letter sequence": "(S): Words beginning with same letter sequence",
+	"(A): Anagrams or words with extra hyphens": "(A): Anagrams or words with extra hyphens"
 }
 }
