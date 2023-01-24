@@ -1,5 +1,10 @@
 # Jar file version
 
+## Next binary
+* Words highlighted when extra hyphens.
+* Added list of abbreviations at bottom of HTML result file.
+* UI enlarged to accomodate translated labelling
+
 ## Version 1.5
 * Length of text snippet for occurring search words can be customized
 
