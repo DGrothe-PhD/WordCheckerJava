@@ -89,6 +89,7 @@ public class UserDialog {
 	public UserDialog() {
 		try {
 			lang = new Localization();
+			
 			jsonSearchWords = new SearchWords();
 			headline = new JLabel(lang.getLocalizedText("description"));
 
@@ -134,7 +135,8 @@ public class UserDialog {
 			mainFrame.setVisible(true);
 			mainFrame.requestFocus();
 
-		} catch (Exception awe) {
+		}
+		catch (Exception awe) {
 			// intended as fallback if UI cannot be shown on system
 			System.out.println("Application window could not be opened. Reason:");
 			System.out.println(awe.toString());

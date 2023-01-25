@@ -17,10 +17,10 @@ public class Localization extends ReadJson{
     	return "Empty key";
     }
 	
-	public Localization(){
+	public Localization() {
 		super("/json/localized.json");
 		charRep = new CharRep();
-		switchTo("EN");		
+		switchTo("EN");
 	}
 	
 	public String Header(String key) {

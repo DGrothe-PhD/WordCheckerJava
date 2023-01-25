@@ -14,13 +14,14 @@ import org.json.JSONObject;
 class ReadJson {
 	String resource;
 	String[] keysArray;
-	String jsonString;
+	String jsonString, defaultJsonString;
 	JSONObject obj;
 	List<String> keysList;
     
     public ReadJson(String resource) {
 
     	jsonString = "";
+    	defaultJsonString = "{\"EN\": {\"Close window\": \"Close window\"}}";
     	
         try {
         	this.resource = resource;
@@ -28,20 +29,12 @@ class ReadJson {
         	jsonString = new String(inputAsStream.readAllBytes());
         	
         	obj = new JSONObject(jsonString);
-        	
-        	// standard
-        	Iterator<String> keysIt = obj.keys();
-        	keysList = new ArrayList<String>();
-        	while(keysIt.hasNext()) {
-        	    String key = (String) keysIt.next();
-        	    keysList.add(key);
-        	}
-        	
-        	keysList.sort(null);
-        	keysArray = keysList.toArray(new String[keysList.size()]);
+        	prepareKeys();
         } 
         catch (org.json.JSONException js) {
-        	System.out.println("json error");
+        	System.out.println("JSON file raised an exception. Formatting error");
+        	obj = new JSONObject(defaultJsonString);
+        	prepareKeys();
         }
         catch (Exception e) {
         	System.out.println("JSON loader failed for "+resource);
@@ -51,6 +44,19 @@ class ReadJson {
     public String[] getAll() {
     	return keysArray;
     }
+    
+    private void prepareKeys() {
+    	Iterator<String> keysIt = obj.keys();
+    	keysList = new ArrayList<String>();
+    	while(keysIt.hasNext()) {
+    	    String key = (String) keysIt.next();
+    	    keysList.add(key);
+    	}
+    	
+    	keysList.sort(null);
+    	keysArray = keysList.toArray(new String[keysList.size()]);
+    }
+    
 }
 
 class SearchWords extends ReadJson {
