@@ -34,4 +34,6 @@ This way, quick review of an entry by command line tools as well: such as
 To compile, a JDK is required, it will run on a JRE 8 or later.<br>
 The jar file can then be used on different platforms including a Raspberry Pi (it has been tested on Raspberry Pi3).
 
-![GUI-Beispiel](./examples/GUIWindowDE.png "German GUI window") ![GUI-Example](./examples/GUIWindowEN.png "Default GUI window") ![GUI-Example](./examples/GUIWarningFR.png "Example French GUI window")
+<img src="./examples/GUIWindowDE.png" width="30%" title="German GUI window" alt="German GUI window"/>&nbsp;
+<img src="./examples/GUIWindowEN.png" width="30%" title="Default GUI window" alt="Default GUI window"/>&nbsp;
+<img src="./examples/GUIWarningFR.png" width="30%" title="Example French GUI window" alt="Example French GUI window"/>
